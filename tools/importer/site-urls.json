@@ -1,0 +1,45 @@
+{
+  "originUrl": "https://www.medtronic.com",
+  "aborted": false,
+  "urls": [
+    {
+      "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
+      "source": "MANUAL",
+      "targetPath": "/in-en/healthcare-professionals",
+      "id": "63714cd41b4b49c11cdee12b024c08a80abda210"
+    },
+    {
+      "url": "https://www.medtronic.com/in-en/index.html",
+      "source": "MANUAL",
+      "targetPath": "/in-en",
+      "id": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254"
+    },
+    {
+      "url": "https://www.medtronic.com/in-en/our-company.html",
+      "source": "MANUAL",
+      "targetPath": "/in-en/our-company",
+      "id": "867525b3bcfdb6918005c7fe05c521a35df604e2"
+    },
+    {
+      "url": "https://www.medtronic.com/in-en/our-impact.html",
+      "source": "MANUAL",
+      "targetPath": "/in-en/our-impact",
+      "id": "1cb1b96977e91d26e2406d970c59af25a7db30ae"
+    }
+  ],
+  "lastCrawled": "MANUAL",
+  "crawlOptions": {
+    "timeout": 64800000,
+    "inclusionPatterns": [],
+    "exclusionPatterns": [],
+    "limit": 100,
+    "sameDomain": true,
+    "keepHash": false,
+    "strategy": "manual",
+    "strategiesAttempted": [
+      "MANUAL"
+    ]
+  },
+  "extractionErrors": [],
+  "errorCountMessage": "none"
+}
