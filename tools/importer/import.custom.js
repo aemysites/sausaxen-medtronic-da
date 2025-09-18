@@ -37,4 +37,44 @@ export const customElements = [];
 /**
  * Custom transformers
  */
-export const customTransformers = {};
+export const customTransformers = {
+  /**
+   * Removes unwanted navigation and header elements from the page
+   * @param {Document} document - The document to transform
+   */
+  inject: (hookName, element, context) => {
+    if (hookName === 'beforeTransform') {
+      try {
+        // Try to get document from context, element, or global
+        const doc = context?.document || element?.ownerDocument || element?.document || document;
+        
+        if (doc) {
+          // Check and remove .header
+          let element1 = doc.querySelector(".header");
+          console.log('Before removal - .header found:', !!element1);
+          element1?.remove();
+          console.log('After removal - .header still exists:', !!doc.querySelector(".header"));
+          
+          // Check and remove .footer
+          let element2 = doc.querySelector(".footer");
+          console.log('Before removal - .footer found:', !!element2);
+          element2?.remove();
+          console.log('After removal - .footer still exists:', !!doc.querySelector(".footer"));
+          
+          // Check and remove .ot-floating-button__front
+          let element3 = doc.querySelector(".addthis_outer");
+          console.log('Before removal - .addthis_outer found:', !!element3);
+          element3?.remove();
+          console.log('After removal - .addthis_outer still exists:', !!doc.querySelector(".ot-floating-button__front"));
+          
+  
+          console.log('All element removals completed');
+        } else {
+          console.log('Debug: document is null, context:', context, 'element:', element);
+        }
+      } catch (e) {
+        console.log('Error in removeUnwantedElements:', e);
+      }
+    }
+  },
+};
