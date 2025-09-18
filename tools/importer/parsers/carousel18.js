@@ -1,63 +1,76 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the carousel block
-  const carousel = element.querySelector('.carousel.panelcontainer.carousel-slider');
+  // Find the carousel root
+  const carousel = element.querySelector('.carousel.panelcontainer.carousel-no-action-buttons.carousel-slider');
   if (!carousel) return;
-  const cmpCarouselContent = carousel.querySelector('.cmp-carousel__content');
-  if (!cmpCarouselContent) return;
 
-  // Get all carousel slides
-  const slides = Array.from(cmpCarouselContent.querySelectorAll('.cmp-carousel__item'));
-  if (slides.length === 0) return;
+  // Find the cmp-carousel__content which contains all slides
+  const carouselContent = carousel.querySelector('.cmp-carousel__content');
+  if (!carouselContent) return;
 
-  // Table header: block name only
-  const headerRow = ['Carousel (carousel18)'];
-  const rows = [headerRow];
+  // Get all slides
+  const slides = carouselContent.querySelectorAll('.cmp-carousel__item');
+
+  // Prepare table rows
+  const rows = [];
+  // Always use the required header row
+  rows.push(['Carousel (carousel18)']);
 
   slides.forEach((slide) => {
-    // --- First column: Image ---
-    let imageEl = null;
-    const imageContainer = slide.querySelector('.image .cmp-image');
-    if (imageContainer) {
-      const img = imageContainer.querySelector('img');
-      if (img) imageEl = img;
-    }
-    // Fallback: any img in slide
-    if (!imageEl) {
-      imageEl = slide.querySelector('img');
-    }
+    // Each slide has two main columns: image and text content
+    let imageCell = '';
+    let textCell = '';
 
-    // --- Second column: Text content ---
-    const cardContainer = slide.querySelector('.wide-card');
-    const textNodes = [];
-    if (cardContainer) {
-      // Eyebrow (optional)
-      const eyebrow = cardContainer.querySelector('.eyebrow2 .cmp-text p');
-      if (eyebrow) textNodes.push(eyebrow);
-      // Title (h3)
-      const title = cardContainer.querySelector('.cmp-title__text');
-      if (title) textNodes.push(title);
-      // Description (first .cmp-text after title)
-      const descriptions = cardContainer.querySelectorAll('.no-bottom-margin-p .cmp-text p');
-      if (descriptions.length > 0) {
-        textNodes.push(descriptions[0]);
-        // CTA (if present)
-        if (descriptions.length > 1) textNodes.push(descriptions[1]);
+    // Defensive: find .image inside this slide
+    const imageCol = slide.querySelector('.image');
+    if (imageCol) {
+      // Use the actual <img> element inside
+      const img = imageCol.querySelector('img');
+      if (img) {
+        imageCell = img;
       }
     }
-    // Fallback: any .cmp-title__text, .cmp-text p in slide
-    if (textNodes.length === 0) {
-      const fallbackTitle = slide.querySelector('.cmp-title__text');
-      if (fallbackTitle) textNodes.push(fallbackTitle);
-      slide.querySelectorAll('.cmp-text p').forEach((p) => textNodes.push(p));
+
+    // Find the text content column (the card-module container)
+    const cardCol = slide.querySelector('.card-module');
+    if (cardCol) {
+      // We'll collect all text content in order: eyebrow, title, description, CTA
+      const textContent = [];
+      // Eyebrow (first .cmp-text inside .eyebrow2)
+      const eyebrow = cardCol.querySelector('.eyebrow2 .cmp-text');
+      if (eyebrow) {
+        const p = eyebrow.querySelector('p');
+        if (p) textContent.push(p);
+      }
+      // Title (first .cmp-title)
+      const title = cardCol.querySelector('.cmp-title');
+      if (title) {
+        const heading = title.querySelector('h1, h2, h3, h4, h5, h6');
+        if (heading) textContent.push(heading);
+      }
+      // Description and CTA (all .cmp-text)
+      const cmpTexts = cardCol.querySelectorAll('.cmp-text');
+      cmpTexts.forEach((cmpText) => {
+        const p = cmpText.querySelector('p');
+        if (p && !textContent.includes(p)) {
+          const a = p.querySelector('a');
+          if (a && p.childNodes.length === 1) {
+            textContent.push(p); // CTA
+          } else {
+            textContent.push(p); // Description
+          }
+        }
+      });
+      textCell = textContent;
     }
 
-    // Only reference elements, do not clone or create new ones
-    const row = [imageEl, textNodes];
-    rows.push(row);
+    rows.push([
+      imageCell || '',
+      textCell || '',
+    ]);
   });
 
-  // Create the carousel block table
-  const blockTable = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(blockTable);
+  // Create the table
+  const table = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(table);
 }

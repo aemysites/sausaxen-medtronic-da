@@ -1,67 +1,61 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background image URL from inline style
-  function extractBgImageUrl(style) {
-    if (!style) return null;
-    const match = style.match(/background-image:\s*url\(([^)]+)\)/i);
-    if (match && match[1]) {
-      // Remove any leading \ and decode URI
-      let url = match[1].replace(/\\/g, '');
-      // Remove surrounding quotes if present
-      url = url.replace(/^['"]|['"]$/g, '');
-      return url;
-    }
-    return null;
-  }
-
   // 1. Header row
   const headerRow = ['Hero (hero22)'];
 
-  // 2. Background image row
-  // Find the first .cmp-container with a background-image style
-  let bgImgUrl = null;
-  let bgContainer = null;
-  const containers = element.querySelectorAll('[class*="cmp-container"]');
-  for (const c of containers) {
-    const style = c.getAttribute('style');
-    const url = extractBgImageUrl(style);
-    if (url) {
-      bgImgUrl = url;
-      bgContainer = c;
-      break;
+  // 2. Background image row: extract background-image from style attribute
+  let bgImageUrl = '';
+  let bgImageEl = null;
+  // Find the first element with a style containing background-image
+  const bgStyleEl = element.querySelector('[style*="background-image"]');
+  if (bgStyleEl) {
+    const style = bgStyleEl.getAttribute('style');
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/i);
+    if (match && match[1]) {
+      // Clean up the URL (handle \2f escapes)
+      bgImageUrl = match[1].replace(/\\2f /g, '/').replace(/\\2f/g, '/').replace(/'/g, '').replace(/\"/g, '').trim();
+      // Remove leading slash if present
+      if (bgImageUrl.startsWith('/')) bgImageUrl = bgImageUrl;
+      // Create image element
+      bgImageEl = document.createElement('img');
+      bgImageEl.src = bgImageUrl;
+      bgImageEl.alt = '';
     }
   }
+  const bgImageRow = [bgImageEl ? bgImageEl : ''];
 
-  let bgImgCell = '';
-  if (bgImgUrl) {
-    // Create an <img> element for the background image
-    const img = document.createElement('img');
-    img.src = bgImgUrl;
-    img.alt = '';
-    bgImgCell = img;
+  // 3. Content row: extract headline, subheading, and intro
+  // We'll grab the deepest .aem-Grid inside the block (the one with the text content)
+  let contentRowContent = [];
+  const grids = element.querySelectorAll('.aem-Grid');
+  let textGrid = null;
+  if (grids.length > 0) {
+    // The last .aem-Grid is the one with the text content
+    textGrid = grids[grids.length - 1];
   }
-
-  // 3. Content row: Title, Subheading, CTA
-  // The content is inside nested .cmp-container > .aem-Grid > .text blocks
-  // We'll collect all .cmp-text blocks in visual order
-  const cmpTexts = element.querySelectorAll('.cmp-text');
-  const contentNodes = [];
-  cmpTexts.forEach((cmpText) => {
-    // Defensive: skip if empty
-    if (cmpText.textContent.trim()) {
-      // Push the inner content (children) instead of the wrapper div
-      // This avoids extra wrappers in the output
-      contentNodes.push(...Array.from(cmpText.children.length ? cmpText.children : cmpText.childNodes));
-    }
-  });
+  if (textGrid) {
+    // Get all direct children .text blocks
+    const textBlocks = Array.from(textGrid.children).filter(el => el.classList.contains('text'));
+    textBlocks.forEach(tb => {
+      // Each .text contains a .cmp-text with the actual content
+      const cmpText = tb.querySelector('.cmp-text');
+      if (cmpText) {
+        // Push all children (preserving elements)
+        Array.from(cmpText.children).forEach(child => {
+          contentRowContent.push(child);
+        });
+      }
+    });
+  }
+  const contentRow = [contentRowContent];
 
   // Compose the table
-  const tableRows = [
+  const tableCells = [
     headerRow,
-    [bgImgCell],
-    [contentNodes]
+    bgImageRow,
+    contentRow,
   ];
 
-  const block = WebImporter.DOMUtils.createTable(tableRows, document);
-  element.replaceWith(block);
+  const table = WebImporter.DOMUtils.createTable(tableCells, document);
+  element.replaceWith(table);
 }

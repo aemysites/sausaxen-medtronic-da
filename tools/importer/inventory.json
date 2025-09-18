@@ -335,7 +335,7 @@
     },
     {
       "name": "Hero",
-      "cluster": 26,  
+      "cluster": 26,
       "source": "Hero",
       "target": "Hero (hero26)",
       "key": "hero26",
@@ -351,7 +351,7 @@
     },
     {
       "name": "Hero",
-      "cluster": 27,  
+      "cluster": 27,
       "source": "Hero",
       "target": "Hero (hero27)",
       "key": "hero27",

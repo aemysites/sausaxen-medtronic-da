@@ -1,14 +1,19 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
   // Helper to extract background image URL from inline style
-  function extractBgImageUrl(style) {
+  function getBackgroundImageUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image:\s*url\((['"]?)(.*?)\1\)/i);
-    if (match && match[2]) {
-      // Handle escaped slashes
-      let url = match[2].replace(/\\2f /g, '/').replace(/\\/g, '');
-      // Remove leading /content if present
-      if (url.startsWith('/content')) url = url;
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/);
+    if (match && match[1]) {
+      let url = match[1].trim();
+      // Remove any escaped characters
+      url = url.replace(/\\/g, '');
+      // Remove any surrounding quotes
+      url = url.replace(/^['"]|['"]$/g, '');
+      // If relative, prepend origin
+      if (url.startsWith('/')) {
+        url = window.location.origin + url;
+      }
       return url;
     }
     return null;
@@ -18,55 +23,74 @@ export default function parse(element, { document }) {
   const headerRow = ['Hero (hero19)'];
 
   // 2. Background image row
-  // Find the first child with a background-image style
-  let bgImageUrl = null;
+  let bgImgUrl = null;
+  // Find the first element with a background-image style
   let bgDiv = null;
-  // Defensive: look for any div with background-image style
-  element.querySelectorAll('div').forEach((div) => {
+  const allDivs = element.querySelectorAll('div');
+  for (const div of allDivs) {
     const style = div.getAttribute('style');
     if (style && style.includes('background-image')) {
-      bgImageUrl = extractBgImageUrl(style);
+      bgImgUrl = getBackgroundImageUrl(style);
       bgDiv = div;
+      break;
     }
-  });
-  let bgImgEl = null;
-  if (bgImageUrl) {
-    bgImgEl = document.createElement('img');
-    bgImgEl.src = bgImageUrl;
-    bgImgEl.alt = '';
   }
-  const bgImageRow = [bgImgEl ? bgImgEl : ''];
+
+  let bgImgEl = null;
+  if (bgImgUrl) {
+    bgImgEl = document.createElement('img');
+    bgImgEl.src = bgImgUrl;
+    bgImgEl.alt = '';
+    bgImgEl.loading = 'eager';
+    bgImgEl.style.width = '100%';
+    bgImgEl.style.height = 'auto';
+  }
+  const bgRow = [bgImgEl ? bgImgEl : ''];
 
   // 3. Content row (title, subheading, paragraph)
-  // Find the innermost .aem-Grid containing the text blocks
-  let contentGrid = null;
-  const grids = element.querySelectorAll('.aem-Grid');
-  if (grids.length) {
-    // Pick the deepest grid (last one)
-    contentGrid = grids[grids.length - 1];
-  }
-  // Defensive: fallback to element itself if not found
-  const contentRoot = contentGrid || element;
-
-  // Gather all direct text blocks in order
-  const textBlocks = [];
-  contentRoot.querySelectorAll(':scope > div').forEach((block) => {
-    if (block.classList.contains('text')) {
-      const cmpText = block.querySelector('.cmp-text');
-      if (cmpText) textBlocks.push(cmpText);
+  // Find all text blocks in the deepest grid
+  let contentRow = [''];
+  let contentContainer = null;
+  // Find the deepest aem-Grid
+  let grids = element.querySelectorAll('.aem-Grid');
+  let deepestGrid = null;
+  let maxDepth = -1;
+  for (const grid of grids) {
+    let depth = 0;
+    let node = grid;
+    while (node.parentElement && node.parentElement !== element) {
+      node = node.parentElement;
+      depth++;
     }
-  });
-  // Compose content cell
-  const contentCell = textBlocks.length ? textBlocks : [''];
-  const contentRow = [contentCell];
+    if (depth > maxDepth) {
+      maxDepth = depth;
+      deepestGrid = grid;
+    }
+  }
+  if (deepestGrid) {
+    // Get all direct children with class 'text'
+    const textBlocks = deepestGrid.querySelectorAll(':scope > div.text');
+    // Compose a container for all text blocks
+    contentContainer = document.createElement('div');
+    for (const block of textBlocks) {
+      // Find the cmp-text child
+      const cmpText = block.querySelector('.cmp-text');
+      if (cmpText) {
+        // Append all children (paragraphs)
+        for (const child of cmpText.children) {
+          contentContainer.appendChild(child.cloneNode(true));
+        }
+      }
+    }
+    contentRow = [contentContainer];
+  }
 
   // Compose table
-  const table = WebImporter.DOMUtils.createTable([
+  const cells = [
     headerRow,
-    bgImageRow,
+    bgRow,
     contentRow
-  ], document);
-
-  // Replace original element
+  ];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

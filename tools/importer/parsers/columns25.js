@@ -1,9 +1,6 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Always use the block name as the header row
-  const headerRow = ['Columns (columns25)'];
-
-  // Defensive: Get all immediate children of the main grid
+  // Defensive: Find all immediate child teasers (columns)
   const grid = element.querySelector('.aem-Grid');
   if (!grid) return;
   const teasers = Array.from(grid.querySelectorAll(':scope > .teaser'));
@@ -11,19 +8,18 @@ export default function parse(element, { document }) {
   // Each teaser contains a cmp-teaser__description with the content
   const columns = teasers.map(teaser => {
     const desc = teaser.querySelector('.cmp-teaser__description');
-    // Defensive: If not found, fallback to the teaser itself
-    return desc || teaser;
+    // Defensive: If no description, skip
+    if (!desc) return document.createElement('div');
+    return desc;
   });
 
-  // Only create the second row if there is at least one column
-  if (!columns.length) return;
+  // Table header row
+  const headerRow = ['Columns (columns25)'];
+  // Table content row: one cell per column
+  const contentRow = columns;
 
-  // Build the table rows
-  const rows = [headerRow, columns];
+  const cells = [headerRow, contentRow];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
 
-  // Create the block table
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-
-  // Replace the original element
   element.replaceWith(table);
 }

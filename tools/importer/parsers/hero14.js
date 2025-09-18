@@ -1,21 +1,19 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
   // Helper to get background image URL from inline style
-  function extractBgUrl(style) {
+  function getBackgroundImageUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/i);
+    const match = style.match(/background-image\s*:\s*url\(['"]?(.*?)['"]?\)/i);
     if (match && match[1]) {
-      let url = match[1]
-        .replace(/\\2f/g, '/') // decode \2f to /
-        .replace(/\s/g, '') // remove spaces
-        .replace(/'/g, '') // remove single quotes
-        .replace(/"/g, ''); // remove double quotes
-      // Remove any leading slash if present after decoding
-      if (url.startsWith('/')) {
-        url = url;
-      }
+      let url = match[1];
+      // Remove escaped unicode for slashes
+      url = url.replace(/\\2f\s*/g, '/');
+      // Remove any whitespace
+      url = url.trim();
+      // Remove any leading 'null/'
+      url = url.replace(/^null\//, '/');
       // If relative, prepend origin
-      if (typeof window !== 'undefined' && url && url.startsWith('/')) {
+      if (url.startsWith('/')) {
         url = window.location.origin + url;
       }
       return url;
@@ -23,60 +21,74 @@ export default function parse(element, { document }) {
     return null;
   }
 
-  // 1. Header row
-  const headerRow = ['Hero (hero14)'];
+  // Find the innermost cmp-container with the background-image style
+  let bgUrl = null;
+  let bgContainer = null;
+  const containers = element.querySelectorAll('.cmp-container');
+  for (const c of containers) {
+    const style = c.getAttribute('style');
+    if (style && style.includes('background-image')) {
+      bgUrl = getBackgroundImageUrl(style);
+      bgContainer = c;
+      break;
+    }
+  }
 
-  // 2. Background image row
-  let bgImgCell = '';
-  let bgContainer = element.querySelector('[style*="background-image"]');
+  // Create image element if background image exists
+  let bgImgEl = null;
+  if (bgUrl) {
+    bgImgEl = document.createElement('img');
+    bgImgEl.src = bgUrl;
+    bgImgEl.alt = '';
+    bgImgEl.loading = 'lazy';
+  }
+
+  // Find the main content container (the innermost cmp-container)
+  let contentContainer = null;
   if (bgContainer) {
-    const bgUrl = extractBgUrl(bgContainer.getAttribute('style'));
-    if (bgUrl) {
-      const img = document.createElement('img');
-      img.src = bgUrl;
-      img.alt = '';
-      bgImgCell = img;
+    // Look for the next cmp-container inside bgContainer
+    const innerContainer = bgContainer.querySelector('.cmp-container');
+    contentContainer = innerContainer || bgContainer;
+  } else {
+    // Fallback: use the first cmp-container
+    contentContainer = containers[0] || element;
+  }
+
+  // Extract text elements: eyebrow, heading, CTA
+  let eyebrow = null;
+  let heading = null;
+  let cta = null;
+  const grid = contentContainer.querySelector('.aem-Grid');
+  if (grid) {
+    // Eyebrow
+    const eyebrowDiv = grid.querySelector('.eyebrow2 .cmp-text');
+    if (eyebrowDiv) {
+      eyebrow = eyebrowDiv;
+    }
+    // Heading
+    const headingDiv = grid.querySelector('.h1 .cmp-text');
+    if (headingDiv) {
+      heading = headingDiv;
+    }
+    // CTA
+    const ctaDiv = grid.querySelector('.button .cmp-button');
+    if (ctaDiv) {
+      cta = ctaDiv;
     }
   }
 
-  // 3. Content row (title, subheading, CTA)
-  let contentCell = [];
-  let contentContainer = element.querySelector('.cmp-container .aem-Grid');
-  if (!contentContainer) {
-    const cmpContainers = element.querySelectorAll('.cmp-container');
-    for (const cmp of cmpContainers) {
-      const grid = cmp.querySelector('.aem-Grid');
-      if (grid) {
-        contentContainer = grid;
-        break;
-      }
-    }
-  }
-  if (contentContainer) {
-    // Collect all cmp-text and button elements as nodes
-    const textBlocks = contentContainer.querySelectorAll('.cmp-text');
-    textBlocks.forEach((tb) => {
-      // Use the children of cmp-text to avoid nested divs
-      Array.from(tb.childNodes).forEach((node) => {
-        contentCell.push(node.cloneNode(true));
-      });
-    });
-    const btn = contentContainer.querySelector('a.cmp-button');
-    if (btn) {
-      contentCell.push(btn.cloneNode(true));
-    }
-  }
+  // Compose content cell for row 3
+  const contentCell = [];
+  if (eyebrow) contentCell.push(eyebrow);
+  if (heading) contentCell.push(heading);
+  if (cta) contentCell.push(cta);
 
   // Table rows
-  const rows = [
-    headerRow,
-    [bgImgCell],
-    [contentCell]
-  ];
+  const headerRow = ['Hero (hero14)'];
+  const imageRow = [bgImgEl ? bgImgEl : ''];
+  const contentRow = [contentCell.length ? contentCell : ''];
 
-  // Create block table
-  const block = WebImporter.DOMUtils.createTable(rows, document);
-
-  // Replace original element
+  const cells = [headerRow, imageRow, contentRow];
+  const block = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(block);
 }
