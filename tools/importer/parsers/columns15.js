@@ -1,82 +1,72 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to get all direct child divs of a given element
-  function getDirectDivs(el) {
-    return Array.from(el.querySelectorAll(':scope > div'));
+  // Helper to get immediate children by selector
+  function getImmediateChildren(el, selector) {
+    return Array.from(el.querySelectorAll(':scope > ' + selector));
   }
 
-  // Find the deepest grid with the two main columns
-  let mainGrid;
-  let imageCol, textCol;
-
-  // Defensive: traverse down to the two main columns
-  let current = element;
-  for (let i = 0; i < 5; i++) {
-    const divs = getDirectDivs(current);
-    // Find the grid with exactly two children (columns)
-    const grid = divs.find(div => {
-      const children = getDirectDivs(div);
-      return children.length === 2;
-    });
-    if (grid) {
-      mainGrid = grid;
-      break;
-    }
-    // Otherwise, descend into the first child
-    current = divs[0];
-  }
+  // Find the main grid containing the two columns
+  let mainGrid = element.querySelector('.aem-Grid.aem-Grid--8') || element.querySelector('.aem-Grid.aem-Grid--tablet--10');
   if (!mainGrid) {
-    // Fallback: try to find the grid with two columns
-    mainGrid = element.querySelector('.aem-Grid.aem-Grid--8, .aem-Grid.aem-Grid--tablet--10');
+    // Defensive fallback: try to find the deepest .aem-Grid with two children
+    const allGrids = element.querySelectorAll('.aem-Grid');
+    mainGrid = Array.from(allGrids).reverse().find(g => getImmediateChildren(g, 'div').length === 2);
   }
+  if (!mainGrid) return;
 
-  // Get the two columns
-  const columns = getDirectDivs(mainGrid);
-  // Defensive: ensure we have two columns
-  if (columns.length < 2) {
-    // Fallback: try to find two columns
-    const allColumns = Array.from(mainGrid.querySelectorAll(':scope > div'));
-    imageCol = allColumns[1];
-    textCol = allColumns[0];
-  } else {
-    textCol = columns[0];
-    imageCol = columns[1];
-  }
+  // Get the two column containers
+  const columns = getImmediateChildren(mainGrid, 'div');
+  if (columns.length < 2) return;
 
-  // --- Left column: collect all content blocks (image, eyebrow, heading, paragraph, link) ---
-  let leftContent = [];
-  if (textCol) {
-    // Get all direct children (should be 3-4 blocks)
-    const leftBlocks = getDirectDivs(textCol);
-    leftBlocks.forEach(block => {
-      // Only add if it contains content
-      if (block.textContent.trim() || block.querySelector('img')) {
-        leftContent.push(block);
-      }
-    });
-  }
-
-  // --- Right column: main image ---
-  let rightContent = [];
-  if (imageCol) {
-    // Find the image block
-    const imgBlock = imageCol.querySelector('.cmp-image');
-    if (imgBlock) {
-      rightContent.push(imgBlock);
-    } else {
-      // Fallback: grab all content
-      rightContent.push(imageCol);
+  // --- First column: mission text ---
+  const leftCol = columns[0];
+  // Instead of picking only specific blocks, grab all content in leftCol
+  // This ensures we don't miss any text
+  const leftContentBlocks = Array.from(leftCol.querySelectorAll(':scope > div'));
+  const leftCellContent = [];
+  leftContentBlocks.forEach(block => {
+    // If block contains .cmp-text, add all its children
+    const cmpText = block.querySelector('.cmp-text');
+    if (cmpText) {
+      Array.from(cmpText.childNodes).forEach(node => {
+        leftCellContent.push(node.cloneNode(true));
+      });
     }
-  }
+    // If block contains an image, add it
+    const img = block.querySelector('img');
+    if (img) {
+      leftCellContent.push(img.cloneNode(true));
+    }
+  });
 
-  // Compose table rows
+  // --- Second column: image ---
+  const rightCol = columns[1];
+  // Grab all images and text in rightCol
+  const rightCellContent = [];
+  const rightBlocks = Array.from(rightCol.querySelectorAll(':scope > div'));
+  rightBlocks.forEach(block => {
+    // Add images
+    const img = block.querySelector('img');
+    if (img) {
+      rightCellContent.push(img.cloneNode(true));
+    }
+    // Add all text nodes from .cmp-text
+    const cmpText = block.querySelector('.cmp-text');
+    if (cmpText) {
+      Array.from(cmpText.childNodes).forEach(node => {
+        rightCellContent.push(node.cloneNode(true));
+      });
+    }
+  });
+
+  // Table header
   const headerRow = ['Columns (columns15)'];
-  const contentRow = [leftContent, rightContent];
+  // Table second row: two columns
+  const secondRow = [leftCellContent, rightCellContent];
 
-  // Create the block table
-  const cells = [headerRow, contentRow];
-  const block = WebImporter.DOMUtils.createTable(cells, document);
+  // Create table
+  const table = WebImporter.DOMUtils.createTable([headerRow, secondRow], document);
 
   // Replace the original element
-  element.replaceWith(block);
+  element.replaceWith(table);
 }

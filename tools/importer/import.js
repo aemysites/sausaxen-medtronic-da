@@ -11,26 +11,28 @@
  */
 /* global WebImporter */
 /* eslint-disable no-console */
-import cards5Parser from './parsers/cards5.js';
 import columns3Parser from './parsers/columns3.js';
+import columns1Parser from './parsers/columns1.js';
 import hero4Parser from './parsers/hero4.js';
 import hero2Parser from './parsers/hero2.js';
-import columns1Parser from './parsers/columns1.js';
-import columns7Parser from './parsers/columns7.js';
 import columns6Parser from './parsers/columns6.js';
-import columns15Parser from './parsers/columns15.js';
-import hero14Parser from './parsers/hero14.js';
+import columns7Parser from './parsers/columns7.js';
+import cards5Parser from './parsers/cards5.js';
 import columns11Parser from './parsers/columns11.js';
+import hero14Parser from './parsers/hero14.js';
+import columns15Parser from './parsers/columns15.js';
+import carousel10Parser from './parsers/carousel10.js';
 import carousel18Parser from './parsers/carousel18.js';
+import hero19Parser from './parsers/hero19.js';
 import hero20Parser from './parsers/hero20.js';
 import hero22Parser from './parsers/hero22.js';
-import hero19Parser from './parsers/hero19.js';
 import hero23Parser from './parsers/hero23.js';
-import carousel8Parser from './parsers/carousel8.js';
+import embedVideo21Parser from './parsers/embedVideo21.js';
 import columns24Parser from './parsers/columns24.js';
-import columns25Parser from './parsers/columns25.js';
 import carousel16Parser from './parsers/carousel16.js';
-import hero21Parser from './parsers/hero21.js';
+import columns25Parser from './parsers/columns25.js';
+import hero26Parser from './parsers/hero26.js';
+import hero27Parser from './parsers/hero27.js';
 import headerParser from './parsers/header.js';
 import metadataParser from './parsers/metadata.js';
 import cleanupTransformer from './transformers/cleanup.js';
@@ -47,26 +49,28 @@ import {
 
 const parsers = {
   metadata: metadataParser,
-  cards5: cards5Parser,
   columns3: columns3Parser,
+  columns1: columns1Parser,
   hero4: hero4Parser,
   hero2: hero2Parser,
-  columns1: columns1Parser,
-  columns7: columns7Parser,
   columns6: columns6Parser,
-  columns15: columns15Parser,
-  hero14: hero14Parser,
+  columns7: columns7Parser,
+  cards5: cards5Parser,
   columns11: columns11Parser,
+  hero14: hero14Parser,
+  columns15: columns15Parser,
+  carousel10: carousel10Parser,
   carousel18: carousel18Parser,
+  hero19: hero19Parser,
   hero20: hero20Parser,
   hero22: hero22Parser,
-  hero19: hero19Parser,
   hero23: hero23Parser,
-  carousel8: carousel8Parser,
+  embedVideo21: embedVideo21Parser,
   columns24: columns24Parser,
-  columns25: columns25Parser,
   carousel16: carousel16Parser,
-  hero21: hero21Parser,
+  columns25: columns25Parser,
+  hero26: hero26Parser,
+  hero27: hero27Parser,
   ...customParsers,
 };
 

@@ -1,59 +1,69 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find all card modules
-  const cardModules = element.querySelectorAll('.container.card-module');
-  const rows = [];
-  // Header row as required by block spec
-  rows.push(['Cards (cards5)']);
+  // Find all card-module blocks (these are the cards)
+  const cardBlocks = Array.from(element.querySelectorAll('.card-module'));
 
-  cardModules.forEach(card => {
-    // 1. Image (first column)
+  // Table header row as required
+  const headerRow = ['Cards (cards5)'];
+  const rows = [headerRow];
+
+  cardBlocks.forEach(card => {
+    // Image extraction (mandatory)
     let imageEl = null;
-    const imageContainer = card.querySelector('.image .cmp-image');
-    if (imageContainer) {
-      imageEl = imageContainer.querySelector('img');
+    const img = card.querySelector('.cmp-image img');
+    if (img) imageEl = img.cloneNode(true);
+
+    // Eyebrow (optional)
+    let eyebrow = '';
+    const eyebrowDiv = card.querySelector('.cmp-text p');
+    if (eyebrowDiv) {
+      eyebrow = eyebrowDiv.textContent.trim();
     }
 
-    // 2. Text content (second column)
-    const textContent = document.createElement('div');
+    // Title (mandatory)
+    let titleEl = null;
+    const titleContainer = card.querySelector('.cmp-title');
+    if (titleContainer) {
+      const heading = titleContainer.querySelector('h1, h2, h3');
+      if (heading) titleEl = heading.cloneNode(true);
+    }
 
-    // Eyebrow (optional, all-caps small text above title)
-    const eyebrow = card.querySelector('.text.eyebrow2 p');
+    // CTA (optional, "Learn more" link)
+    let ctaEl = null;
+    const textBlocks = card.querySelectorAll('.cmp-text');
+    if (textBlocks.length > 1) {
+      const lastTextBlock = textBlocks[textBlocks.length - 1];
+      const link = lastTextBlock.querySelector('a');
+      if (link) ctaEl = link.cloneNode(true);
+    }
+
+    // Compose text cell content
+    const textCell = document.createElement('div');
     if (eyebrow) {
       const eyebrowDiv = document.createElement('div');
-      eyebrowDiv.textContent = eyebrow.textContent;
-      eyebrowDiv.style.fontSize = '0.85em';
-      eyebrowDiv.style.letterSpacing = '0.05em';
-      eyebrowDiv.style.textTransform = 'uppercase';
-      textContent.appendChild(eyebrowDiv);
+      eyebrowDiv.textContent = eyebrow;
+      textCell.appendChild(eyebrowDiv);
     }
-
-    // Title (mandatory, as heading)
-    const title = card.querySelector('.title .cmp-title__text');
-    if (title) {
-      // Clone the heading node to preserve <h3> and any links
-      textContent.appendChild(title.cloneNode(true));
+    if (titleEl) {
+      textCell.appendChild(titleEl);
     }
-
-    // CTA (optional, "Learn more")
-    const cta = card.querySelector('.text.no-top-margin a');
-    if (cta) {
-      // Place CTA at the bottom, in its own div
+    if (ctaEl) {
       const ctaDiv = document.createElement('div');
-      ctaDiv.appendChild(cta.cloneNode(true));
-      textContent.appendChild(ctaDiv);
+      ctaDiv.appendChild(ctaEl);
+      textCell.appendChild(ctaDiv);
+    }
+    // If no eyebrow/title/cta, fallback to all text
+    if (!eyebrow && !titleEl && textBlocks.length > 0) {
+      textCell.appendChild(textBlocks[0].cloneNode(true));
     }
 
-    // Only add row if image and title exist
-    if (imageEl && title) {
-      rows.push([
-        imageEl,
-        textContent
-      ]);
+    // Only add row if image and text content are present
+    if (imageEl && textCell.textContent.trim()) {
+      rows.push([imageEl, textCell]);
     }
   });
 
-  // Create the table block and replace original element
-  const block = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(block);
+  // Create table and replace element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(table);
 }

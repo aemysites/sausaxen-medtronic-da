@@ -1,57 +1,83 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
+  // Helper to extract background image from inline style
+  function getBackgroundImageUrl(style) {
+    if (!style) return null;
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/i);
+    if (match && match[1]) {
+      let url = match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
+      // Remove any surrounding quotes
+      url = url.replace(/^['"]|['"]$/g, '');
+      // If relative, prepend origin
+      if (url.startsWith('/')) {
+        url = window.location.origin + url;
+      }
+      return url;
+    }
+    return null;
+  }
+
   // 1. Header row
   const headerRow = ['Hero (hero19)'];
 
-  // 2. Background image extraction
-  let bgImgEl = null;
-  const bgEl = element.querySelector('[style*="background-image"]');
-  if (bgEl && bgEl.style.backgroundImage) {
-    const match = bgEl.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-    if (match && match[1]) {
-      let bgImageUrl = match[1];
-      // Make absolute if needed
-      const a = document.createElement('a');
-      a.href = bgImageUrl;
-      bgImageUrl = a.href;
-      bgImgEl = document.createElement('img');
-      bgImgEl.src = bgImageUrl;
-      bgImgEl.alt = '';
-    }
-  }
-
-  // 3. Content extraction
-  let contentContainer = null;
-  const gridContainers = element.querySelectorAll('.aem-Grid');
-  for (const grid of gridContainers) {
-    if (grid.querySelector('.cmp-text, .cmp-title')) {
-      contentContainer = grid;
+  // 2. Background image row
+  let bgImageUrl = null;
+  // Find the deepest container with a background-image style
+  const containers = element.querySelectorAll('[style*="background-image"]');
+  for (const c of containers) {
+    const url = getBackgroundImageUrl(c.getAttribute('style'));
+    if (url) {
+      bgImageUrl = url;
       break;
     }
   }
-  if (!contentContainer) contentContainer = element;
+  let bgImageCell = '';
+  if (bgImageUrl) {
+    const img = document.createElement('img');
+    img.src = bgImageUrl;
+    img.alt = '';
+    bgImageCell = img;
+  }
 
-  let eyebrow = null, heading = null, subheading = null;
-  const eyebrowEl = contentContainer.querySelector('.eyebrow2 .cmp-text > p');
-  if (eyebrowEl) eyebrow = eyebrowEl;
-  const headingEl = contentContainer.querySelector('.h1 .cmp-text > p');
-  if (headingEl) heading = headingEl;
-  const subheadingEl = contentContainer.querySelector('.intro-heading .cmp-title h1');
-  if (subheadingEl) subheading = subheadingEl;
+  // 3. Content row (title, subheading, etc.)
+  // Gather the text blocks in order
+  // - Eyebrow: .eyebrow2 .cmp-text p
+  // - Headline: .h1 .cmp-text p
+  // - Title: .intro-heading .cmp-title h1
+  const contentElements = [];
 
-  const contentCell = [];
-  if (eyebrow) contentCell.push(eyebrow);
-  if (heading) contentCell.push(heading);
-  if (subheading) contentCell.push(subheading);
+  // Eyebrow
+  const eyebrow = element.querySelector('.eyebrow2 .cmp-text p');
+  if (eyebrow) {
+    contentElements.push(eyebrow);
+  }
+  // Headline
+  const headline = element.querySelector('.h1 .cmp-text p');
+  if (headline) {
+    contentElements.push(headline);
+  }
+  // Title (main heading)
+  const title = element.querySelector('.intro-heading .cmp-title h1');
+  if (title) {
+    contentElements.push(title);
+  }
 
-  // 4. Build the table rows (ALWAYS 3 rows: header, bg image, content)
+  // Compose content cell
+  let contentCell = '';
+  if (contentElements.length) {
+    contentCell = contentElements;
+  }
+
+  // Compose table rows
   const rows = [
     headerRow,
-    [bgImgEl ? bgImgEl : ''],
-    [contentCell.length ? contentCell : ''],
+    [bgImageCell],
+    [contentCell]
   ];
 
-  // 5. Create and replace
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(table);
+  // Create table block
+  const block = WebImporter.DOMUtils.createTable(rows, document);
+
+  // Replace original element
+  element.replaceWith(block);
 }

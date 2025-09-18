@@ -1,60 +1,28 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the deepest grid with two main children (text and image columns)
-  let mainGrid = element;
-  while (mainGrid) {
-    const grids = mainGrid.querySelectorAll(':scope > div');
-    if (grids.length === 1) {
-      mainGrid = grids[0];
-    } else {
-      break;
-    }
-  }
+  // Find the innermost grid containing the two columns
+  const grid = element.querySelector('.aem-Grid.aem-Grid--4')?.parentElement;
+  if (!grid) return;
 
-  // Find the two main column containers (text and image)
-  let columns = mainGrid.querySelectorAll(':scope > div');
-  if (columns.length > 2) {
-    columns = Array.from(columns).filter((col) => {
-      return col.classList.contains('text') || col.classList.contains('image') || col.querySelector('.cmp-text, .cmp-title, .cmp-image');
-    });
-  }
+  // Find the left column (text) and right column (image)
+  const leftCol = grid.querySelector('.aem-Grid.aem-Grid--4');
+  const rightCol = grid.querySelector('.image');
+  if (!leftCol || !rightCol) return;
 
-  // Find the text column (contains .cmp-text or .cmp-title)
-  const textCol = Array.from(columns).find(col => col.classList.contains('text') || col.querySelector('.cmp-text, .cmp-title'));
-  // Find the image column (contains .cmp-image)
-  const imageCol = Array.from(columns).find(col => col.classList.contains('image') || col.querySelector('.cmp-image'));
+  // Gather all text/title blocks in left column
+  const leftContent = [];
+  leftCol.querySelectorAll('.cmp-text, .cmp-title').forEach(el => leftContent.push(el));
 
-  // Fallbacks if not found
-  const leftCol = textCol || columns[0];
-  const rightCol = imageCol || columns[1];
+  // Gather image in right column
+  const rightContent = [];
+  const img = rightCol.querySelector('img');
+  if (img) rightContent.push(img);
 
-  // Gather left column content (all .cmp-text and .cmp-title in order)
-  let leftContent = [];
-  if (leftCol) {
-    const textBlocks = leftCol.querySelectorAll('.cmp-text, .cmp-title');
-    textBlocks.forEach(block => {
-      leftContent.push(block);
-    });
-  }
-
-  // Gather right column content (first .cmp-image)
-  let rightContent = [];
-  if (rightCol) {
-    const imageBlock = rightCol.querySelector('.cmp-image');
-    if (imageBlock) {
-      rightContent.push(imageBlock);
-    }
-  }
-
-  // Build the table rows
+  // Compose table rows
   const headerRow = ['Columns block (columns6)'];
   const contentRow = [leftContent, rightContent];
 
-  // Create the columns block table
-  const block = WebImporter.DOMUtils.createTable([
-    headerRow,
-    contentRow
-  ], document);
-
-  element.replaceWith(block);
+  // Create table and replace element
+  const table = WebImporter.DOMUtils.createTable([headerRow, contentRow], document);
+  element.replaceWith(table);
 }

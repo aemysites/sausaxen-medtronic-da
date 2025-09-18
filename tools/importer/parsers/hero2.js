@@ -1,65 +1,70 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Header row
-  const headerRow = ['Hero (hero2)'];
-
-  // 2. Background image row (row 2)
-  // Find the background-image style in the first .cmp-container
-  let bgUrl = null;
-  const container = element.querySelector('.cmp-container[style*="background-image"]');
-  if (container) {
-    const style = container.getAttribute('style') || '';
-    const match = style.match(/background-image:\s*url\(([^)]+)\)/i);
+  // Helper: Extract background image from style attribute
+  function getBackgroundImageUrl(el) {
+    const style = el.getAttribute('style') || '';
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/);
     if (match && match[1]) {
-      // Clean up escaped slashes
-      bgUrl = match[1].replace(/\\2f /g, '/').replace(/(^['"]|['"]$)/g, '').trim();
-      // Remove any leading/trailing slashes or whitespace
-      bgUrl = bgUrl.replace(/^\/+/,'');
-      // Prepend origin if relative
-      if (bgUrl && !/^https?:\//.test(bgUrl)) {
-        bgUrl = `${window.location.origin}${bgUrl.startsWith('/') ? '' : '/'}${bgUrl}`;
+      let url = match[1].replace(/(^['"]|['"]$)/g, '');
+      url = url.replace(/\\2f/g, '/').replace(/\\/g, '');
+      url = url.replace(/\s+/g, '');
+      if (url.startsWith('/')) {
+        return url;
       }
+      return url;
     }
+    return null;
   }
+
+  // Find the background image URL from the first container with style
+  const bgContainer = element.querySelector('[style*="background-image"]');
+  const bgUrl = bgContainer ? getBackgroundImageUrl(bgContainer) : null;
+
+  // Create image element if background image exists
   let bgImgEl = null;
   if (bgUrl) {
     bgImgEl = document.createElement('img');
     bgImgEl.src = bgUrl;
     bgImgEl.alt = '';
   }
-  const bgRow = [bgImgEl ? bgImgEl : ''];
 
-  // 3. Content row (row 3)
-  // Find the innermost .cmp-container (with the text/button content)
-  let innerContainer = element.querySelector('.cmp-container .aem-Grid');
-  if (!innerContainer) {
-    // fallback: try to find the deepest .aem-Grid
-    const grids = element.querySelectorAll('.aem-Grid');
-    innerContainer = grids[grids.length - 1];
+  // Find the deepest .aem-Grid
+  let grid = element.querySelector('.aem-Grid.aem-Grid--12.aem-Grid--tablet--12.aem-Grid--default--12.aem-Grid--phone--12');
+  if (!grid) {
+    // fallback: find any .aem-Grid
+    grid = element.querySelector('.aem-Grid');
   }
 
-  // We'll collect content in order: eyebrow, intro, heading, button
-  let contentEls = [];
-  if (innerContainer) {
-    // Eyebrow
-    const eyebrow = innerContainer.querySelector('.eyebrow2 .cmp-text');
-    if (eyebrow) contentEls.push(eyebrow);
-    // Intro
-    const intro = innerContainer.querySelector('.intro-heading .cmp-text');
-    if (intro) contentEls.push(intro);
-    // Heading
-    const heading = innerContainer.querySelector('.h1 .cmp-text');
-    if (heading) contentEls.push(heading);
-    // Button
-    const button = innerContainer.querySelector('.button a.cmp-button');
-    if (button) contentEls.push(button);
+  // Collect all .text and .button blocks inside the grid
+  let textBlocks = [];
+  if (grid) {
+    textBlocks = Array.from(grid.querySelectorAll('.text, .button'));
   }
-  const contentRow = [contentEls.length ? contentEls : ''];
 
-  // Assemble table
+  // Compose content cell (row 3)
+  const contentCell = [];
+  textBlocks.forEach((block) => {
+    // For .text blocks, extract their .cmp-text children (usually contains <p> or <h3>)
+    const cmpText = block.querySelector('.cmp-text');
+    if (cmpText) {
+      // Clone to avoid moving from original DOM
+      contentCell.push(cmpText.cloneNode(true));
+    }
+    // For .button blocks, extract the <a> element
+    if (block.classList.contains('button')) {
+      const a = block.querySelector('a');
+      if (a) contentCell.push(a.cloneNode(true));
+    }
+  });
+
+  // Build table rows
+  const headerRow = ['Hero (hero2)'];
+  const imageRow = [bgImgEl ? bgImgEl : ''];
+  const contentRow = [contentCell.length ? contentCell : ''];
+
   const table = WebImporter.DOMUtils.createTable([
     headerRow,
-    bgRow,
+    imageRow,
     contentRow,
   ], document);
 
