@@ -251,22 +251,6 @@
     },
     {
       "name": "header",
-      "cluster": 12,
-      "source": "Header",
-      "target": "Header (header12)",
-      "key": "header12",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
-          "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
-          "uuid": "63714cd4-00-fb800061a6868607901a7d86210caf52d46011ee",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]",
-          "section": "section-5"
-        }
-      ]
-    },
-    {
-      "name": "header",
       "cluster": 13,
       "source": "Header",
       "target": "Header (header13)",
@@ -388,6 +372,19 @@
           "uuid": "867525b3-02-09bc5b3870cd6f656e88e4daee23300cff7bef28",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[3]",
           "section": "section-10"
+        }
+      ]
+    },
+    {
+      "name": "Hero",
+      "cluster": 21,
+      "instances": [
+        {
+          "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
+          "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
+          "uuid": "63714cd4-00-fb800061a6868607901a7d86210caf52d46011ee",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]",
+          "section": "section-5"
         }
       ]
     }
