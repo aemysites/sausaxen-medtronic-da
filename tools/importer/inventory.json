@@ -268,7 +268,7 @@
       "cluster": 20,
       "source": "Hero",
       "target": "Hero (hero19)",
-      "key": "hero19",
+      "key": "hero20",
       "instances": [
         {
           "url": "https://www.medtronic.com/in-en/our-company.html",
@@ -297,7 +297,7 @@
     },
     {
       "name": "Hero",
-      "cluster": 22,  
+      "cluster": 22,
       "source": "Hero",
       "target": "Hero (hero22)",
       "key": "hero22",
@@ -313,7 +313,7 @@
     },
     {
       "name": "Hero",
-      "cluster": 23,  
+      "cluster": 23,
       "source": "Hero",
       "target": "Hero (hero23)",
       "key": "hero23",
@@ -337,11 +337,12 @@
           "uuid": "867525b3-03-b3fb3569666c185e0416e5449a88232afc86088d",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[4]/div[1]"
         }
-      ]
+      ],
+      "key": "columns24"
     },
     {
       "name": "Columns",
-      "cluster": 25,  
+      "cluster": 25,
       "source": "Columns",
       "target": "Columns (columns25)",
       "key": "columns25",
