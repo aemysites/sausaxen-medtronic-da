@@ -65,7 +65,7 @@ export const customTransformers = {
           let element3 = doc.querySelector(".addthis_outer");
           console.log('Before removal - .addthis_outer found:', !!element3);
           element3?.remove();
-          console.log('After removal - .addthis_outer still exists:', !!doc.querySelector(".ot-floating-button__front"));
+          console.log('After removal - .addthis_outer still exists:', !!doc.querySelector(".addthis_outer"));
           
   
           console.log('All element removals completed');
