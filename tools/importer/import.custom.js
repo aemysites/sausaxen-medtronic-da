@@ -66,6 +66,11 @@ export const customTransformers = {
           console.log('Before removal - .addthis_outer found:', !!element3);
           element3?.remove();
           console.log('After removal - .addthis_outer still exists:', !!doc.querySelector(".addthis_outer"));
+
+          let element4 = doc.querySelector(".ot-sdk-container");
+          console.log('Before removal - .ot-sdk-container found:', !!element3);
+          element4?.remove();
+          console.log('After removal - .ot-sdk-container still exists:', !!doc.querySelector(".ot-sdk-container"));
           
   
           console.log('All element removals completed');
