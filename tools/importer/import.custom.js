@@ -72,8 +72,7 @@ export const customTransformers = {
           element4?.remove();
           console.log('After removal - .ot-sdk-container still exists:', !!doc.querySelector(".ot-sdk-container"));
           
-  
-          console.log('All element removals completed');
+           console.log('All element removals completed');
         } else {
           console.log('Debug: document is null, context:', context, 'element:', element);
         }

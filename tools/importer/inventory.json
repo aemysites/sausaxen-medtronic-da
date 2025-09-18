@@ -258,11 +258,11 @@
       ]
     },
     {
-      "name": "new",
+      "name": "Embed (video)",
       "cluster": 21,
-      "source": "Hero",
-      "target": "Hero (hero21)",
-      "key": "hero21",
+      "source": "Embed (video)",
+      "target": "Embed (embedVideo21)",
+      "key": "embedVideo21",
       "instances": [
         {
           "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
@@ -335,7 +335,10 @@
     },
     {
       "name": "Hero",
-      "cluster": 26,
+      "cluster": 26,  
+      "source": "Hero",
+      "target": "Hero (hero26)",
+      "key": "hero26",
       "instances": [
         {
           "url": "https://www.medtronic.com/in-en/index.html",
@@ -348,7 +351,10 @@
     },
     {
       "name": "Hero",
-      "cluster": 27,
+      "cluster": 27,  
+      "source": "Hero",
+      "target": "Hero (hero27)",
+      "key": "hero27",
       "instances": [
         {
           "url": "https://www.medtronic.com/in-en/index.html",
