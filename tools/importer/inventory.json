@@ -250,22 +250,6 @@
       ]
     },
     {
-      "name": "header",
-      "cluster": 13,
-      "source": "Header",
-      "target": "Header (header13)",
-      "key": "header13",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-impact.html",
-          "urlHash": "1cb1b96977e91d26e2406d970c59af25a7db30ae",
-          "uuid": "1cb1b969-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]",
-          "section": "section-1"
-        }
-      ]
-    },
-    {
       "name": "Hero",
       "cluster": 14,
       "source": "Hero",
@@ -385,6 +369,19 @@
           "uuid": "63714cd4-00-fb800061a6868607901a7d86210caf52d46011ee",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]",
           "section": "section-5"
+        }
+      ]
+    },
+    {
+      "name": "Hero",
+      "cluster": 22,
+      "instances": [
+        {
+          "url": "https://www.medtronic.com/in-en/our-impact.html",
+          "urlHash": "1cb1b96977e91d26e2406d970c59af25a7db30ae",
+          "uuid": "1cb1b969-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]",
+          "section": "section-1"
         }
       ]
     }
