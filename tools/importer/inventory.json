@@ -134,22 +134,6 @@
     },
     {
       "name": "Carousel",
-      "cluster": 8,
-      "source": "Carousel",
-      "target": "Carousel (carousel8)",
-      "key": "carousel8",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/index.html",
-          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
-          "uuid": "3462ed27-03-312986026cd8ee832437867f6932c0cd7408977d",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[4]",
-          "section": "section-4"
-        }
-      ]
-    },
-    {
-      "name": "Carousel",
       "cluster": 10,
       "source": "Carousel",
       "target": "Carousel (carousel10)",
@@ -352,6 +336,19 @@
           "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
           "uuid": "867525b3-05-4a607e4dcc62d5c6dd7750947edf6cdb8a50efd1",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[6]/div[1]"
+        }
+      ]
+    },
+    {
+      "name": "Hero",
+      "cluster": 26,
+      "instances": [
+        {
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-03-312986026cd8ee832437867f6932c0cd7408977d",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[4]",
+          "section": "section-4"
         }
       ]
     }
