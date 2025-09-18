@@ -15,6 +15,7 @@
     document.querySelector('.header')?.remove();
     document.querySelector('.footer')?.remove();
     document.querySelector(".addthis_outer")?.remove();
+    document.querySelector(".ot-sdk-container")?.remove();
   } catch (e) {
     // noop
   }
