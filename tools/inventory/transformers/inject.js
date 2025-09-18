@@ -14,9 +14,7 @@
   try {
     document.querySelector('.header')?.remove();
     document.querySelector('.footer')?.remove();
-    document.querySelector('.ot-floating-button__front')?.remove();
-    document.querySelector('.ot-sdk-container')?.remove();
-    document.querySelector('.fancybox-wrap')?.remove();
+    document.querySelector(".addthis_outer")?.remove();
   } catch (e) {
     // noop
   }
