@@ -183,10 +183,10 @@
       ]
     },
     {
-      "name": "Embed Video",
+      "name": "Embed (video)",
       "cluster": 12,
-      "source": "Embed Video",
-      "target": "Embed Video (embedVideo12)",
+      "source": "Embed (video)",
+      "target": "Embed (video) (embedVideo12)",
       "key": "embedVideo12",
       "instances": [
         {
