@@ -1,48 +1,43 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the deepest grid containing two columns: left (text), right (image)
-  let grid = element.querySelector('.aem-Grid.aem-Grid--6, .aem-Grid.aem-Grid--12, .aem-Grid.aem-Grid--tablet--12, .aem-Grid.aem-Grid--default--12, .aem-Grid.aem-Grid--tablet--10');
-  let leftCol = null;
-  let rightCol = null;
-  if (grid) {
-    const children = Array.from(grid.children);
-    leftCol = children.find(child => child.classList.contains('container') && child.classList.contains('text'));
-    rightCol = children.find(child => child.classList.contains('image'));
-  }
-  // Fallbacks if not found
-  if (!leftCol) {
-    leftCol = element.querySelector('.container.text');
-  }
-  if (!rightCol) {
-    rightCol = element.querySelector('.image');
+  // Find the grid containing the two columns
+  const mainGrid = element.querySelector('.aem-Grid.aem-Grid--6');
+  if (!mainGrid) return;
+
+  // The left column: all .text/.title blocks (in order)
+  const leftColumnEls = [];
+  const selectors = [
+    '.eyebrow2 .cmp-text',
+    '.title .cmp-title',
+    '.text:not(.eyebrow2):not(:has(.cmp-title)) .cmp-text',
+  ];
+  selectors.forEach(sel => {
+    mainGrid.querySelectorAll(sel).forEach(el => {
+      if (!leftColumnEls.includes(el)) leftColumnEls.push(el);
+    });
+  });
+
+  // The last .text block is the CTA ("Learn more")
+  const cta = mainGrid.querySelector('.text .cmp-text:last-of-type');
+  if (cta && !leftColumnEls.includes(cta)) leftColumnEls.push(cta);
+
+  // The right column: the image
+  const rightColumnEls = [];
+  const imageCol = element.querySelector('.image');
+  if (imageCol) {
+    const img = imageCol.querySelector('img');
+    if (img) rightColumnEls.push(img);
   }
 
-  // Gather all text blocks for left column
-  let leftContent = [];
-  if (leftCol) {
-    // Get all cmp-text and cmp-title in order
-    leftCol.querySelectorAll('.cmp-text, .cmp-title').forEach(node => leftContent.push(node));
-  }
-  // Defensive fallback: all text blocks in element
-  if (leftContent.length === 0) {
-    element.querySelectorAll('.cmp-text, .cmp-title').forEach(node => leftContent.push(node));
-  }
+  // Defensive: if no left or right content, abort
+  if (leftColumnEls.length === 0 && rightColumnEls.length === 0) return;
 
-  // Gather image for right column
-  let rightContent = [];
-  if (rightCol) {
-    const img = rightCol.querySelector('img');
-    if (img) rightContent.push(img);
-  }
-  // Defensive fallback: any img in element
-  if (rightContent.length === 0) {
-    const img = element.querySelector('img');
-    if (img) rightContent.push(img);
-  }
-
-  // Compose the table
+  // Build the table
   const headerRow = ['Columns (columns3)'];
-  const contentRow = [leftContent, rightContent];
+  const contentRow = [
+    leftColumnEls,
+    rightColumnEls
+  ];
   const table = WebImporter.DOMUtils.createTable([
     headerRow,
     contentRow

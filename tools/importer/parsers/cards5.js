@@ -1,50 +1,63 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find all card-module containers
-  const cards = Array.from(element.querySelectorAll('.card-module'));
-  if (!cards.length) return;
+  // Find all card blocks (direct children)
+  const cardBlocks = Array.from(
+    element.querySelectorAll(':scope > div > div > div > div > div.container.card-module')
+  );
 
-  // Table header as per block spec
+  // Table header must match target block name exactly
   const headerRow = ['Cards (cards5)'];
   const rows = [headerRow];
 
-  cards.forEach(card => {
-    // Image: first .cmp-image img
-    const imgDiv = card.querySelector('.cmp-image img');
-    const imgCell = imgDiv ? imgDiv : '';
-
-    // Eyebrow: .eyebrow2 .cmp-text > p (optional)
-    let eyebrow = '';
-    const eyebrowDiv = card.querySelector('.eyebrow2 .cmp-text p');
-    if (eyebrowDiv) eyebrow = eyebrowDiv.cloneNode(true);
-
-    // Title: .cmp-title h1-h6 (mandatory)
-    let title = '';
-    const titleDiv = card.querySelector('.cmp-title');
-    if (titleDiv) {
-      const heading = titleDiv.querySelector('h1,h2,h3,h4,h5,h6');
-      if (heading) title = heading.cloneNode(true);
+  cardBlocks.forEach(card => {
+    // --- IMAGE (mandatory, referenced element) ---
+    let imageEl = null;
+    const imageCmp = card.querySelector('.image .cmp-image');
+    if (imageCmp) {
+      const img = imageCmp.querySelector('img');
+      if (img) imageEl = img;
     }
 
-    // CTA: .text.no-top-margin .cmp-text a (optional)
-    let cta = '';
-    const ctaDiv = card.querySelector('.text.no-top-margin .cmp-text a');
-    if (ctaDiv) cta = ctaDiv.cloneNode(true);
-
-    // Compose text cell
-    const textCell = document.createElement('div');
-    if (eyebrow) textCell.appendChild(eyebrow);
-    if (title) textCell.appendChild(title);
-    if (cta) {
-      // Add line break before CTA if there's other content
-      if (eyebrow || title) textCell.appendChild(document.createElement('br'));
-      textCell.appendChild(cta);
+    // --- EYEBROW (optional, styled as small text above title) ---
+    let eyebrowEl = null;
+    const eyebrowContainer = card.querySelector('.text.eyebrow2');
+    if (eyebrowContainer) {
+      const eyebrowP = eyebrowContainer.querySelector('p');
+      if (eyebrowP) eyebrowEl = eyebrowP;
     }
 
-    rows.push([imgCell, textCell.childNodes.length ? textCell : '']);
+    // --- TITLE (mandatory, heading) ---
+    let titleEl = null;
+    const titleContainer = card.querySelector('.title .cmp-title__text');
+    if (titleContainer) {
+      // Use heading element directly (h3)
+      titleEl = titleContainer;
+    }
+
+    // --- CTA (optional, linked text at bottom) ---
+    let ctaEl = null;
+    const ctaContainer = card.querySelector('.text.no-top-margin');
+    if (ctaContainer) {
+      const ctaLink = ctaContainer.querySelector('a');
+      if (ctaLink) ctaEl = ctaContainer;
+    }
+
+    // Compose text cell, preserving order and semantics
+    const textCellContent = [];
+    if (eyebrowEl) textCellContent.push(eyebrowEl.cloneNode(true));
+    if (titleEl) textCellContent.push(titleEl.cloneNode(true));
+    if (ctaEl) textCellContent.push(ctaEl.cloneNode(true));
+
+    // Defensive: skip if no image or title
+    if (!imageEl || !titleEl) return;
+
+    rows.push([
+      imageEl,
+      textCellContent
+    ]);
   });
 
-  // Create and replace with table
+  // Only one table, no Section Metadata block, no <hr>
   const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

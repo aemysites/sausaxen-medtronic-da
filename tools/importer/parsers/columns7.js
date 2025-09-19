@@ -1,56 +1,65 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: get immediate child by class
-  function getChildByClass(parent, className) {
+  // Helper to get direct child by class
+  function getDirectChildByClass(parent, className) {
     return Array.from(parent.children).find(child => child.classList.contains(className));
   }
 
-  // Find the main grid that splits into two columns
-  const mainGrid = element.querySelector('.aem-Grid');
-  if (!mainGrid) return;
+  // Find the main grid
+  const grid = element.querySelector('.aem-Grid');
+  if (!grid) return;
 
-  // LEFT COLUMN: image
-  let imageEl = null;
-  const leftCol = getChildByClass(mainGrid, 'image');
-  if (leftCol) {
-    const cmpImage = leftCol.querySelector('.cmp-image');
+  // Get left column: image
+  const imageCol = Array.from(grid.children).find(child => child.classList.contains('image'));
+  let imageCell = null;
+  if (imageCol) {
+    const cmpImage = getDirectChildByClass(imageCol, 'cmp-image');
     if (cmpImage) {
       const img = cmpImage.querySelector('img');
-      if (img) imageEl = img;
+      if (img) imageCell = img;
     }
   }
 
-  // RIGHT COLUMN: all text content (eyebrow, title, description)
-  let rightColContent = [];
-  const rightCol = getChildByClass(mainGrid, 'wide-card');
-  if (rightCol) {
-    const innerGrid = rightCol.querySelector('.aem-Grid');
-    if (innerGrid) {
+  // Get right column: content
+  const cardCol = Array.from(grid.children).find(child => child.classList.contains('wide-card'));
+  let contentCell = document.createElement('div');
+  if (cardCol) {
+    const cardGrid = cardCol.querySelector('.aem-Grid');
+    if (cardGrid) {
       // Eyebrow
-      const eyebrow = getChildByClass(innerGrid, 'eyebrow2');
+      const eyebrow = getDirectChildByClass(cardGrid, 'eyebrow2');
       if (eyebrow) {
-        const cmpText = eyebrow.querySelector('.cmp-text');
-        if (cmpText) rightColContent.push(cmpText);
+        const cmpText = getDirectChildByClass(eyebrow, 'cmp-text');
+        if (cmpText) {
+          Array.from(cmpText.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
+        }
       }
       // Title
-      const title = getChildByClass(innerGrid, 'title');
+      const title = getDirectChildByClass(cardGrid, 'title');
       if (title) {
-        const cmpTitle = title.querySelector('.cmp-title');
-        if (cmpTitle) rightColContent.push(cmpTitle);
+        const cmpTitle = getDirectChildByClass(title, 'cmp-title');
+        if (cmpTitle) {
+          Array.from(cmpTitle.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
+        }
       }
-      // Description
-      const desc = getChildByClass(innerGrid, 'no-bottom-margin-p');
-      if (desc) {
-        const cmpText = desc.querySelector('.cmp-text');
-        if (cmpText) rightColContent.push(cmpText);
+      // Text
+      const text = getDirectChildByClass(cardGrid, 'no-bottom-margin-p');
+      if (text) {
+        const cmpText2 = getDirectChildByClass(text, 'cmp-text');
+        if (cmpText2) {
+          Array.from(cmpText2.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
+        }
       }
     }
   }
 
-  // Compose table
+  // Only create table if at least one cell has content
+  if (!imageCell && !contentCell.hasChildNodes()) return;
+
   const headerRow = ['Columns (columns7)'];
-  const contentRow = [imageEl, ...rightColContent];
-  const cells = [headerRow, contentRow];
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(block);
+  const contentRow = [imageCell, contentCell];
+  const rows = [headerRow, contentRow];
+
+  const table = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(table);
 }

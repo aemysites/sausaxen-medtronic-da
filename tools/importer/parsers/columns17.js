@@ -1,23 +1,24 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Only parse carousel actions blocks
-  if (!element.classList.contains('cmp-carousel__actions')) return;
+  // Only process cmp-carousel__actions
+  if (!element || !element.classList.contains('cmp-carousel__actions')) return;
 
-  // Block header row
+  // Find the two navigation buttons (previous, next)
+  const buttons = Array.from(element.querySelectorAll(':scope > button'));
+  if (buttons.length === 0) return;
+
+  // Columns block header as per spec
   const headerRow = ['Columns (columns17)'];
 
-  // Get all carousel action buttons (previous/next)
-  const buttons = Array.from(element.querySelectorAll('button'));
+  // Each button (with its SVG image) is a column
+  const contentRow = buttons.map((btn) => btn);
 
-  // Each button goes in its own cell for a two-column layout
-  const contentRow = buttons.map(btn => btn);
+  // Compose the table
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    contentRow,
+  ], document);
 
-  // Build the table rows
-  const rows = [headerRow, contentRow];
-
-  // Create the block table
-  const block = WebImporter.DOMUtils.createTable(rows, document);
-
-  // Replace the original element with the new block table
-  element.replaceWith(block);
+  // Replace the carousel actions with the columns block
+  element.replaceWith(table);
 }
