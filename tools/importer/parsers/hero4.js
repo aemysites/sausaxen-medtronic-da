@@ -1,12 +1,14 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract the background image URL from inline style
-  function extractBgImageUrl(style) {
+  // Helper to extract background-image URL from inline style
+  function extractBackgroundImageUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image:\s*url\(['"]?([^'")]+)['"]?\)/i);
-    if (match && match[1]) {
-      // Unescape any encoded characters (e.g., \2f for /)
-      return match[1].replace(/\\2f\s*/g, '/');
+    const match = style.match(/background-image:\s*url\((['"]?)(.*?)\1\)/i);
+    if (match && match[2]) {
+      let url = match[2];
+      // Clean up escaped slashes (\2f => /)
+      url = url.replace(/\\2f\s*/g, '/');
+      return url;
     }
     return null;
   }
@@ -15,52 +17,67 @@ export default function parse(element, { document }) {
   const headerRow = ['Hero (hero4)'];
 
   // 2. Background image row
-  let bgImgRow = [''];
-  // Find the first container with a background-image style
-  const bgContainer = element.querySelector('[style*="background-image"]');
-  if (bgContainer) {
-    const bgUrl = extractBgImageUrl(bgContainer.getAttribute('style'));
-    if (bgUrl) {
-      const img = document.createElement('img');
-      img.src = bgUrl;
-      bgImgRow = [img];
+  let bgUrl = null;
+  let bgDiv = null;
+  element.querySelectorAll('div').forEach((div) => {
+    if (div.hasAttribute('style') && div.style.backgroundImage) {
+      bgUrl = extractBackgroundImageUrl(div.getAttribute('style'));
+      bgDiv = div;
     }
+  });
+  let bgCell = '';
+  if (bgUrl) {
+    const img = document.createElement('img');
+    img.src = bgUrl;
+    img.loading = 'lazy';
+    bgCell = img;
   }
 
-  // 3. Content row: Title, Subheading, CTA (if any)
-  // We'll collect all text blocks in visual order
-  let contentRow = [''];
-  // Find the deepest .aem-Grid with text blocks
-  const grids = element.querySelectorAll('.aem-Grid');
-  let textGrid = null;
-  for (const grid of grids) {
-    if (grid.querySelector('.cmp-text')) {
-      textGrid = grid;
-      break;
+  // 3. Content row (title, subheading, cta)
+  let title = '';
+  let subheading = '';
+  let cta = '';
+
+  const cmpTexts = element.querySelectorAll('.cmp-text');
+  if (cmpTexts.length > 0) {
+    const titleDiv = cmpTexts[0];
+    const titleP = titleDiv.querySelector('p, h1, h2, h3, h4, h5, h6');
+    if (titleP) {
+      const h1 = document.createElement('h1');
+      h1.innerHTML = titleP.innerHTML;
+      title = h1;
     }
-  }
-  if (textGrid) {
-    // Get all .cmp-text elements in order
-    const textBlocks = textGrid.querySelectorAll('.cmp-text');
-    const contentElements = [];
-    textBlocks.forEach(tb => {
-      // Defensive: only add if has content
-      if (tb.textContent.trim()) {
-        // Use the <div class="cmp-text"> directly
-        contentElements.push(tb);
+    if (cmpTexts.length > 1) {
+      const subDiv = cmpTexts[1];
+      const subP = subDiv.querySelector('p, h2, h3, h4, h5, h6');
+      if (subP) {
+        const p = document.createElement('p');
+        p.innerHTML = subP.innerHTML;
+        subheading = p;
       }
-    });
-    if (contentElements.length) {
-      contentRow = [contentElements];
     }
   }
 
-  // Compose the table
-  const cells = [
+  const ctaEl = element.querySelector('a');
+  if (ctaEl) {
+    const ctaLink = document.createElement('a');
+    ctaLink.href = ctaEl.href;
+    ctaLink.innerHTML = ctaEl.innerHTML;
+    cta = ctaLink;
+  }
+
+  const contentCell = [];
+  if (title) contentCell.push(title);
+  if (subheading) contentCell.push(subheading);
+  if (cta) contentCell.push(cta);
+
+  const rows = [
     headerRow,
-    bgImgRow,
-    contentRow,
+    [bgCell],
+    [contentCell],
   ];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+
+  const table = WebImporter.DOMUtils.createTable(rows, document);
+
   element.replaceWith(table);
 }

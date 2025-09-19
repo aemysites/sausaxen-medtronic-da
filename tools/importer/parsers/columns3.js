@@ -1,36 +1,57 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid that splits into two columns visually
-  const mainGrid = element.querySelector('.aem-Grid.aem-Grid--12, .aem-Grid.aem-Grid--tablet--12');
+  // Find the main grid that contains the two columns
+  const mainGrid = element.querySelector('.aem-Grid.aem-Grid--12.aem-Grid--default--12');
   if (!mainGrid) return;
 
-  // Find the left (text) and right (image) column containers
-  let leftCol = mainGrid.querySelector('.container.text.wide-card');
-  let rightCol = mainGrid.querySelector('.image');
-  if (!leftCol || !rightCol) return;
+  // Find the inner grid with columns
+  const innerGrid = mainGrid.querySelector('.aem-Grid.aem-Grid--12.aem-Grid--tablet--12.aem-Grid--default--12.aem-Grid--phone--12');
+  if (!innerGrid) return;
 
-  // LEFT COLUMN: Gather all relevant text content in order
-  const leftInnerGrid = leftCol.querySelector('.aem-Grid');
+  // Find left and right columns
+  let leftCol = Array.from(innerGrid.children).find(child => child.classList.contains('container') && child.classList.contains('wide-card'));
+  let rightCol = Array.from(innerGrid.children).find(child => child.classList.contains('image'));
+
+  // Defensive fallback
+  if (!leftCol) leftCol = innerGrid.children[0];
+  if (!rightCol) rightCol = innerGrid.children[1];
+
+  // --- LEFT COLUMN ---
+  // Collect all content blocks in left column
   let leftContent = [];
-  if (leftInnerGrid) {
-    // Collect all .cmp-text and .cmp-title blocks in order
-    const blocks = leftInnerGrid.querySelectorAll('.cmp-text, .cmp-title');
-    blocks.forEach(block => leftContent.push(block));
+  if (leftCol) {
+    const leftGrid = leftCol.querySelector('.aem-Grid');
+    if (leftGrid) {
+      leftContent = Array.from(leftGrid.children).map(block => {
+        const text = block.querySelector('.cmp-text');
+        const title = block.querySelector('.cmp-title');
+        if (title) return title;
+        if (text) return text;
+        return null;
+      }).filter(Boolean);
+    }
   }
 
-  // RIGHT COLUMN: Find the image element
-  let rightContent = [];
-  const imageCmp = rightCol.querySelector('.cmp-image');
-  if (imageCmp) {
-    const img = imageCmp.querySelector('img');
-    if (img) rightContent.push(img);
+  // --- RIGHT COLUMN ---
+  // Get image element only (reference, not clone)
+  let imageEl = null;
+  if (rightCol) {
+    const cmpImage = rightCol.querySelector('.cmp-image');
+    if (cmpImage) {
+      imageEl = cmpImage.querySelector('img');
+    }
   }
 
-  // Table structure: header row, then one row with two columns
+  // Compose table rows
   const headerRow = ['Columns (columns3)'];
-  const contentRow = [leftContent, rightContent];
-  const cells = [headerRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  const contentRow = [leftContent, imageEl ? imageEl : ''];
 
+  // Create table
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    contentRow
+  ], document);
+
+  // Replace original element
   element.replaceWith(table);
 }

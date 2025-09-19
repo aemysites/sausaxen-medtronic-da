@@ -1,57 +1,42 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
   // Find the main grid containing the two columns
-  const mainGrid = element.querySelector('.aem-Grid');
-  if (!mainGrid) return;
-  const gridChildren = Array.from(mainGrid.children);
+  const grid = element.querySelector('.aem-Grid');
+  if (!grid) return;
+  const cols = Array.from(grid.children);
+  if (cols.length < 2) return;
 
-  // Identify image and content columns
-  let imageCol = null;
-  let contentCol = null;
-  gridChildren.forEach((child) => {
-    if (child.querySelector('.cmp-image')) {
-      imageCol = child;
-    } else if (child.querySelector('.card-module')) {
-      contentCol = child;
-    }
-  });
-  // Only proceed if at least one column has content
-  if (!imageCol && !contentCol) return;
+  // --- LEFT COLUMN ---
+  // Find the image element (reference, not clone)
+  const leftImage = cols[0].querySelector('img');
+  const leftCell = leftImage || '';
 
-  // --- Left column: Image ---
-  let imgCell = null;
-  if (imageCol) {
-    const imgWrapper = imageCol.querySelector('.cmp-image');
-    if (imgWrapper) {
-      imgCell = document.createElement('div');
-      const img = imgWrapper.querySelector('img');
-      if (img) imgCell.appendChild(img.cloneNode(true));
-    }
+  // --- RIGHT COLUMN ---
+  // Find the nested grid for right column content
+  const rightGrid = cols[1].querySelector('.aem-Grid');
+  let rightCellContent = [];
+  if (rightGrid) {
+    // Eyebrow text (first .cmp-text)
+    const eyebrow = rightGrid.querySelector('.cmp-text');
+    if (eyebrow) rightCellContent.push(eyebrow);
+    // Title (h3)
+    const title = rightGrid.querySelector('.cmp-title');
+    if (title) rightCellContent.push(title);
+    // Description (second .cmp-text)
+    const texts = rightGrid.querySelectorAll('.cmp-text');
+    if (texts.length > 1) rightCellContent.push(texts[1]);
   }
+  // If nothing found, fallback to empty string
+  const rightCell = rightCellContent.length > 0 ? rightCellContent : '';
 
-  // --- Right column: Content ---
-  let rightCell = null;
-  if (contentCol) {
-    const cardGrid = contentCol.querySelector('.aem-Grid');
-    if (cardGrid) {
-      rightCell = document.createElement('div');
-      // Collect all text and title blocks in order
-      const blocks = cardGrid.querySelectorAll('.cmp-text, .cmp-title');
-      blocks.forEach((block) => {
-        rightCell.appendChild(block.cloneNode(true));
-      });
-    }
-  }
-
-  // Build the table only with columns that have actual content
+  // Table header must match block name exactly
   const headerRow = ['Columns (columns7)'];
-  const contentRow = [];
-  if (imgCell && imgCell.childNodes.length > 0) contentRow.push(imgCell);
-  if (rightCell && rightCell.childNodes.length > 0) contentRow.push(rightCell);
-  if (contentRow.length === 0) return; // Don't create empty columns
+  const row = [leftCell, rightCell];
 
-  const cells = [headerRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    row,
+  ], document);
 
   element.replaceWith(table);
 }

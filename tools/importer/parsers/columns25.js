@@ -1,36 +1,32 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // The header row must match the target block name exactly
-  const headerRow = ['Columns (columns25)'];
-
-  // Find the main grid container
+  // Find the grid containing the columns
   const grid = element.querySelector('.aem-Grid');
-  if (!grid) {
-    // Defensive fallback: just output header
-    const table = WebImporter.DOMUtils.createTable([headerRow], document);
-    element.replaceWith(table);
-    return;
-  }
+  if (!grid) return;
 
-  // Find all direct children of the grid that are teasers (columns)
-  const columns = Array.from(grid.children).filter(col => col.classList.contains('teaser'));
+  // Find all direct child .teaser columns
+  const teasers = Array.from(grid.querySelectorAll(':scope > .teaser'));
+  if (teasers.length === 0) return;
 
-  // For each column, extract its cmp-teaser__description content, preserving semantic HTML
-  const columnCells = columns.map(col => {
-    const desc = col.querySelector('.cmp-teaser__description');
-    // Defensive: fallback to the column itself if description not found
-    // Always reference existing elements, do not clone
-    return desc || col;
+  // For each teaser, extract the cmp-teaser__description (preserving semantic HTML)
+  const columnCells = teasers.map(teaser => {
+    const desc = teaser.querySelector('.cmp-teaser__description');
+    // Defensive: If missing, fallback to teaser itself
+    if (desc) {
+      // Use the actual element reference, not a clone
+      return desc;
+    } else {
+      return teaser;
+    }
   });
 
-  // Only create one table, no Section Metadata block required
-  // Table rows: header, then one row with all columns
-  const tableRows = [
-    headerRow,
-    columnCells
-  ];
+  // Build the table rows
+  const headerRow = ['Columns (columns25)']; // Must match target block name exactly
+  const contentRow = columnCells;
 
-  // Create the table and replace the element
-  const table = WebImporter.DOMUtils.createTable(tableRows, document);
+  // Create the table using WebImporter.DOMUtils.createTable
+  const table = WebImporter.DOMUtils.createTable([headerRow, contentRow], document);
+
+  // Replace the original element with the new table
   element.replaceWith(table);
 }

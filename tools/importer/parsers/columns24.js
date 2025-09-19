@@ -1,27 +1,39 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Get all direct teaser columns in order
+  // Always use the block name as the header row
+  const headerRow = ['Columns (columns24)'];
+
+  // Defensive: Get all immediate children that are columns
   const grid = element.querySelector('.aem-Grid');
-  const teasers = grid ? Array.from(grid.children).filter(e => e.classList.contains('teaser')) : [];
+  let columnDivs = [];
+  if (grid) {
+    // Get all direct children of grid that are columns
+    columnDivs = Array.from(grid.children).filter(
+      (child) => child.classList.contains('teaser')
+    );
+  } else {
+    // Fallback: try to find columns directly in element
+    columnDivs = Array.from(element.children).filter(
+      (child) => child.classList.contains('teaser')
+    );
+  }
 
-  // Defensive fallback if structure is unexpected
-  const columns = teasers.length ? teasers : Array.from(element.querySelectorAll(':scope > .teaser'));
-
-  // For each column, extract the .cmp-teaser__description content (preserves headings, paragraphs, etc)
-  const columnCells = columns.map(col => {
+  // For each column, extract the main content block
+  const contentRow = columnDivs.map((col) => {
+    // Defensive: Find the description content
     const desc = col.querySelector('.cmp-teaser__description');
-    // Defensive: fallback to column itself if no description
-    return desc || col;
+    // If found, use the whole description block (preserves headings and paragraphs)
+    if (desc) {
+      return desc;
+    }
+    // Fallback: use the column itself
+    return col;
   });
 
-  // Table header must match target block name exactly
-  const headerRow = ['Columns (columns24)'];
-  const contentRow = columnCells;
-  const tableRows = [headerRow, contentRow];
-
-  // Create the block table
-  const block = WebImporter.DOMUtils.createTable(tableRows, document);
+  // Build the table
+  const tableCells = [headerRow, contentRow];
+  const blockTable = WebImporter.DOMUtils.createTable(tableCells, document);
 
   // Replace the original element
-  element.replaceWith(block);
+  element.replaceWith(blockTable);
 }

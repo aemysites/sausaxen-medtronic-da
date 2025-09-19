@@ -1,93 +1,79 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the carousel root
-  const carousel = element.querySelector('.carousel.panelcontainer, .carousel');
-  if (!carousel) return;
+  // Find the carousel content block
+  const carouselContent = element.querySelector('.cmp-carousel__content');
+  if (!carouselContent) return;
 
-  // Find the cmp-carousel__content container
-  const cmpContent = carousel.querySelector('.cmp-carousel__content');
-  if (!cmpContent) return;
+  // Table header
+  const headerRow = ['Carousel (carousel18)'];
+  const rows = [headerRow];
 
-  // Get all slide items
-  const slides = cmpContent.querySelectorAll('.cmp-carousel__item');
-  if (!slides.length) return;
-
-  // Prepare table rows
-  const rows = [];
-  // Header row
-  rows.push(['Carousel (carousel18)']);
+  // Get all carousel slides
+  const slides = Array.from(carouselContent.querySelectorAll(':scope > .cmp-carousel__item'));
 
   slides.forEach((slide) => {
-    // Each slide has two main columns: image and text
-    // Find the image (first .image .cmp-image img)
-    let imgEl = null;
-    const imageContainer = slide.querySelector('.image .cmp-image');
-    if (imageContainer) {
-      imgEl = imageContainer.querySelector('img');
+    // --- IMAGE COLUMN ---
+    let imageCell = null;
+    const imageBlock = slide.querySelector('.cmp-image img');
+    if (imageBlock) {
+      // Reference the actual image element
+      imageCell = imageBlock;
     }
 
-    // Find the text content (the card module)
-    let textContent = null;
-    const cardModule = slide.querySelector('.card-module');
-    if (cardModule) {
-      // We'll collect eyebrow, title, description, CTA in order
-      const contentParts = [];
-      // Eyebrow (optional)
-      const eyebrow = cardModule.querySelector('.eyebrow2 .cmp-text');
-      if (eyebrow) {
-        // Use the p element directly
-        const p = eyebrow.querySelector('p');
-        if (p) contentParts.push(p);
-      }
-      // Title (h3 with link)
-      const title = cardModule.querySelector('.title .cmp-title__text');
-      if (title) {
-        // Use the h3 element directly
-        contentParts.push(title);
-      }
-      // Description (first .cmp-text after title)
-      // Find all .cmp-text in cardModule
-      const allTexts = cardModule.querySelectorAll('.cmp-text');
-      // Exclude eyebrow (already added) and CTA (which is a link only)
-      allTexts.forEach((cmpText) => {
-        // If this cmp-text contains a link only, treat as CTA
-        const p = cmpText.querySelector('p');
-        const onlyLink = p && p.querySelector('a') && p.childNodes.length === 1;
-        // If it's not eyebrow, not CTA, and not already added
-        if (
-          !cmpText.closest('.eyebrow2') &&
-          !onlyLink &&
-          (!p || !contentParts.includes(p))
-        ) {
-          // Add the p element (description)
-          if (p) contentParts.push(p);
+    // --- TEXT COLUMN ---
+    const textColumn = [];
+
+    // Eyebrow (first .cmp-text p)
+    const eyebrowBlock = slide.querySelector('.cmp-text p');
+    if (eyebrowBlock) {
+      textColumn.push(eyebrowBlock.cloneNode(true));
+    }
+
+    // Title (h3.cmp-title__text)
+    const titleBlock = slide.querySelector('.cmp-title__text');
+    if (titleBlock) {
+      textColumn.push(titleBlock.cloneNode(true));
+    }
+
+    // Description(s): all .cmp-text (after eyebrow) that are not just CTA
+    const textBlocks = Array.from(slide.querySelectorAll('.cmp-text'));
+    textBlocks.forEach((block, idx) => {
+      // Only consider blocks after the first (eyebrow)
+      if (idx === 0) return;
+      const p = block.querySelector('p');
+      if (p) {
+        // If this is a CTA ("See how"), skip for now
+        const a = p.querySelector('a');
+        if (!a || p.textContent.trim().toLowerCase() !== 'see how') {
+          textColumn.push(p.cloneNode(true));
         }
-      });
-      // CTA (link in .cmp-text)
-      allTexts.forEach((cmpText) => {
-        const p = cmpText.querySelector('p');
-        if (p && p.querySelector('a') && p.childNodes.length === 1) {
-          // Only the link
-          contentParts.push(p);
+      }
+    });
+
+    // CTA: last .cmp-text p containing a link with text "See how"
+    let ctaBlock = null;
+    for (let i = textBlocks.length - 1; i >= 0; i--) {
+      const p = textBlocks[i].querySelector('p');
+      if (p) {
+        const a = p.querySelector('a');
+        if (a && p.textContent.trim().toLowerCase() === 'see how') {
+          ctaBlock = p.cloneNode(true);
+          break;
         }
-      });
-      // Wrap all content in a div for the cell
-      if (contentParts.length) {
-        const div = document.createElement('div');
-        contentParts.forEach((el) => div.appendChild(el.cloneNode(true)));
-        textContent = div;
       }
     }
-    // Add the row: [image, textContent]
+    if (ctaBlock) {
+      textColumn.push(ctaBlock);
+    }
+
+    // Add row for this slide
     rows.push([
-      imgEl || '',
-      textContent || ''
+      imageCell,
+      textColumn.length > 0 ? textColumn : ''
     ]);
   });
 
-  // Create the table block
+  // Create and replace with table
   const table = WebImporter.DOMUtils.createTable(rows, document);
-
-  // Replace the original carousel with the table
-  carousel.replaceWith(table);
+  element.replaceWith(table);
 }
