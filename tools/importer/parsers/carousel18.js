@@ -1,71 +1,81 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the carousel block
-  const carousel = element.querySelector('.carousel, .cmp-carousel');
-  if (!carousel) return;
+  // Helper to find all carousel items
+  const carouselContent = element.querySelector('.cmp-carousel__content');
+  if (!carouselContent) return;
 
-  // Find carousel content
-  const content = carousel.querySelector('.cmp-carousel__content');
-  if (!content) return;
+  // Get all slides
+  const slides = Array.from(carouselContent.querySelectorAll('.cmp-carousel__item'));
+  if (!slides.length) return;
 
-  // Get all carousel items
-  const items = Array.from(content.querySelectorAll('.cmp-carousel__item'));
-  if (!items.length) return;
-
-  // Table header must match the block name exactly
+  // Table header
   const headerRow = ['Carousel (carousel18)'];
   const rows = [headerRow];
 
-  items.forEach((item) => {
-    // --- IMAGE CELL ---
+  slides.forEach((slide) => {
+    // Each slide: find image and text content
     let imageCell = null;
-    const imageBlock = item.querySelector('.image .cmp-image');
-    if (imageBlock) {
-      const img = imageBlock.querySelector('img');
-      if (img) {
-        imageCell = img;
+    let textCell = null;
+
+    // Find image container
+    const imageContainer = slide.querySelector('.image');
+    if (imageContainer) {
+      // Use the actual image element (with link if present)
+      const cmpImage = imageContainer.querySelector('.cmp-image');
+      if (cmpImage) {
+        imageCell = cmpImage;
       }
     }
-    if (!imageCell) return; // skip slide if no image
 
-    // --- TEXT CELL ---
-    const textCell = document.createElement('div');
-    textCell.style.display = 'contents'; // avoid extra wrapper
-    const cardModule = item.querySelector('.card-module');
+    // Find text content container (card-module)
+    const cardModule = slide.querySelector('.card-module');
     if (cardModule) {
-      // Eyebrow (optional, usually first)
-      const eyebrow = cardModule.querySelector('.eyebrow2 .cmp-text p');
+      // We'll collect eyebrow, title, description, CTA
+      const textFragments = [];
+
+      // Eyebrow (optional)
+      const eyebrow = cardModule.querySelector('.eyebrow2 .cmp-text');
       if (eyebrow) {
-        textCell.appendChild(eyebrow.cloneNode(true));
+        textFragments.push(eyebrow);
       }
-      // Title (h3, required)
-      const title = cardModule.querySelector('.cmp-title__text');
+
+      // Title (h3)
+      const title = cardModule.querySelector('.title .cmp-title');
       if (title) {
-        textCell.appendChild(title.cloneNode(true));
+        textFragments.push(title);
       }
-      // Description (all .cmp-text not eyebrow or CTA)
-      const descBlocks = Array.from(cardModule.querySelectorAll('.cmp-text'));
-      descBlocks.forEach((block) => {
-        // Only add paragraphs that are not eyebrow or CTA
-        if (!block.classList.contains('eyebrow2')) {
-          const p = block.querySelector('p');
-          if (p && (!p.querySelector('a') || p.textContent.trim() !== 'See how')) {
-            textCell.appendChild(p.cloneNode(true));
-          }
+
+      // Description(s)
+      const descriptions = cardModule.querySelectorAll('.no-bottom-margin-p .cmp-text');
+      descriptions.forEach(desc => {
+        // Only add if not a CTA
+        const link = desc.querySelector('a');
+        if (link && link.textContent && link.textContent.trim().toLowerCase() === 'see how') {
+          // This is the CTA, add last
+        } else {
+          textFragments.push(desc);
         }
       });
-      // CTA (last .cmp-text p with a link)
-      const cta = Array.from(cardModule.querySelectorAll('.cmp-text p a')).pop();
-      if (cta) {
-        const ctaP = document.createElement('p');
-        ctaP.appendChild(cta.cloneNode(true));
-        textCell.appendChild(ctaP);
+
+      // CTA ("See how")
+      descriptions.forEach(desc => {
+        const link = desc.querySelector('a');
+        if (link && link.textContent && link.textContent.trim().toLowerCase() === 'see how') {
+          textFragments.push(desc);
+        }
+      });
+
+      // Compose text cell
+      if (textFragments.length) {
+        textCell = textFragments;
       }
     }
-    rows.push([imageCell, textCell]);
+
+    // Defensive: if no text cell, use empty string
+    rows.push([imageCell, textCell || '']);
   });
 
-  // Create the table block
+  // Create block table
   const block = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(block);
 }

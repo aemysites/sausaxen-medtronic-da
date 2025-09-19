@@ -1,65 +1,55 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to get direct child by class
-  function getDirectChildByClass(parent, className) {
-    return Array.from(parent.children).find(child => child.classList.contains(className));
-  }
-
-  // Find the main grid
+  // Find the main grid containing the two columns
   const grid = element.querySelector('.aem-Grid');
   if (!grid) return;
 
-  // Get left column: image
-  const imageCol = Array.from(grid.children).find(child => child.classList.contains('image'));
-  let imageCell = null;
-  if (imageCol) {
-    const cmpImage = getDirectChildByClass(imageCol, 'cmp-image');
-    if (cmpImage) {
-      const img = cmpImage.querySelector('img');
-      if (img) imageCell = img;
-    }
+  // Find the two main columns (image and content)
+  const columns = Array.from(grid.children).filter(child => child.classList.contains('aem-GridColumn'));
+  if (columns.length < 2) return;
+
+  // LEFT COLUMN: Find the image element (reference, do not clone)
+  let leftImage = null;
+  const imageCol = columns[0];
+  const cmpImage = imageCol.querySelector('.cmp-image img');
+  if (cmpImage) {
+    leftImage = cmpImage;
   }
 
-  // Get right column: content
-  const cardCol = Array.from(grid.children).find(child => child.classList.contains('wide-card'));
-  let contentCell = document.createElement('div');
-  if (cardCol) {
-    const cardGrid = cardCol.querySelector('.aem-Grid');
-    if (cardGrid) {
-      // Eyebrow
-      const eyebrow = getDirectChildByClass(cardGrid, 'eyebrow2');
+  // RIGHT COLUMN: Compose the right content (eyebrow, title, description)
+  const rightCol = columns[1];
+  let rightContent = document.createDocumentFragment();
+  const rightContainer = rightCol.querySelector('.cmp-container');
+  if (rightContainer) {
+    const rightGrid = rightContainer.querySelector('.aem-Grid');
+    if (rightGrid) {
+      // Eyebrow (optional)
+      const eyebrow = rightGrid.querySelector('.eyebrow2 .cmp-text');
       if (eyebrow) {
-        const cmpText = getDirectChildByClass(eyebrow, 'cmp-text');
-        if (cmpText) {
-          Array.from(cmpText.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
-        }
+        Array.from(eyebrow.childNodes).forEach(node => rightContent.appendChild(node.cloneNode(true)));
       }
-      // Title
-      const title = getDirectChildByClass(cardGrid, 'title');
+      // Title (h3)
+      const title = rightGrid.querySelector('.cmp-title .cmp-title__text');
       if (title) {
-        const cmpTitle = getDirectChildByClass(title, 'cmp-title');
-        if (cmpTitle) {
-          Array.from(cmpTitle.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
-        }
+        rightContent.appendChild(title.cloneNode(true));
       }
-      // Text
-      const text = getDirectChildByClass(cardGrid, 'no-bottom-margin-p');
-      if (text) {
-        const cmpText2 = getDirectChildByClass(text, 'cmp-text');
-        if (cmpText2) {
-          Array.from(cmpText2.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
-        }
+      // Description (p)
+      const desc = rightGrid.querySelector('.no-bottom-margin-p .cmp-text');
+      if (desc) {
+        Array.from(desc.childNodes).forEach(node => rightContent.appendChild(node.cloneNode(true)));
       }
     }
   }
 
-  // Only create table if at least one cell has content
-  if (!imageCell && !contentCell.hasChildNodes()) return;
+  // Build the table rows
+  const headerRow = ['Columns block (columns7)'];
+  const contentRow = [leftImage, rightContent];
 
-  const headerRow = ['Columns (columns7)'];
-  const contentRow = [imageCell, contentCell];
-  const rows = [headerRow, contentRow];
+  // Create the table (using references, not clones, for images)
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    contentRow
+  ], document);
 
-  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }
