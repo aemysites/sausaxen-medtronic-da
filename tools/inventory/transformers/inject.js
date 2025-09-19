@@ -16,6 +16,7 @@
     document.querySelector('.footer')?.remove();
     document.querySelector(".addthis_outer")?.remove();
     document.querySelector(".ot-sdk-container")?.remove();
+    document.querySelector("#fsvs-pagination")?.remove();
   } catch (e) {
     // noop
   }
