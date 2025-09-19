@@ -269,7 +269,7 @@
       ]
     },
     {
-      "name": "header",
+      "name": "Hero",
       "cluster": 13,
       "source": "Header",
       "target": "Header (header13)",
