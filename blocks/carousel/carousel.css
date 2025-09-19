@@ -329,8 +329,6 @@
   }
 }
 
-
-/* Restore vertical page indicator dots on the left, with improved spacing and subtle opacity */
 .carousel.carousel16 .carousel-slide-indicators {
   position: absolute;
   top: 50%;
@@ -370,7 +368,6 @@
   outline-offset: 2px;
 }
 
-/* Slide content box: keep gradient fade, but slightly more compact for better balance */
 .carousel.carousel16 .carousel-slide .carousel-slide-content {
   color: #232364;
   background: linear-gradient(90deg, #fff 82%, rgb(255 255 255 / 12%) 100%);
@@ -436,7 +433,6 @@
   text-decoration: none;
 }
 
-/* Arrow navigation buttons: refine size and spacing to match indicators and content */
 .carousel.carousel16 .carousel-navigation-buttons button {
   background: #fff;
   border: 1.5px solid #e1e1ee;
@@ -476,7 +472,6 @@
   transform: translate(-50%, -50%) rotate(-45deg);
 }
 
-/* Responsive adjustments for smaller screens */
 @media (width <= 900px) {
   .carousel.carousel16 .carousel-slide-indicators {
     left: 8px;
@@ -495,4 +490,188 @@
   .carousel.carousel16 .carousel-slide .carousel-slide-content h2 {
     font-size: 1.19rem;
   }
+}
+
+
+.carousel.carousel18 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  max-width: 1220px;
+  margin: 80px auto;
+  background: #fff;
+  min-height: 410px;
+  box-sizing: border-box;
+  position: relative;
+  padding-top: 26px;
+  padding-bottom: 26px;
+}
+
+.carousel.carousel18 .carousel-slides-container {
+  flex: 1 1 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  background: none;
+  min-height: 1px;
+  position: relative;
+}
+
+.carousel.carousel18 .carousel-slides {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  min-height: 300px;
+  overflow: visible;
+  background: none;
+  padding: 0;
+  margin: 0;
+}
+
+.carousel.carousel18 .carousel-slide {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  background: none;
+  border-radius: 0;
+  min-height: 300px;
+  box-shadow: none;
+  padding: 0;
+  position: static;
+}
+
+/* Larger image, less right margin */
+.carousel.carousel18 .carousel-slide-image {
+  flex: 0 0 43%;
+  min-width: 390px;
+  max-width: 480px;
+  aspect-ratio: 16/7.2;
+  height: 240px;
+  margin: 0 30px 0 0;
+  position: relative;
+  border-radius: 0;
+  display: block;
+  overflow: hidden;
+}
+
+.carousel.carousel18 .carousel-slide-image picture,
+.carousel.carousel18 .carousel-slide-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+/* Content block: more vertical spacing and larger headline */
+.carousel.carousel18 .carousel-slide-content {
+  flex: 1 1 57%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  margin: 0;
+  padding: 12px 0 0 14px;
+  background: none;
+  color: #0a2691;
+  max-width: 635px;
+  min-height: 220px;
+}
+
+.carousel.carousel18 .carousel-slide-content p {
+  margin-top: 0;
+  margin-bottom: 24px;
+  color: #191919;
+  font-size: 1.16rem;
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+.carousel.carousel18 .carousel-slide-content h3 {
+  margin-top: 0;
+  margin-bottom: 22px;
+  color: #1661d8;
+  font-size: 2.3rem;
+  line-height: 1.12;
+  font-weight: 900;
+  border-left: 5px solid #1661d8;
+  padding-left: 15px;
+  letter-spacing: 0;
+}
+
+.carousel.carousel18 .carousel-slide-content .button-container {
+  margin-top: 2px;
+  margin-bottom: 0;
+}
+
+.carousel.carousel18 .carousel-slide-content .button {
+  background: none;
+  color: #0a2691;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  margin: 0;
+  font-size: 1.13rem;
+  font-weight: 800;
+  text-decoration: underline;
+  border-radius: 0;
+  min-width: 0;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.carousel.carousel18 .carousel-slide-content .button:hover,
+.carousel.carousel18 .carousel-slide-content .button:focus {
+  text-decoration: underline;
+  color: #3b63fb;
+  background: none;
+}
+
+/* Hide navigation buttons */
+.carousel.carousel18 .carousel-navigation-buttons {
+  display: none;
+}
+
+/* Page indicators: lighter inactive, stronger gap, slightly lower for balance */
+.carousel.carousel18 .carousel-slide-indicators {
+  position: absolute;
+  inset: auto 52px 22px auto;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0 28px;
+  background: none;
+  height: 36px;
+  padding: 0;
+  z-index: 3;
+}
+
+.carousel.carousel18 .carousel-slide-indicator button {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  padding: 0;
+  border-radius: 50%;
+  border: 1.5px solid rgb(21 31 68 / 9%);
+  background: #fff;
+  box-shadow: none;
+  transition: background 0.2s, border 0.2s;
+}
+
+.carousel.carousel18 .carousel-slide-indicator button:disabled,
+.carousel.carousel18 .carousel-slide-indicator button[aria-current="true"] {
+  background: #0a2691;
+  border: 1.5px solid #0a2691;
+}
+
+.carousel.carousel18 .carousel-slide-indicator button:hover,
+.carousel.carousel18 .carousel-slide-indicator button:focus-visible {
+  border-color: #3b63fb;
+  background: #e4eafc;
 }
