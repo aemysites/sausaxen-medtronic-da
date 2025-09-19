@@ -1,70 +1,85 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: get all direct children with a class
-  function getDirectChildrenByClass(parent, className) {
-    return Array.from(parent.children).filter(child => child.classList.contains(className));
+  // Helper: get immediate children matching selector
+  function getDirectChildren(parent, selector) {
+    return Array.from(parent.children).filter(child => child.matches(selector));
   }
 
-  // Find the two main columns in the visual layout
-  // 1. Left column: contains the blue bar image, mission text, heading, description, link
-  // 2. Right column: contains the large illustration image
-
-  // The structure is deeply nested, so we need to traverse down to the two main columns
-  // Step 1: Find the first .aem-Grid with 8 columns (left+right)
-  const outerGrid = element.querySelector('.aem-Grid.aem-Grid--8');
-  if (!outerGrid) return;
-
-  // Step 2: Find the left and right column containers
-  // Left: .container.responsivegrid.left-pad.right-pad
-  // Right: .image.aem-GridColumn--default--5
-  let leftCol, rightCol;
-  const children = Array.from(outerGrid.children);
-  // The left column is the first .container.responsivegrid
-  leftCol = children.find(child => child.classList.contains('container') && child.classList.contains('responsivegrid'));
-  // The right column is the first .image (not inside leftCol)
-  rightCol = children.find(child => child.classList.contains('image'));
-
-  // Defensive: If not found, fallback to first and second child
-  if (!leftCol || !rightCol) {
-    leftCol = children[0];
-    rightCol = children[1];
-  }
-
-  // LEFT COLUMN: Compose all content blocks in leftCol
-  // It has a .aem-Grid with 3 content blocks: blue bar image, eyebrow text, heading, description, link
-  let leftContent = [];
-  const leftGrid = leftCol.querySelector('.aem-Grid');
-  if (leftGrid) {
-    const leftBlocks = Array.from(leftGrid.children);
-    leftBlocks.forEach(block => {
-      // Only add blocks that have content
-      if (block.textContent.trim() || block.querySelector('img')) {
-        leftContent.push(block);
+  // Find the innermost grid containing the two column children
+  let grid = element;
+  // Defensive: descend until we find a grid with two main children (text and image)
+  let found = false;
+  while (!found && grid) {
+    const grids = grid.querySelectorAll(':scope > .aem-Grid');
+    for (const g of grids) {
+      // Look for a grid with two direct children, one with image, one with text
+      const children = Array.from(g.children);
+      const hasImage = children.some(c => c.classList.contains('image'));
+      const hasText = children.some(c => c.classList.contains('text'));
+      if (children.length === 2 && hasImage && hasText) {
+        grid = g;
+        found = true;
+        break;
       }
+    }
+    if (!found) {
+      // Go one level deeper
+      const next = grid.querySelector(':scope > .cmp-container, :scope > .aem-Grid');
+      if (next && next !== grid) {
+        grid = next;
+      } else {
+        break;
+      }
+    }
+  }
+
+  // Fallback: If not found, try to find the two main columns manually
+  let leftCol, rightCol;
+  if (found) {
+    // Two children: one text, one image
+    const children = Array.from(grid.children);
+    leftCol = children.find(c => c.classList.contains('container')) || children.find(c => c.classList.contains('text'));
+    rightCol = children.find(c => c.classList.contains('image'));
+  } else {
+    // Defensive: try to find first container/text and first image
+    leftCol = element.querySelector('.container, .text');
+    rightCol = element.querySelector('.image');
+  }
+
+  // Left column: gather all text blocks and eyebrow bar image
+  let leftContent = [];
+  if (leftCol) {
+    // Find all .image and .text blocks inside leftCol
+    const eyebrowImgWrap = leftCol.querySelector('.image');
+    if (eyebrowImgWrap) {
+      leftContent.push(eyebrowImgWrap);
+    }
+    const textBlocks = leftCol.querySelectorAll('.text');
+    textBlocks.forEach(tb => {
+      leftContent.push(tb);
     });
-  } else {
-    leftContent.push(leftCol);
   }
 
-  // RIGHT COLUMN: The image is inside a .cmp-image
+  // Right column: main image
   let rightContent = [];
-  const cmpImage = rightCol.querySelector('.cmp-image');
-  if (cmpImage) {
-    rightContent.push(cmpImage);
-  } else {
-    // fallback: any images
-    const imgs = rightCol.querySelectorAll('img');
-    rightContent = Array.from(imgs);
+  if (rightCol) {
+    // Defensive: if rightCol contains .cmp-image, use that
+    const cmpImg = rightCol.querySelector('.cmp-image');
+    if (cmpImg) {
+      rightContent.push(cmpImg);
+    } else {
+      rightContent.push(rightCol);
+    }
   }
 
-  // Compose the table rows
+  // Table structure
   const headerRow = ['Columns (columns15)'];
   const contentRow = [leftContent, rightContent];
 
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    contentRow
-  ], document);
+  // Create block table
+  const cells = [headerRow, contentRow];
+  const block = WebImporter.DOMUtils.createTable(cells, document);
 
-  element.replaceWith(table);
+  // Replace original element
+  element.replaceWith(block);
 }

@@ -1,12 +1,11 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to get background image from inline style
-  function getBackgroundImageUrl(style) {
+  // Helper to extract background image URL from inline style
+  function extractBackgroundImageUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/i);
+    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/);
     if (match && match[1]) {
       let url = match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
-      // Remove any surrounding quotes
       url = url.replace(/^['"]|['"]$/g, '');
       return url;
     }
@@ -19,54 +18,45 @@ export default function parse(element, { document }) {
   // 2. Background image row
   let bgImgUrl = null;
   let bgImgEl = null;
-  // Find the first container with a background-image style
   const bgContainer = element.querySelector('[style*="background-image"]');
   if (bgContainer) {
-    bgImgUrl = getBackgroundImageUrl(bgContainer.getAttribute('style'));
+    bgImgUrl = extractBackgroundImageUrl(bgContainer.getAttribute('style'));
     if (bgImgUrl) {
       bgImgEl = document.createElement('img');
       bgImgEl.src = bgImgUrl;
-      bgImgEl.setAttribute('loading', 'lazy');
       bgImgEl.alt = '';
+      bgImgEl.style.display = 'none'; // Hide for import, used for asset reference
     }
   }
-  const bgImgRow = [bgImgEl ? bgImgEl : ''];
+  const bgRow = [bgImgEl ? bgImgEl : ''];
 
-  // 3. Content row (title, subheading, etc)
-  // Defensive: Find all text blocks in the deepest grid
-  let contentRow = [''];
-  const innerGrid = element.querySelector('.aem-Grid.aem-Grid--11');
-  if (innerGrid) {
-    // Get all direct children divs (text/title blocks)
-    const blocks = Array.from(innerGrid.children);
-    const contentEls = [];
-    blocks.forEach((block) => {
-      // Find the actual content container inside each block
-      const content = block.querySelector('.cmp-text, .cmp-title');
-      if (content) {
-        // For title, use heading element directly
-        const heading = content.querySelector('h1, h2, h3, h4, h5, h6');
-        if (heading) {
-          contentEls.push(heading);
-        } else {
-          // For text, use all paragraphs
-          const paragraphs = content.querySelectorAll('p');
-          paragraphs.forEach((p) => contentEls.push(p));
-        }
+  // 3. Content row: Collect all visible text blocks in order
+  const contentCell = [];
+  // Use a less specific selector to get all text/title blocks
+  const textBlocks = element.querySelectorAll('.cmp-text, .cmp-title');
+  textBlocks.forEach((block) => {
+    // If it's a .cmp-title, preserve heading tag
+    if (block.classList.contains('cmp-title')) {
+      const h1 = block.querySelector('h1');
+      if (h1) {
+        contentCell.push(h1.cloneNode(true));
       }
-    });
-    if (contentEls.length > 0) {
-      contentRow = [contentEls];
     }
-  }
+    // For .cmp-text, add all paragraphs
+    block.querySelectorAll('p').forEach((p) => {
+      contentCell.push(p.cloneNode(true));
+    });
+  });
+  const contentRow = [contentCell.length ? contentCell : ''];
 
   // Compose table
   const cells = [
     headerRow,
-    bgImgRow,
+    bgRow,
     contentRow,
   ];
+  const block = WebImporter.DOMUtils.createTable(cells, document);
 
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+  // Replace original element
+  element.replaceWith(block);
 }

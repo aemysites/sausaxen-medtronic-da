@@ -1,25 +1,24 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract image from background-image style
-  function extractBgImageUrl(style) {
+  // Helper to extract background image URL from style attribute
+  function extractBgUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/);
+    const match = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/);
     if (match && match[1]) {
-      let url = match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
-      // Remove quotes if present
-      url = url.replace(/^['"]|['"]$/g, '');
-      // If the URL is relative, prepend origin
+      let url = match[1];
+      // Remove escaped characters
+      url = url.replace(/\\2f /g, '/').replace(/\\/g, '');
+      // If relative, prepend origin
       if (url.startsWith('/')) {
-        url = document.location.origin + url;
+        url = window.location.origin + url;
       }
       return url;
     }
     return null;
   }
 
-  // Helper to create an img element from a background image
-  function createImgFromBg(style) {
-    const url = extractBgImageUrl(style);
+  // Helper to create an image element from a URL
+  function createImg(url) {
     if (!url) return null;
     const img = document.createElement('img');
     img.src = url;
@@ -27,64 +26,72 @@ export default function parse(element, { document }) {
     return img;
   }
 
-  // Find the carousel root
+  // Find the carousel block
   const carousel = element.querySelector('.cmp-carousel');
   if (!carousel) return;
 
-  // Get all carousel items
-  const items = carousel.querySelectorAll('.cmp-carousel__item');
+  // Get all slides
+  const slides = carousel.querySelectorAll('.cmp-carousel__item');
 
   // Table header
   const headerRow = ['Carousel (carousel10)'];
   const rows = [headerRow];
 
-  items.forEach((item) => {
-    // Find the hero image container (should have background-image)
-    const heroModule = item.querySelector('.hero-module');
-    let imgEl = null;
-    if (heroModule && heroModule.firstElementChild) {
-      const bgStyle = heroModule.firstElementChild.getAttribute('style');
-      imgEl = createImgFromBg(bgStyle);
-    }
-    // Defensive fallback: if no image found, skip this slide
-    if (!imgEl) return;
-
-    // Find the main text container (the innermost cmp-container)
-    let textContainer = null;
-    // The text content is inside a cmp-container with several .text children
-    const containers = item.querySelectorAll('.cmp-container');
-    containers.forEach((container) => {
-      // Look for .text children
-      if (container.querySelector('.text')) {
-        textContainer = container;
+  slides.forEach((slide) => {
+    // Find the hero container with background image
+    const hero = slide.querySelector('.hero-module');
+    let imgUrl = null;
+    if (hero) {
+      const heroBg = hero.querySelector('.cmp-container');
+      if (heroBg) {
+        imgUrl = extractBgUrl(heroBg.getAttribute('style'));
       }
-    });
+    }
+    const imgEl = createImg(imgUrl);
 
-    // Defensive: if no textContainer, skip
-    if (!textContainer) return;
-
-    // Compose the text cell
-    // We'll collect all .text blocks, .button, and .isi-isw in order
-    const textCellContent = [];
-    // All .text blocks (order matters)
-    textContainer.querySelectorAll('.text').forEach((t) => {
-      textCellContent.push(t);
-    });
-    // Button (call-to-action)
-    const button = textContainer.querySelector('.button');
+    // Compose text content
+    const textContent = document.createElement('div');
+    // Eyebrow
+    const eyebrow = slide.querySelector('.eyebrow2 .cmp-text');
+    if (eyebrow) {
+      textContent.appendChild(eyebrow.cloneNode(true));
+    }
+    // Heading/title
+    let heading = slide.querySelector('.text:not(.eyebrow2) .cmp-text h1, .text:not(.eyebrow2) .cmp-text h2, .text:not(.eyebrow2) .cmp-text h3');
+    if (!heading) {
+      // Sometimes heading is inside .cmp-text directly
+      heading = slide.querySelector('.cmp-text h1, .cmp-text h2, .cmp-text h3');
+    }
+    if (heading) {
+      textContent.appendChild(heading.cloneNode(true));
+    }
+    // Intro/description
+    const intro = slide.querySelector('.intro-heading .cmp-text');
+    if (intro) {
+      textContent.appendChild(intro.cloneNode(true));
+    }
+    // Additional description
+    const desc = slide.querySelector('.text.no-bottom-margin-p .cmp-text');
+    if (desc) {
+      textContent.appendChild(desc.cloneNode(true));
+    }
+    // CTA button
+    const button = slide.querySelector('.button .cmp-button');
     if (button) {
-      textCellContent.push(button);
+      textContent.appendChild(button.cloneNode(true));
     }
-    // ISI/ISW (additional info)
-    const isiIsw = textContainer.querySelector('.isi-isw');
+    // ISI/ISW link
+    const isiIsw = slide.querySelector('.isi-isw .redirect-isi-isw, .isi-isw .ext_link');
     if (isiIsw) {
-      textCellContent.push(isiIsw);
+      textContent.appendChild(isiIsw.cloneNode(true));
     }
 
-    rows.push([imgEl, textCellContent]);
+    // Only add text cell if it has content
+    const textCell = textContent.childNodes.length > 0 ? textContent : '';
+    rows.push([imgEl, textCell]);
   });
 
-  // Create and replace
+  // Create block table
   const block = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(block);
 }

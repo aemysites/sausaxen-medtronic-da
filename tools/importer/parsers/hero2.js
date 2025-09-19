@@ -1,81 +1,72 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background-image url from style attribute
-  function extractBgUrl(style) {
-    if (!style) return null;
-    const match = style.match(/background-image:\s*url\(['"]?([^'")]+)['"]?\)/i);
-    if (match && match[1]) {
-      // Unescape any encoded slashes
-      return match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
+  // Helper to extract background image from style attribute
+  function extractBackgroundImage(el) {
+    let url = '';
+    if (el && el.hasAttribute('style')) {
+      const style = el.getAttribute('style');
+      const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/);
+      if (match && match[1]) {
+        url = match[1]
+          .replace(/\\2f/g, '/') // Replace \2f with /
+          .replace(/\s/g, '');
+        // Remove any surrounding quotes
+        url = url.replace(/^['"]|['"]$/g, '');
+        // If relative, prepend origin
+        if (url.startsWith('/')) {
+          url = document.location.origin + url;
+        }
+      }
     }
-    return null;
+    return url;
   }
 
-  // 1. Header row
-  const headerRow = ['Hero (hero2)'];
+  // Find the background image from the first .cmp-container with style
+  const bgContainer = element.querySelector('.cmp-container[style]');
+  const bgUrl = extractBackgroundImage(bgContainer);
 
-  // 2. Background image row
-  // Look for the first element with a background-image style
-  let bgUrl = null;
-  let bgDiv = null;
-  // Search direct children and one level deeper for background-image
-  const containers = [element, ...element.querySelectorAll('*')];
-  for (const el of containers) {
-    const style = el.getAttribute && el.getAttribute('style');
-    const url = extractBgUrl(style);
-    if (url) {
-      bgUrl = url;
-      bgDiv = el;
-      break;
-    }
-  }
   let bgImgEl = null;
   if (bgUrl) {
     bgImgEl = document.createElement('img');
     bgImgEl.src = bgUrl;
     bgImgEl.alt = '';
+    bgImgEl.loading = 'lazy';
+    bgImgEl.style.maxWidth = '100%';
   }
-  const bgRow = [bgImgEl ? bgImgEl : ''];
 
-  // 3. Content row
-  // Find content elements: eyebrow, intro, h1, button
-  // These are inside nested .aem-Grid > .text or .button
-  let eyebrow = null, intro = null, h1 = null, cta = null;
-  const grids = element.querySelectorAll('.aem-Grid');
-  for (const grid of grids) {
-    // Eyebrow
-    if (!eyebrow) {
-      eyebrow = grid.querySelector('.text.eyebrow2 .cmp-text');
-    }
-    // Intro
-    if (!intro) {
-      intro = grid.querySelector('.text.intro-heading .cmp-text');
-    }
-    // H1
-    if (!h1) {
-      h1 = grid.querySelector('.text.h1 .cmp-text');
-    }
-    // CTA
-    if (!cta) {
-      cta = grid.querySelector('.button a.cmp-button');
-    }
+  // Find the main content container (deepest .cmp-container)
+  const contentContainer = element.querySelector('.cmp-container:not([style])');
+  let contentGrid = contentContainer;
+  if (!contentGrid) {
+    contentGrid = element;
   }
+
+  // Find all text blocks and button
+  const texts = Array.from(contentGrid.querySelectorAll('.cmp-text'));
+  const buttonEl = contentGrid.querySelector('.cmp-button');
 
   // Compose content cell
   const contentCell = [];
-  if (eyebrow) contentCell.push(eyebrow);
-  if (intro) contentCell.push(intro);
-  if (h1) contentCell.push(h1);
-  if (cta) contentCell.push(cta);
+  texts.forEach((txt) => {
+    if (txt && txt.textContent.trim()) {
+      contentCell.push(txt);
+    }
+  });
+  if (buttonEl) {
+    contentCell.push(buttonEl);
+  }
+
+  // Table structure
+  const headerRow = ['Hero (hero2)'];
+  const imageRow = [bgImgEl ? bgImgEl : ''];
   const contentRow = [contentCell.length ? contentCell : ''];
 
-  // Compose table
-  const table = WebImporter.DOMUtils.createTable([
+  const cells = [
     headerRow,
-    bgRow,
+    imageRow,
     contentRow,
-  ], document);
+  ];
 
-  // Replace original element
-  element.replaceWith(table);
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

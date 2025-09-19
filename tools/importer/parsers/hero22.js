@@ -1,12 +1,22 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background image URL from inline style
-  function getBackgroundImageUrl(style) {
-    if (!style) return null;
-    const match = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/i);
+  // Helper: Extract background image URL from style attribute
+  function getBackgroundImageUrl(el) {
+    const style = el.getAttribute('style') || '';
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/i);
     if (match && match[1]) {
-      // Some URLs may be encoded with \2f for '/'
-      return match[1].replace(/\\2f\s*/g, '/');
+      let url = match[1]
+        .replace(/\\2f/g, '/')
+        .replace(/\\/g, '')
+        .replace(/^['"]|['"]$/g, '')
+        .trim();
+      // Remove any whitespace
+      url = url.replace(/\s+/g, '');
+      // If relative, prepend origin
+      if (url.startsWith('/')) {
+        url = window.location.origin + url;
+      }
+      return url;
     }
     return null;
   }
@@ -14,53 +24,59 @@ export default function parse(element, { document }) {
   // 1. Header row
   const headerRow = ['Hero (hero22)'];
 
-  // 2. Background image row
-  let bgImgCell = '';
-  // Find the first container with a background-image style
-  const bgContainer = element.querySelector('[style*="background-image"]');
-  if (bgContainer) {
-    const bgUrl = getBackgroundImageUrl(bgContainer.getAttribute('style'));
-    if (bgUrl) {
-      // Create an image element for the background asset
-      const img = document.createElement('img');
-      img.src = bgUrl;
-      img.alt = '';
-      bgImgCell = img;
+  // 2. Background image row (optional)
+  let bgImgUrl = null;
+  let bgImgEl = null;
+  const bgDiv = element.querySelector('[style*="background-image"]');
+  if (bgDiv) {
+    bgImgUrl = getBackgroundImageUrl(bgDiv);
+    if (bgImgUrl) {
+      bgImgEl = document.createElement('img');
+      bgImgEl.src = bgImgUrl;
+      bgImgEl.alt = '';
+      bgImgEl.setAttribute('loading', 'lazy');
     }
   }
+  const bgImgRow = [bgImgEl ? bgImgEl : ''];
 
-  // 3. Content row (headline, subheading, etc)
-  // Find all text blocks in order
-  const textBlocks = [];
-  // Find all .cmp-text elements inside the block, in order
-  element.querySelectorAll('.cmp-text').forEach((cmpText) => {
-    // Only add non-empty blocks
-    if (cmpText.textContent.trim()) {
-      textBlocks.push(cmpText);
+  // 3. Content row: Title, Subheading, CTA
+  let contentRowContent = [];
+  // Find the deepest .aem-Grid
+  const grids = element.querySelectorAll('.aem-Grid');
+  let deepestGrid = null;
+  let maxDepth = 0;
+  grids.forEach(g => {
+    let depth = 0;
+    let parent = g;
+    while (parent && parent !== element) {
+      parent = parent.parentElement;
+      depth++;
+    }
+    if (depth > maxDepth) {
+      maxDepth = depth;
+      deepestGrid = g;
     }
   });
-
-  // Compose content cell
-  let contentCell = '';
-  if (textBlocks.length) {
-    // Compose a fragment to keep all text blocks together
-    const frag = document.createDocumentFragment();
-    textBlocks.forEach((block) => {
-      frag.appendChild(block);
+  if (deepestGrid) {
+    const textBlocks = deepestGrid.querySelectorAll(':scope > .text');
+    textBlocks.forEach(block => {
+      const cmpText = block.querySelector('.cmp-text');
+      if (cmpText) {
+        Array.from(cmpText.children).forEach(child => {
+          contentRowContent.push(child);
+        });
+      }
     });
-    contentCell = frag;
   }
+  const contentRow = [contentRowContent.length ? contentRowContent : ''];
 
-  // Assemble table rows
-  const rows = [
+  // Compose table
+  const cells = [
     headerRow,
-    [bgImgCell],
-    [contentCell]
+    bgImgRow,
+    contentRow
   ];
 
-  // Create the block table
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-
-  // Replace the original element with the block table
+  const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

@@ -1,13 +1,13 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background-image URL from inline style
-  function extractBackgroundImageUrl(style) {
+  // Helper to extract background image URL from inline style
+  function getBackgroundImageUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image:\s*url\((['"]?)(.*?)\1\)/i);
-    if (match && match[2]) {
-      let url = match[2];
-      // Clean up escaped slashes (\2f => /)
-      url = url.replace(/\\2f\s*/g, '/');
+    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/i);
+    if (match && match[1]) {
+      let url = match[1].replace(/\\2f /g, '/').replace(/\s/g, '');
+      // Remove any surrounding quotes
+      url = url.replace(/^['"]|['"]$/g, '');
       return url;
     }
     return null;
@@ -17,67 +17,72 @@ export default function parse(element, { document }) {
   const headerRow = ['Hero (hero4)'];
 
   // 2. Background image row
-  let bgUrl = null;
-  let bgDiv = null;
-  element.querySelectorAll('div').forEach((div) => {
-    if (div.hasAttribute('style') && div.style.backgroundImage) {
-      bgUrl = extractBackgroundImageUrl(div.getAttribute('style'));
-      bgDiv = div;
-    }
+  let bgImageUrl = null;
+  // Find the first child with a background-image style
+  const bgDiv = Array.from(element.querySelectorAll('div')).find(div => {
+    return div.style && div.style.backgroundImage;
   });
-  let bgCell = '';
-  if (bgUrl) {
+  if (bgDiv && bgDiv.style.backgroundImage) {
+    bgImageUrl = getBackgroundImageUrl(bgDiv.getAttribute('style'));
+  }
+  let bgImageCell;
+  if (bgImageUrl) {
     const img = document.createElement('img');
-    img.src = bgUrl;
-    img.loading = 'lazy';
-    bgCell = img;
+    img.src = bgImageUrl;
+    img.alt = '';
+    bgImageCell = img;
+  } else {
+    bgImageCell = '';
   }
 
-  // 3. Content row (title, subheading, cta)
-  let title = '';
-  let subheading = '';
-  let cta = '';
+  // 3. Content row (title, subheading, etc)
+  // Find the deepest .aem-Grid with text children
+  let contentGrid = null;
+  const grids = element.querySelectorAll('.aem-Grid');
+  for (const grid of grids) {
+    if (grid.querySelector('.text.h1, .text.intro-heading')) {
+      contentGrid = grid;
+      break;
+    }
+  }
 
-  const cmpTexts = element.querySelectorAll('.cmp-text');
-  if (cmpTexts.length > 0) {
-    const titleDiv = cmpTexts[0];
-    const titleP = titleDiv.querySelector('p, h1, h2, h3, h4, h5, h6');
-    if (titleP) {
+  let title = '', subheading = '', cta = '';
+  if (contentGrid) {
+    // Title: .text.h1 > .cmp-text > p
+    const titleDiv = contentGrid.querySelector('.text.h1 .cmp-text p');
+    if (titleDiv) {
       const h1 = document.createElement('h1');
-      h1.innerHTML = titleP.innerHTML;
+      h1.textContent = titleDiv.textContent.trim();
       title = h1;
     }
-    if (cmpTexts.length > 1) {
-      const subDiv = cmpTexts[1];
-      const subP = subDiv.querySelector('p, h2, h3, h4, h5, h6');
-      if (subP) {
-        const p = document.createElement('p');
-        p.innerHTML = subP.innerHTML;
-        subheading = p;
-      }
+    // Subheading: .text.intro-heading > .cmp-text > p
+    const subheadingDiv = contentGrid.querySelector('.text.intro-heading .cmp-text p');
+    if (subheadingDiv) {
+      const p = document.createElement('p');
+      p.textContent = subheadingDiv.textContent.trim();
+      subheading = p;
+    }
+    // CTA: Not present in this example, but if there is a link, add it
+    const ctaLink = contentGrid.querySelector('a');
+    if (ctaLink) {
+      cta = ctaLink;
     }
   }
 
-  const ctaEl = element.querySelector('a');
-  if (ctaEl) {
-    const ctaLink = document.createElement('a');
-    ctaLink.href = ctaEl.href;
-    ctaLink.innerHTML = ctaEl.innerHTML;
-    cta = ctaLink;
-  }
-
+  // Compose content cell
   const contentCell = [];
   if (title) contentCell.push(title);
   if (subheading) contentCell.push(subheading);
   if (cta) contentCell.push(cta);
 
+  // Table rows
   const rows = [
     headerRow,
-    [bgCell],
-    [contentCell],
+    [bgImageCell],
+    [contentCell]
   ];
 
+  // Create and replace
   const table = WebImporter.DOMUtils.createTable(rows, document);
-
   element.replaceWith(table);
 }
