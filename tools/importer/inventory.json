@@ -144,6 +144,12 @@
           "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
           "uuid": "63714cd4-04-858bd8088210114fb707fc05266771cb4003db40",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[5]"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-01-5340e1e12d4ea571e39a11e9ba5eb58a20fc47cb",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]"
         }
       ]
     },
@@ -192,21 +198,6 @@
           "uuid": "867525b3-06-897d04125718c8374d6da592581048ae04cd4342",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[7]",
           "section": "section-2"
-        }
-      ]
-    },
-    {
-      "name": "Carousel",
-      "cluster": 16,
-      "source": "Carousel",
-      "target": "Carousel (carousel16)",
-      "key": "carousel16",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/index.html",
-          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
-          "uuid": "3462ed27-01-5340e1e12d4ea571e39a11e9ba5eb58a20fc47cb",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]"
         }
       ]
     },
