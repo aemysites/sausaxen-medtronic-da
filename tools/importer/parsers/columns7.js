@@ -1,51 +1,57 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to get direct children by class
-  function findChildByClass(parent, className) {
-    return Array.from(parent.children).find((el) => el.classList.contains(className));
-  }
-
-  // 1. Find the two main columns: left (image), right (content)
-  // The structure is: element > .container > .cmp-container > .aem-Grid > [image div, content div]
+  // Find the main grid containing the two columns
   const mainGrid = element.querySelector('.aem-Grid');
   if (!mainGrid) return;
+  const gridChildren = Array.from(mainGrid.children);
 
-  // Find the image column (left)
-  const imageCol = Array.from(mainGrid.children).find((div) => div.querySelector('.cmp-image'));
-  // Find the content column (right)
-  const contentCol = Array.from(mainGrid.children).find((div) => div !== imageCol);
+  // Identify image and content columns
+  let imageCol = null;
+  let contentCol = null;
+  gridChildren.forEach((child) => {
+    if (child.querySelector('.cmp-image')) {
+      imageCol = child;
+    } else if (child.querySelector('.card-module')) {
+      contentCol = child;
+    }
+  });
+  // Only proceed if at least one column has content
+  if (!imageCol && !contentCol) return;
 
-  // Defensive: If either column is missing, abort
-  if (!imageCol || !contentCol) return;
+  // --- Left column: Image ---
+  let imgCell = null;
+  if (imageCol) {
+    const imgWrapper = imageCol.querySelector('.cmp-image');
+    if (imgWrapper) {
+      imgCell = document.createElement('div');
+      const img = imgWrapper.querySelector('img');
+      if (img) imgCell.appendChild(img.cloneNode(true));
+    }
+  }
 
-  // Get the image element
-  const cmpImage = imageCol.querySelector('.cmp-image');
-  let imgEl = cmpImage ? cmpImage.querySelector('img') : null;
+  // --- Right column: Content ---
+  let rightCell = null;
+  if (contentCol) {
+    const cardGrid = contentCol.querySelector('.aem-Grid');
+    if (cardGrid) {
+      rightCell = document.createElement('div');
+      // Collect all text and title blocks in order
+      const blocks = cardGrid.querySelectorAll('.cmp-text, .cmp-title');
+      blocks.forEach((block) => {
+        rightCell.appendChild(block.cloneNode(true));
+      });
+    }
+  }
 
-  // Get the content column's grid (contains text/title/desc)
-  const contentGrid = contentCol.querySelector('.aem-Grid');
-  if (!contentGrid) return;
-
-  // Extract content elements in order
-  const contentEls = [];
-  // Eyebrow
-  const eyebrow = contentGrid.querySelector('.eyebrow2 .cmp-text');
-  if (eyebrow) contentEls.push(eyebrow);
-  // Title
-  const title = contentGrid.querySelector('.cmp-title');
-  if (title) contentEls.push(title);
-  // Description
-  const desc = contentGrid.querySelector('.no-bottom-margin-p .cmp-text');
-  if (desc) contentEls.push(desc);
-
-  // Compose the table rows
+  // Build the table only with columns that have actual content
   const headerRow = ['Columns (columns7)'];
-  const columnsRow = [imgEl, contentEls];
+  const contentRow = [];
+  if (imgCell && imgCell.childNodes.length > 0) contentRow.push(imgCell);
+  if (rightCell && rightCell.childNodes.length > 0) contentRow.push(rightCell);
+  if (contentRow.length === 0) return; // Don't create empty columns
 
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    columnsRow,
-  ], document);
+  const cells = [headerRow, contentRow];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
 
   element.replaceWith(table);
 }

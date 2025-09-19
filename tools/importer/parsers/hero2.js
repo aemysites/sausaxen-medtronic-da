@@ -1,72 +1,86 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: Extract background image from style attribute
-  function getBackgroundImageUrl(el) {
+  // Helper: Extract background image URL from inline style or img
+  function getBgImageUrl(el) {
     const style = el.getAttribute('style') || '';
-    const match = style.match(/background-image:\s*url\(([^)]+)\)/);
+    const match = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/i);
     if (match && match[1]) {
-      let url = match[1].replace(/(^['"]|['"]$)/g, '');
-      url = url.replace(/\\2f/g, '/').replace(/\\/g, '');
-      url = url.replace(/\s+/g, '');
-      if (url.startsWith('/')) {
-        return url;
+      let url = match[1]
+        .replace(/\\2f/g, '/')
+        .replace(/\\/g, '')
+        .replace(/\s+/g, '');
+      url = url.replace(/^\//, '');
+      if (!/^https?:\/\//.test(url)) {
+        url = `${document.location.origin}/${url}`;
       }
       return url;
+    }
+    // Check for img tag
+    const img = el.querySelector('img');
+    if (img && img.src) {
+      return img.src;
     }
     return null;
   }
 
-  // Find the background image URL from the first container with style
-  const bgContainer = element.querySelector('[style*="background-image"]');
-  const bgUrl = bgContainer ? getBackgroundImageUrl(bgContainer) : null;
-
-  // Create image element if background image exists
-  let bgImgEl = null;
-  if (bgUrl) {
-    bgImgEl = document.createElement('img');
-    bgImgEl.src = bgUrl;
-    bgImgEl.alt = '';
+  // Helper: Create image element from URL
+  function createImage(url) {
+    const img = document.createElement('img');
+    img.src = url;
+    img.setAttribute('loading', 'lazy');
+    return img;
   }
 
-  // Find the deepest .aem-Grid
-  let grid = element.querySelector('.aem-Grid.aem-Grid--12.aem-Grid--tablet--12.aem-Grid--default--12.aem-Grid--phone--12');
-  if (!grid) {
-    // fallback: find any .aem-Grid
-    grid = element.querySelector('.aem-Grid');
+  // Try to find a background image in parent or siblings
+  let bgUrl = null;
+  let el = element;
+  while (el && el !== document.body) {
+    const url = getBgImageUrl(el);
+    if (url) {
+      bgUrl = url;
+      break;
+    }
+    el = el.parentElement;
+  }
+  if (!bgUrl) {
+    const img = element.querySelector('img');
+    if (img && img.src) {
+      bgUrl = img.src;
+    }
   }
 
-  // Collect all .text and .button blocks inside the grid
-  let textBlocks = [];
-  if (grid) {
-    textBlocks = Array.from(grid.querySelectorAll('.text, .button'));
-  }
-
-  // Compose content cell (row 3)
+  // Gather all visible text content (headings, paragraphs, etc.), preserving order
   const contentCell = [];
-  textBlocks.forEach((block) => {
-    // For .text blocks, extract their .cmp-text children (usually contains <p> or <h3>)
-    const cmpText = block.querySelector('.cmp-text');
-    if (cmpText) {
-      // Clone to avoid moving from original DOM
-      contentCell.push(cmpText.cloneNode(true));
+  // Use a TreeWalker to preserve document order
+  const walker = document.createTreeWalker(
+    element,
+    NodeFilter.SHOW_ELEMENT,
+    {
+      acceptNode: (node) => {
+        if (node.closest('.cmp-carousel__actions')) return NodeFilter.FILTER_REJECT;
+        if (node.tagName && node.tagName.toLowerCase() === 'img') return NodeFilter.FILTER_SKIP;
+        // Accept headings, paragraphs, links, buttons, and divs with text
+        if ([
+          'h1','h2','h3','h4','h5','h6','p','a','button','span','strong','em','b','i','div','ul','ol','li'
+        ].includes(node.tagName && node.tagName.toLowerCase())) {
+          if (node.textContent && node.textContent.trim()) return NodeFilter.FILTER_ACCEPT;
+        }
+        return NodeFilter.FILTER_SKIP;
+      }
     }
-    // For .button blocks, extract the <a> element
-    if (block.classList.contains('button')) {
-      const a = block.querySelector('a');
-      if (a) contentCell.push(a.cloneNode(true));
+  );
+  let n;
+  while ((n = walker.nextNode())) {
+    if (!contentCell.some(e => e.isSameNode && e.isSameNode(n))) {
+      contentCell.push(n.cloneNode(true));
     }
-  });
+  }
 
-  // Build table rows
   const headerRow = ['Hero (hero2)'];
-  const imageRow = [bgImgEl ? bgImgEl : ''];
-  const contentRow = [contentCell.length ? contentCell : ''];
-
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    imageRow,
-    contentRow,
-  ], document);
-
+  const rows = [headerRow];
+  rows.push([bgUrl ? createImage(bgUrl) : '']);
+  // Always add a third row for content, even if empty (to match required structure)
+  rows.push([contentCell.length ? contentCell : '']);
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

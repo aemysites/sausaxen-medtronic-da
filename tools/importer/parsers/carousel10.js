@@ -1,92 +1,82 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background image URL from style attribute
-  function getBgImageUrl(style) {
+  // Helper to extract image from background-image style
+  function extractBgImageUrl(style) {
     if (!style) return null;
     const match = style.match(/background-image:\s*url\(([^)]+)\)/);
     if (match && match[1]) {
-      let url = match[1].replace(/\\2f/g, '/').replace(/\\/g, '');
+      let url = match[1].trim();
+      // Remove any escaped chars
+      url = url.replace(/\\/g, '');
+      // Remove surrounding quotes if present
       url = url.replace(/^['"]|['"]$/g, '');
-      // Remove spaces at start/end and in path
-      url = url.trim().replace(/\s+/g, '');
+      // If relative, prepend origin
+      if (url.startsWith('/')) {
+        url = window.location.origin + url;
+      }
       return url;
     }
     return null;
   }
 
   // Find carousel block
-  const carousel = element.querySelector('.cmp-carousel__content');
+  const carousel = element.querySelector('.cmp-carousel');
   if (!carousel) return;
-
-  // Get all slides
-  const slides = Array.from(carousel.querySelectorAll(':scope > .cmp-carousel__item'));
+  const items = carousel.querySelectorAll('.cmp-carousel__item');
 
   // Table header
   const headerRow = ['Carousel (carousel10)'];
   const rows = [headerRow];
 
-  slides.forEach(slide => {
-    // Find hero image (background-image)
-    let heroImgUrl = null;
-    let heroImgElem = null;
-    // Find the deepest .cmp-container with background-image
-    const containers = slide.querySelectorAll('.cmp-container');
-    for (const c of containers) {
-      const url = getBgImageUrl(c.getAttribute('style'));
-      if (url) {
-        heroImgUrl = url;
-        break;
+  items.forEach((item) => {
+    // Each slide
+    // Find hero container with background image
+    const hero = item.querySelector('.hero-module');
+    let imgEl = null;
+    if (hero) {
+      const cmpContainer = hero.querySelector('.cmp-container');
+      if (cmpContainer) {
+        const bgUrl = extractBgImageUrl(cmpContainer.getAttribute('style'));
+        if (bgUrl) {
+          imgEl = document.createElement('img');
+          imgEl.src = bgUrl;
+          imgEl.loading = 'lazy';
+        }
       }
     }
-    if (heroImgUrl) {
-      heroImgElem = document.createElement('img');
-      heroImgElem.src = heroImgUrl;
-      heroImgElem.alt = '';
-      heroImgElem.loading = 'lazy';
-    }
 
-    // Find text content container (the innermost .cmp-container with text/buttons)
-    let textContainer = null;
-    for (const c of containers) {
-      // If it contains .cmp-text or .cmp-button, it's the right one
-      if (c.querySelector('.cmp-text, .cmp-button')) {
-        textContainer = c;
-        break;
-      }
-    }
-    if (!textContainer) textContainer = slide;
-
-    // Compose text cell contents
+    // Compose text cell
     const textCellContent = [];
-    const eyebrow = textContainer.querySelector('.eyebrow2 .cmp-text');
+    // Eyebrow
+    const eyebrow = item.querySelector('.eyebrow2 .cmp-text');
     if (eyebrow) {
-      textCellContent.push(eyebrow);
+      // Use <p> only
+      const p = eyebrow.querySelector('p');
+      if (p) textCellContent.push(p);
     }
-    const heading = textContainer.querySelector('h2, h3');
-    if (heading) {
-      textCellContent.push(heading);
-    }
-    const paragraphs = textContainer.querySelectorAll('.cmp-text p');
-    paragraphs.forEach(p => {
-      if (!textCellContent.includes(p.parentElement)) {
-        textCellContent.push(p);
-      }
-    });
-    const button = textContainer.querySelector('.cmp-button');
-    if (button) {
-      textCellContent.push(button);
-    }
-    const isiLink = textContainer.querySelector('.isi-isw a');
-    if (isiLink) {
-      textCellContent.push(isiLink);
-    }
+    // Title (h2 or h3)
+    let title = item.querySelector('.text .cmp-text h2, .text .cmp-text h3');
+    if (title) textCellContent.push(title);
+    // Intro/description
+    const intro = item.querySelector('.intro-heading .cmp-text p');
+    if (intro) textCellContent.push(intro);
+    // Additional description
+    const desc = item.querySelector('.text.no-bottom-margin-p .cmp-text p');
+    if (desc) textCellContent.push(desc);
+    // CTA button
+    const button = item.querySelector('.button a.cmp-button, .button a.cmp-button.ext_link');
+    if (button) textCellContent.push(button);
+    // ISI/ISW link (safety/warnings)
+    const isiLink = item.querySelector('.isi-isw a');
+    if (isiLink) textCellContent.push(isiLink);
 
     rows.push([
-      heroImgElem || '',
-      textCellContent.length ? textCellContent : ''
+      imgEl || '',
+      textCellContent.length ? textCellContent : '',
     ]);
   });
 
-  const block = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(block);
+  // Create table and replace element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(table);
 }

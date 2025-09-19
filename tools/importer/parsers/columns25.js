@@ -1,25 +1,36 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Defensive: Find all immediate child teasers (columns)
-  const grid = element.querySelector('.aem-Grid');
-  if (!grid) return;
-  const teasers = Array.from(grid.querySelectorAll(':scope > .teaser'));
+  // The header row must match the target block name exactly
+  const headerRow = ['Columns (columns25)'];
 
-  // Each teaser contains a cmp-teaser__description with the content
-  const columns = teasers.map(teaser => {
-    const desc = teaser.querySelector('.cmp-teaser__description');
-    // Defensive: If no description, skip
-    if (!desc) return document.createElement('div');
-    return desc;
+  // Find the main grid container
+  const grid = element.querySelector('.aem-Grid');
+  if (!grid) {
+    // Defensive fallback: just output header
+    const table = WebImporter.DOMUtils.createTable([headerRow], document);
+    element.replaceWith(table);
+    return;
+  }
+
+  // Find all direct children of the grid that are teasers (columns)
+  const columns = Array.from(grid.children).filter(col => col.classList.contains('teaser'));
+
+  // For each column, extract its cmp-teaser__description content, preserving semantic HTML
+  const columnCells = columns.map(col => {
+    const desc = col.querySelector('.cmp-teaser__description');
+    // Defensive: fallback to the column itself if description not found
+    // Always reference existing elements, do not clone
+    return desc || col;
   });
 
-  // Table header row
-  const headerRow = ['Columns (columns25)'];
-  // Table content row: one cell per column
-  const contentRow = columns;
+  // Only create one table, no Section Metadata block required
+  // Table rows: header, then one row with all columns
+  const tableRows = [
+    headerRow,
+    columnCells
+  ];
 
-  const cells = [headerRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-
+  // Create the table and replace the element
+  const table = WebImporter.DOMUtils.createTable(tableRows, document);
   element.replaceWith(table);
 }
