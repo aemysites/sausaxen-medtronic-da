@@ -1,41 +1,36 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid containing the two columns
-  const mainGrid = element.querySelector('.aem-Grid.aem-Grid--12.aem-Grid--default--12');
+  // Find the main grid that splits into two columns visually
+  const mainGrid = element.querySelector('.aem-Grid.aem-Grid--12, .aem-Grid.aem-Grid--tablet--12');
   if (!mainGrid) return;
 
-  // Find the two main column containers: left (text), right (image)
-  let leftCol = mainGrid.querySelector('.container.responsivegrid.card-module.text.wide-card');
+  // Find the left (text) and right (image) column containers
+  let leftCol = mainGrid.querySelector('.container.text.wide-card');
   let rightCol = mainGrid.querySelector('.image');
   if (!leftCol || !rightCol) return;
 
-  // LEFT COLUMN: Collect all text content in visual order
-  const leftGrid = leftCol.querySelector('.aem-Grid');
+  // LEFT COLUMN: Gather all relevant text content in order
+  const leftInnerGrid = leftCol.querySelector('.aem-Grid');
   let leftContent = [];
-  if (leftGrid) {
-    // Collect all .cmp-text and .cmp-title elements in order
-    const blocks = leftGrid.querySelectorAll('.cmp-text, .cmp-title');
-    leftContent = Array.from(blocks);
-  } else {
-    // Fallback: grab all .cmp-text and .cmp-title
-    leftContent = Array.from(leftCol.querySelectorAll('.cmp-text, .cmp-title'));
+  if (leftInnerGrid) {
+    // Collect all .cmp-text and .cmp-title blocks in order
+    const blocks = leftInnerGrid.querySelectorAll('.cmp-text, .cmp-title');
+    blocks.forEach(block => leftContent.push(block));
   }
 
-  // RIGHT COLUMN: Get image element only
-  let imageEl = rightCol.querySelector('img');
+  // RIGHT COLUMN: Find the image element
   let rightContent = [];
-  if (imageEl) {
-    rightContent.push(imageEl);
+  const imageCmp = rightCol.querySelector('.cmp-image');
+  if (imageCmp) {
+    const img = imageCmp.querySelector('img');
+    if (img) rightContent.push(img);
   }
 
-  // Build table
+  // Table structure: header row, then one row with two columns
   const headerRow = ['Columns (columns3)'];
   const contentRow = [leftContent, rightContent];
   const cells = [headerRow, contentRow];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
 
-  // Create block table
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-
-  // Replace original element
-  element.replaceWith(block);
+  element.replaceWith(table);
 }

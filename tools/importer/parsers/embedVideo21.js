@@ -1,100 +1,104 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: Find the poster image for the video
-  function getPosterImage() {
-    const video = element.querySelector('video[poster]');
+  // Helper: Get poster image URL from video block
+  function getPosterUrl(el) {
+    // Try to find a div with a poster attribute
+    const posterDiv = el.querySelector('[poster]');
+    if (posterDiv && posterDiv.getAttribute('poster')) {
+      return posterDiv.getAttribute('poster');
+    }
+    // Try to find a video element with poster
+    const video = el.querySelector('video[poster]');
     if (video && video.getAttribute('poster')) {
-      const posterUrl = video.getAttribute('poster');
-      const img = document.createElement('img');
-      img.src = posterUrl;
-      img.alt = '';
-      return img;
-    }
-    const vjsDiv = element.querySelector('div[poster]');
-    if (vjsDiv && vjsDiv.getAttribute('poster')) {
-      const posterUrl = vjsDiv.getAttribute('poster');
-      const img = document.createElement('img');
-      img.src = posterUrl;
-      img.alt = '';
-      return img;
+      return video.getAttribute('poster');
     }
     return null;
   }
 
-  // Helper: Find the external video URL
-  function getVideoUrl() {
-    const dmDiv = element.querySelector('[data-asset-path][data-asset-type]');
-    if (dmDiv) {
-      const assetType = dmDiv.getAttribute('data-asset-type');
-      const assetPath = dmDiv.getAttribute('data-asset-path');
+  // Helper: Get external video URL from data attributes
+  function getVideoUrl(el) {
+    // Look for a data-asset-path and data-asset-type
+    const root = el.querySelector('[data-asset-path][data-asset-type]');
+    if (root) {
+      const assetPath = root.getAttribute('data-asset-path');
+      const assetType = root.getAttribute('data-asset-type');
+      // Only handle videoavs type
       if (assetType && assetType.toLowerCase().includes('video')) {
-        const videoServer = dmDiv.getAttribute('data-videoserver') || dmDiv.getAttribute('data-contenturl');
-        if (videoServer && assetPath) {
-          const server = videoServer.replace(/\/$/, '');
-          return server + '/' + assetPath;
+        // Try to construct a public video URL
+        // Medtronic Scene7 videos are typically served via is/content/...
+        // Example: https://medtronic.scene7.com/is/content/Medtronic/hcp-landing-video-AVS
+        const videoServer = root.getAttribute('data-videoserver') || 'https://medtronic.scene7.com/is/content/';
+        let url = videoServer;
+        if (!url.endsWith('/')) url += '/';
+        url += assetPath;
+        // Add file extension if available
+        const assetName = root.getAttribute('data-asset-name');
+        if (assetName && assetName.match(/\.mp4$/)) {
+          url += '.mp4';
         }
-      }
-    }
-    const video = element.querySelector('video[src]');
-    if (video) {
-      const src = video.getAttribute('src');
-      if (src && !src.startsWith('blob:')) {
-        return src;
+        return url;
       }
     }
     return null;
   }
 
-  // Helper: Get only visually significant headline/intro text
-  function getMainText() {
-    // Try to find a large headline or intro text
-    const headline = element.querySelector('h1, h2, h3, h4, h5, h6');
-    if (headline && headline.textContent.trim()) {
-      return headline.textContent.trim();
-    }
-    // Try to find a large visible block of text
-    const bigText = element.querySelector('[style*="font-size"], [class*="title"], [class*="headline"], [class*="intro"]');
-    if (bigText && bigText.textContent.trim()) {
-      return bigText.textContent.trim();
-    }
-    // Fallback: get the first non-empty paragraph
-    const p = element.querySelector('p');
-    if (p && p.textContent.trim()) {
-      return p.textContent.trim();
-    }
-    return '';
+  // Helper: Extract all visible text content from the block
+  function getVisibleText(el) {
+    // Remove script/style/noscript
+    const clone = el.cloneNode(true);
+    Array.from(clone.querySelectorAll('script, style, noscript')).forEach(n => n.remove());
+    // Remove elements that are visually hidden
+    Array.from(clone.querySelectorAll('[aria-hidden="true"], [style*="display: none"], [style*="opacity: 0"]')).forEach(n => n.remove());
+    // Get text content, trim, and collapse whitespace
+    return clone.textContent.replace(/\s+/g, ' ').trim();
   }
 
   const headerRow = ['Embed (embedVideo21)'];
-  const cells = [headerRow];
 
-  const cellContent = [];
-  // Add main headline/intro text if present
-  const mainText = getMainText();
-  if (mainText) {
-    cellContent.push(document.createTextNode(mainText));
-    cellContent.push(document.createElement('br'));
+  // Find poster image
+  const posterUrl = getPosterUrl(element);
+  let posterImg = null;
+  if (posterUrl) {
+    posterImg = document.createElement('img');
+    posterImg.src = posterUrl;
+    posterImg.alt = '';
   }
-  const posterImg = getPosterImage();
+
+  // Find video URL
+  const videoUrl = getVideoUrl(element);
+
+  // Compose cell contents
+  const cellContent = [];
   if (posterImg) {
     cellContent.push(posterImg);
   }
-  const videoUrl = getVideoUrl();
   if (videoUrl) {
     const link = document.createElement('a');
     link.href = videoUrl;
     link.textContent = videoUrl;
-    cellContent.push(document.createElement('br'));
+    if (posterImg) cellContent.push(document.createElement('br'));
     cellContent.push(link);
   }
 
-  // Defensive: If no video URL found, just output the image if present
-  if (cellContent.length === 0) {
-    cellContent.push(element);
+  // Defensive fallback: If no videoUrl, just show poster
+  if (!videoUrl && posterImg) {
+    cellContent.push(document.createElement('br'));
+    cellContent.push(document.createTextNode('Video unavailable'));
   }
 
-  cells.push([cellContent]);
+  // Add all visible text content from the block (for completeness)
+  const text = getVisibleText(element);
+  if (text) {
+    cellContent.push(document.createElement('br'));
+    cellContent.push(document.createTextNode(text));
+  }
 
-  const block = WebImporter.DOMUtils.createTable(cells, document);
+  // Compose table
+  const rows = [
+    headerRow,
+    [cellContent]
+  ];
+
+  const block = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(block);
 }
