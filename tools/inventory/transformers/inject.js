@@ -17,6 +17,9 @@
     document.querySelector(".addthis_outer")?.remove();
     document.querySelector(".ot-sdk-container")?.remove();
     document.querySelector("#fsvs-pagination")?.remove();
+    document.querySelector(".modal-dialog")?.remove();
+    document.querySelector("#outdated")?.remove();
+    document.querySelector("#modalAcknowledge")?.remove();
   } catch (e) {
     // noop
   }
