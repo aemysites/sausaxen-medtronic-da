@@ -364,11 +364,8 @@
       ]
     },
     {
-      "name": "header",
+      "name": "Hero",
       "cluster": 17,
-      "source": "Header",
-      "target": "Header (header17)",
-      "key": "header17",
       "instances": [
         {
           "url": "https://www.medtronic.com/in-en/index.html",
