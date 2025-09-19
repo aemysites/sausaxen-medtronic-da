@@ -51,6 +51,13 @@
           "uuid": "63714cd4-06-897d04125718c8374d6da592581048ae04cd4342",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[7]",
           "section": "section-7"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/our-company.html",
+          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+          "uuid": "867525b3-04-858bd8088210114fb707fc05266771cb4003db40",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[5]",
+          "section": "section-11"
         }
       ]
     },
@@ -67,22 +74,6 @@
           "uuid": "1cb1b969-07-897d04125718c8374d6da592581048ae04cd4342",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[7]",
           "section": "section-2"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 4,
-      "source": "Hero",
-      "target": "Hero (hero4)",
-      "key": "hero4",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-company.html",
-          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
-          "uuid": "867525b3-04-858bd8088210114fb707fc05266771cb4003db40",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[5]",
-          "section": "section-11"
         }
       ]
     },
