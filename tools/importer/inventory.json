@@ -190,7 +190,7 @@
           "url": "https://www.medtronic.com/in-en/index.html",
           "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
           "uuid": "3462ed27-01-5340e1e12d4ea571e39a11e9ba5eb58a20fc47cb",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]"
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]"
         }
       ]
     },
@@ -291,7 +291,10 @@
     },
     {
       "name": "Columns",
-      "cluster": 24,
+      "cluster": 24,  
+      "source": "Columns",
+      "target": "Columns (columns24)",
+      "key": "columns24",
       "instances": [
         {
           "url": "https://www.medtronic.com/in-en/our-company.html",
@@ -299,8 +302,7 @@
           "uuid": "867525b3-03-b3fb3569666c185e0416e5449a88232afc86088d",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[4]/div[1]"
         }
-      ],
-      "key": "columns24"
+      ]
     },
     {
       "name": "Columns",
@@ -351,6 +353,9 @@
     {
       "name": "Hero",
       "cluster": 28,
+      "source": "Hero",
+      "target": "Hero (hero28)",
+      "key": "hero28",
       "instances": [
         {
           "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
