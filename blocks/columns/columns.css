@@ -1,6 +1,15 @@
+/* stylelint-disable no-descending-specificity */
 .columns > div {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  max-width: 1120px;
+  margin: 0 auto;
+  min-height: 420px;
+  height: 440px;
 }
 
 .columns img {
@@ -13,6 +22,12 @@
 
 .columns > div > .columns-img-col {
   order: 0;
+  flex: 0 0 50%;
+  display: flex;
+  align-items: stretch;
+  padding: 0;
+  height: 100%;
+  min-width: 0;
 }
 
 .columns > div > .columns-img-col img {
@@ -29,5 +44,88 @@
   .columns > div > div {
     flex: 1;
     order: unset;
+  }
+}
+
+
+.columns {
+  background: #f5f5f5;
+  padding: 16px 0;
+}
+
+.columns > div > .columns-img-col picture,
+.columns > div > .columns-img-col img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.columns > div > .columns-img-col + div {
+  flex: 0 0 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #fff;
+  padding: 48px 44px;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.columns > div > .columns-img-col + div p:first-child {
+  text-transform: uppercase;
+  color: #6c6c6c;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  margin: 0 0 6px;
+}
+
+.columns > div > .columns-img-col + div h3 {
+  color: #2f38ff;
+  font-size: 2rem;
+  font-weight: 500;
+  margin: 0 0 10px;
+  line-height: 1.2;
+  padding-left: 12px;
+  border-left: 4px solid #2f38ff;
+}
+
+.columns > div > .columns-img-col + div p:nth-of-type(2) {
+  color: #525252;
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0;
+}
+
+@media (width <= 1100px) {
+  .columns > div {
+    max-width: 96vw;
+  }
+
+  .columns > div > .columns-img-col + div {
+    padding: 36px 22px;
+  }
+}
+
+@media (width <= 900px) {
+  .columns > div {
+    flex-direction: column;
+    height: auto;
+    min-height: unset;
+    max-width: 100%;
+  }
+
+  .columns > div > .columns-img-col,
+  .columns > div > .columns-img-col + div {
+    flex: unset;
+    height: auto;
+    min-height: unset;
+    padding: 0;
+  }
+
+  .columns > div > .columns-img-col + div {
+    padding: 24px 12px;
   }
 }
