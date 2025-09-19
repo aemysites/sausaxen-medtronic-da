@@ -12,15 +12,64 @@
 /* eslint-disable no-console */
 (() => {
   try {
+    // Remove standard elements
     document.querySelector('.header')?.remove();
     document.querySelector('.footer')?.remove();
     document.querySelector(".addthis_outer")?.remove();
     document.querySelector(".ot-sdk-container")?.remove();
-    document.querySelector("#fsvs-pagination")?.remove();
     document.querySelector(".modal-dialog")?.remove();
     document.querySelector("#outdated")?.remove();
     document.querySelector("#modalAcknowledge")?.remove();
+    
+    // Enhanced pagination removal with multiple approaches
+    const removePagination = () => {
+      const pagination = document.querySelector("#fsvs-pagination");
+      if (pagination) {
+        pagination.remove();
+        console.log('Pagination element removed');
+        return true;
+      }
+      return false;
+    };
+    
+    // Try immediate removal
+    removePagination();
+    
+    // Set up observer for dynamically added pagination
+    if (typeof MutationObserver !== 'undefined') {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          mutation.addedNodes.forEach((node) => {
+            if (node.nodeType === 1) { // Element node
+              if (node.id === 'fsvs-pagination' || (node.querySelector && node.querySelector('#fsvs-pagination'))) {
+                console.log('Pagination detected via mutation observer, removing...');
+                removePagination();
+              }
+            }
+          });
+        });
+      });
+      
+      observer.observe(document.body || document.documentElement, {
+        childList: true,
+        subtree: true
+      });
+      
+      // Disconnect observer after 5 seconds
+      setTimeout(() => observer.disconnect(), 5000);
+    }
+    
+    // Delayed removal attempts
+    [100, 500, 1000, 2000].forEach(delay => {
+      setTimeout(() => {
+        if (document.querySelector("#fsvs-pagination")) {
+          console.log(`Delayed pagination removal attempt after ${delay}ms`);
+          removePagination();
+        }
+      }, delay);
+    });
+    
   } catch (e) {
-    // noop
+    console.log('Error in inject.js:', e);
   }
 })();

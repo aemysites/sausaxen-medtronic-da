@@ -72,10 +72,54 @@ export const customTransformers = {
           element4?.remove();
           console.log('After removal - .ot-sdk-container still exists:', !!doc.querySelector(".ot-sdk-container"));
           
-          // Check and remove #fsvs-pagination
-          let element5 = doc.querySelector("#fsvs-pagination");
-          console.log('Before removal - #fsvs-pagination found:', !!element5);
-          element5?.remove();
+          // Check and remove #fsvs-pagination with multiple attempts
+          const removePagination = () => {
+            let element5 = doc.querySelector("#fsvs-pagination");
+            console.log('Before removal - #fsvs-pagination found:', !!element5);
+            if (element5) {
+              element5.remove();
+              console.log('Pagination element removed');
+            }
+            return !doc.querySelector("#fsvs-pagination");
+          };
+          
+          // Try immediate removal
+          removePagination();
+          
+          // Set up observer to catch dynamically added pagination
+          if (typeof MutationObserver !== 'undefined') {
+            const observer = new MutationObserver((mutations) => {
+              mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                  if (node.nodeType === 1) { // Element node
+                    if (node.id === 'fsvs-pagination' || node.querySelector && node.querySelector('#fsvs-pagination')) {
+                      console.log('Pagination detected via mutation observer, removing...');
+                      removePagination();
+                    }
+                  }
+                });
+              });
+            });
+            
+            observer.observe(doc.body || doc.documentElement, {
+              childList: true,
+              subtree: true
+            });
+            
+            // Disconnect observer after 5 seconds
+            setTimeout(() => observer.disconnect(), 5000);
+          }
+          
+          // Also try delayed removal attempts
+          [100, 500, 1000, 2000].forEach(delay => {
+            setTimeout(() => {
+              if (doc.querySelector("#fsvs-pagination")) {
+                console.log(`Delayed removal attempt after ${delay}ms`);
+                removePagination();
+              }
+            }, delay);
+          });
+          
           doc.querySelector(".modal-dialog")?.remove();
           doc.querySelector("#outdated")?.remove();
           doc.querySelector("#modalAcknowledge")?.remove();
