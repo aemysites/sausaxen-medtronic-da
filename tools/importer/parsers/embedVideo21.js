@@ -1,102 +1,71 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: get the poster image from the video block
-  function getPosterImg(el) {
-    const posterDiv = el.querySelector('[poster]');
-    let posterUrl = null;
-    if (posterDiv) {
-      posterUrl = posterDiv.getAttribute('poster');
-    } else {
-      const video = el.querySelector('video[poster]');
-      if (video) {
-        posterUrl = video.getAttribute('poster');
-      }
-    }
-    if (posterUrl) {
-      const img = document.createElement('img');
-      img.src = posterUrl;
-      img.alt = '';
-      return img;
-    }
-    return null;
-  }
-
-  // Helper: get the video URL from the data attributes
-  function getVideoUrl(el) {
-    const videoRoot = el.querySelector('[data-asset-path][data-asset-name][data-videoserver]');
-    if (videoRoot) {
-      const videoserver = videoRoot.getAttribute('data-videoserver');
-      const assetPath = videoRoot.getAttribute('data-asset-path');
-      const assetName = videoRoot.getAttribute('data-asset-name');
-      if (videoserver && assetPath && assetName) {
-        let url = `${videoserver}${assetPath}/${assetName}`;
-        if (!url.endsWith('.mp4')) {
-          url += '.mp4';
-        }
-        return url;
-      }
-    }
-    const video = el.querySelector('video');
-    if (video && video.src && !video.src.startsWith('blob:')) {
-      return video.src;
-    }
-    return null;
-  }
-
-  // Helper: get visible text content from the block
-  function getTextContent(el) {
-    // Grab all visible text nodes, excluding script/style and hidden elements
-    let texts = [];
-    // Only consider direct children of the root element for text blocks
-    Array.from(el.children).forEach(child => {
-      // Check if the child is visually significant (e.g., not a video container)
-      // For this block, look for large banners or headings
-      if (child.offsetHeight > 0 && child.offsetWidth > 0) {
-        // Get all text nodes inside this child
-        const walker = document.createTreeWalker(child, NodeFilter.SHOW_TEXT, {
-          acceptNode: function(node) {
-            if (node.textContent && node.textContent.trim().length > 0) {
-              return NodeFilter.FILTER_ACCEPT;
-            }
-            return NodeFilter.FILTER_REJECT;
-          }
-        });
-        let node;
-        while ((node = walker.nextNode())) {
-          texts.push(node.textContent.trim());
-        }
-      }
-    });
-    // Remove duplicates and join
-    return Array.from(new Set(texts)).join(' ');
-  }
-
+  // Header row as per block requirement
   const headerRow = ['Embed (embedVideo21)'];
-  const cells = [headerRow];
 
-  const posterImg = getPosterImg(element);
-  const videoUrl = getVideoUrl(element);
-  const textContent = getTextContent(element);
+  // Find the main dynamic media div
+  const dm = element.querySelector('[data-asset-path][data-asset-type]');
+  let videoUrl = null;
+  let posterUrl = null;
 
+  if (dm) {
+    // Try to construct a public video URL from asset-path and asset-name
+    const assetPath = dm.getAttribute('data-asset-path');
+    const assetName = dm.getAttribute('data-asset-name');
+    const videoServer = dm.getAttribute('data-videoserver') || 'https://medtronic.scene7.com/is/content/';
+    if (assetPath && assetName && videoServer) {
+      videoUrl = `${videoServer}${assetPath}/${assetName}`;
+    }
+    // Poster image
+    const videoEl = dm.querySelector('video');
+    if (videoEl && videoEl.hasAttribute('poster')) {
+      posterUrl = videoEl.getAttribute('poster');
+    } else {
+      const videoDiv = dm.querySelector('[poster]');
+      if (videoDiv && videoDiv.getAttribute('poster')) {
+        posterUrl = videoDiv.getAttribute('poster');
+      }
+    }
+  }
+
+  // Compose the cell content as per block requirement: image above link
   const cellContent = [];
-  if (posterImg) {
-    cellContent.push(posterImg);
+  if (posterUrl) {
+    const imgEl = document.createElement('img');
+    imgEl.src = posterUrl;
+    imgEl.alt = '';
+    cellContent.push(imgEl);
   }
   if (videoUrl) {
-    const link = document.createElement('a');
-    link.href = videoUrl;
-    link.textContent = videoUrl;
-    cellContent.push(link);
-  }
-  if (textContent) {
-    cellContent.push(textContent);
-  }
-  if (cellContent.length === 0) {
-    cellContent.push(element);
+    const linkEl = document.createElement('a');
+    linkEl.href = videoUrl;
+    linkEl.textContent = videoUrl;
+    cellContent.push(document.createElement('br'), linkEl);
   }
 
-  cells.push([cellContent]);
+  // Only include text that is visually relevant and not UI chrome
+  // We'll look for visually prominent headings or paragraphs
+  // For this block, we want to include only main visible text, not UI labels
+  // Find all <h1>, <h2>, <h3>, <h4>, <h5>, <h6>, <p> inside the element
+  const textEls = element.querySelectorAll('h1, h2, h3, h4, h5, h6, p');
+  textEls.forEach(te => {
+    if (te.textContent.trim()) {
+      const textDiv = document.createElement('div');
+      textDiv.textContent = te.textContent.trim();
+      cellContent.push(document.createElement('br'), textDiv);
+    }
+  });
 
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(block);
+  // If neither video nor poster, fallback to the whole element's content
+  if (!cellContent.length) {
+    cellContent.push(...element.childNodes);
+  }
+
+  const tableRows = [
+    headerRow,
+    [cellContent]
+  ];
+
+  const table = WebImporter.DOMUtils.createTable(tableRows, document);
+  element.replaceWith(table);
 }

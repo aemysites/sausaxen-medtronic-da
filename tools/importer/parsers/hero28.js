@@ -2,15 +2,10 @@
 export default function parse(element, { document }) {
   // Helper to extract background image URL from inline style
   function getBackgroundImageUrl(style) {
-    if (!style) return null;
-    const match = style.match(/background-image:\s*url\(([^)]+)\)/);
+    const match = /background-image\s*:\s*url\(([^)]+)\)/.exec(style);
     if (match && match[1]) {
-      let url = match[1].replace(/\\/g, '');
-      url = url.replace(/^['"]|['"]$/g, '');
-      if (url.startsWith('/')) {
-        url = window.location.origin + url;
-      }
-      return url;
+      // Remove any escaped chars and leading/trailing quotes
+      return match[1].replace(/\\/g, '').replace(/^['"]|['"]$/g, '');
     }
     return null;
   }
@@ -18,70 +13,64 @@ export default function parse(element, { document }) {
   // 1. Header row
   const headerRow = ['Hero (hero28)'];
 
-  // 2. Background Image row
-  let bgImageUrl = null;
-  const bgContainer = element.querySelector('[style*="background-image"]');
-  if (bgContainer) {
-    bgImageUrl = getBackgroundImageUrl(bgContainer.getAttribute('style'));
-  }
-  let bgImageCell = '';
-  if (bgImageUrl) {
-    const img = document.createElement('img');
-    img.src = bgImageUrl;
-    img.alt = '';
-    bgImageCell = img;
+  // 2. Background image row
+  let bgImgRow = [''];
+  // Find the div with background-image style
+  const bgDiv = element.querySelector('[style*="background-image"]');
+  if (bgDiv) {
+    const bgUrl = getBackgroundImageUrl(bgDiv.getAttribute('style') || '');
+    if (bgUrl) {
+      // Create an img element for the background image
+      const img = document.createElement('img');
+      img.src = bgUrl;
+      img.alt = '';
+      bgImgRow = [img];
+    }
   }
 
   // 3. Content row (title, subheading, paragraph, CTA)
-  let contentContainer = null;
-  const containers = element.querySelectorAll(':scope > div > div > div');
-  for (const cont of containers) {
-    if (cont.classList.contains('circle-content')) {
-      contentContainer = cont;
-      break;
-    }
-  }
-  if (!contentContainer) {
-    contentContainer = element.querySelector('.cmp-container');
-  }
-
-  let titleElem = null;
-  let subheadingElem = null;
-  let paragraphElem = null;
-  let ctaElem = null;
-
-  if (contentContainer) {
-    const eyebrow = contentContainer.querySelector('.eyebrow .cmp-title__text');
+  let contentRow = [''];
+  // Find the main content container (the one with the text/button)
+  const contentDiv = element.querySelector('.circle-content');
+  if (contentDiv) {
+    // We'll collect the following:
+    // - Eyebrow (h3 with link)
+    // - Title (h2)
+    // - Paragraph (p)
+    // - Button (a.cmp-button)
+    const parts = [];
+    // Eyebrow
+    const eyebrow = contentDiv.querySelector('.eyebrow h3, .eyebrow .cmp-title__text');
     if (eyebrow) {
-      titleElem = eyebrow;
+      parts.push(eyebrow);
     }
-    const subheading = contentContainer.querySelector('.avenir-regular .cmp-title__text');
-    if (subheading) {
-      subheadingElem = subheading;
+    // Title
+    const title = contentDiv.querySelector('.avenir-regular h2, .avenir-regular .cmp-title__text');
+    if (title) {
+      parts.push(title);
     }
-    const paragraph = contentContainer.querySelector('.cmp-text p');
-    if (paragraph) {
-      paragraphElem = paragraph;
+    // Paragraph
+    const para = contentDiv.querySelector('.cmp-text p');
+    if (para) {
+      parts.push(para);
     }
-    const button = contentContainer.querySelector('.cmp-button');
-    if (button) {
-      ctaElem = button;
+    // Button
+    const btn = contentDiv.querySelector('.cmp-button');
+    if (btn) {
+      parts.push(btn);
+    }
+    if (parts.length) {
+      contentRow = [parts];
     }
   }
 
-  const contentCell = [];
-  if (titleElem) contentCell.push(titleElem);
-  if (subheadingElem) contentCell.push(subheadingElem);
-  if (paragraphElem) contentCell.push(paragraphElem);
-  if (ctaElem) contentCell.push(ctaElem);
-
-  const rows = [
+  // Compose table
+  const cells = [
     headerRow,
-    [bgImageCell],
-    [contentCell]
+    bgImgRow,
+    contentRow,
   ];
 
-  const block = WebImporter.DOMUtils.createTable(rows, document);
-
-  element.replaceWith(block);
+  const table = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(table);
 }

@@ -1,72 +1,70 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // 1. Table header row
+  // 1. Header row
   const headerRow = ['Hero (hero23)'];
 
-  // 2. Background image row
-  let bgImgRow = [''];
-  // Find background image from inline style
-  let bgUrl = '';
+  // 2. Background image row (extract from inline style)
+  let bgImageRow;
+  // Find the deepest container with a background-image style
   const bgContainer = element.querySelector('[style*="background-image"]');
+  let bgImgEl = null;
   if (bgContainer) {
     const style = bgContainer.getAttribute('style');
     const match = style.match(/background-image:\s*url\(([^)]+)\)/);
     if (match && match[1]) {
-      bgUrl = match[1]
-        .replace(/\\2f/g, '/')
-        .replace(/\s+/g, '') // Remove all whitespace
-        .replace(/'/g, '')
-        .replace(/\"/g, '')
-        .trim();
-      // Remove leading slash if present
-      if (!bgUrl.startsWith('/')) bgUrl = '/' + bgUrl;
+      // Clean up the URL (decode any escaped chars)
+      let url = match[1].replace(/\\2f/g, '/').replace(/\s/g, '');
+      // Remove any leading/trailing quotes
+      url = url.replace(/^['"]|['"]$/g, '');
       // Create image element
-      const img = document.createElement('img');
-      img.src = bgUrl;
-      bgImgRow = [img];
+      bgImgEl = document.createElement('img');
+      bgImgEl.src = url;
+      bgImgEl.alt = '';
+      bgImageRow = [bgImgEl];
     }
   }
+  if (!bgImageRow) {
+    bgImageRow = ['']; // fallback empty cell
+  }
 
-  // 3. Content row: Title, Subheading, CTA
-  // We'll collect all relevant content from the nested grid structure
-  const contentEls = [];
-  // Eyebrow
-  const eyebrow = element.querySelector('.eyebrow2 .cmp-text');
-  if (eyebrow) {
-    contentEls.push(eyebrow);
-  }
-  // Main heading ("Engineering the extraordinary")
-  const mainHeading = element.querySelector('.h1 .cmp-text');
-  if (mainHeading) {
-    // Convert to h2 for semantic heading if not already
-    const h2 = document.createElement('h2');
-    h2.innerHTML = mainHeading.innerHTML;
-    contentEls.push(h2);
-  }
-  // Subheading (longer text)
-  const subheading = element.querySelector('.intro-heading .cmp-title');
-  if (subheading) {
-    const h1 = subheading.querySelector('h1');
-    if (h1) {
-      const p = document.createElement('p');
-      p.innerHTML = h1.innerHTML;
-      contentEls.push(p);
+  // 3. Content row (title, subheading, CTA)
+  // Find text blocks
+  const grid = element.querySelector('.aem-Grid.aem-Grid--11');
+  let contentEls = [];
+  if (grid) {
+    // Eyebrow (Who we are)
+    const eyebrow = grid.querySelector('.eyebrow2 .cmp-text');
+    if (eyebrow) {
+      contentEls.push(eyebrow);
+    }
+    // Subheading (Engineering the extraordinary)
+    const subheading = grid.querySelector('.h1 .cmp-text');
+    if (subheading) {
+      contentEls.push(subheading);
+    }
+    // Title (Groundbreaking healthcare...)
+    const title = grid.querySelector('.intro-heading .cmp-title');
+    if (title) {
+      contentEls.push(title);
+    }
+    // CTA button
+    const button = grid.querySelector('.button .cmp-button');
+    if (button) {
+      contentEls.push(button);
     }
   }
-  // CTA button
-  const cta = element.querySelector('.button a.cmp-button');
-  if (cta) {
-    contentEls.push(cta);
+  // Defensive: if nothing found, fallback to all text children
+  if (contentEls.length === 0) {
+    contentEls = Array.from(element.querySelectorAll('p, h1, h2, h3, a'));
   }
-
   const contentRow = [contentEls];
 
-  // Assemble table
-  const table = WebImporter.DOMUtils.createTable([
+  // Build the table
+  const cells = [
     headerRow,
-    bgImgRow,
+    bgImageRow,
     contentRow,
-  ], document);
-
+  ];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
   element.replaceWith(table);
 }

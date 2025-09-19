@@ -1,57 +1,47 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid that contains the two columns
-  const mainGrid = element.querySelector('.aem-Grid.aem-Grid--12.aem-Grid--default--12');
+  // Find the grid containing the two columns
+  const mainGrid = element.querySelector('.aem-Grid.aem-Grid--6');
   if (!mainGrid) return;
 
-  // Find the inner grid with columns
-  const innerGrid = mainGrid.querySelector('.aem-Grid.aem-Grid--12.aem-Grid--tablet--12.aem-Grid--default--12.aem-Grid--phone--12');
-  if (!innerGrid) return;
+  // The left column: all .text/.title blocks (in order)
+  const leftColumnEls = [];
+  const selectors = [
+    '.eyebrow2 .cmp-text',
+    '.title .cmp-title',
+    '.text:not(.eyebrow2):not(:has(.cmp-title)) .cmp-text',
+  ];
+  selectors.forEach(sel => {
+    mainGrid.querySelectorAll(sel).forEach(el => {
+      if (!leftColumnEls.includes(el)) leftColumnEls.push(el);
+    });
+  });
 
-  // Find left and right columns
-  let leftCol = Array.from(innerGrid.children).find(child => child.classList.contains('container') && child.classList.contains('wide-card'));
-  let rightCol = Array.from(innerGrid.children).find(child => child.classList.contains('image'));
+  // The last .text block is the CTA ("Learn more")
+  const cta = mainGrid.querySelector('.text .cmp-text:last-of-type');
+  if (cta && !leftColumnEls.includes(cta)) leftColumnEls.push(cta);
 
-  // Defensive fallback
-  if (!leftCol) leftCol = innerGrid.children[0];
-  if (!rightCol) rightCol = innerGrid.children[1];
-
-  // --- LEFT COLUMN ---
-  // Collect all content blocks in left column
-  let leftContent = [];
-  if (leftCol) {
-    const leftGrid = leftCol.querySelector('.aem-Grid');
-    if (leftGrid) {
-      leftContent = Array.from(leftGrid.children).map(block => {
-        const text = block.querySelector('.cmp-text');
-        const title = block.querySelector('.cmp-title');
-        if (title) return title;
-        if (text) return text;
-        return null;
-      }).filter(Boolean);
-    }
+  // The right column: the image
+  const rightColumnEls = [];
+  const imageCol = element.querySelector('.image');
+  if (imageCol) {
+    const img = imageCol.querySelector('img');
+    if (img) rightColumnEls.push(img);
   }
 
-  // --- RIGHT COLUMN ---
-  // Get image element only (reference, not clone)
-  let imageEl = null;
-  if (rightCol) {
-    const cmpImage = rightCol.querySelector('.cmp-image');
-    if (cmpImage) {
-      imageEl = cmpImage.querySelector('img');
-    }
-  }
+  // Defensive: if no left or right content, abort
+  if (leftColumnEls.length === 0 && rightColumnEls.length === 0) return;
 
-  // Compose table rows
+  // Build the table
   const headerRow = ['Columns (columns3)'];
-  const contentRow = [leftContent, imageEl ? imageEl : ''];
-
-  // Create table
+  const contentRow = [
+    leftColumnEls,
+    rightColumnEls
+  ];
   const table = WebImporter.DOMUtils.createTable([
     headerRow,
     contentRow
   ], document);
 
-  // Replace original element
   element.replaceWith(table);
 }

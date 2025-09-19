@@ -1,79 +1,71 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the carousel content block
-  const carouselContent = element.querySelector('.cmp-carousel__content');
-  if (!carouselContent) return;
+  // Find the carousel block
+  const carousel = element.querySelector('.carousel, .cmp-carousel');
+  if (!carousel) return;
 
-  // Table header
+  // Find carousel content
+  const content = carousel.querySelector('.cmp-carousel__content');
+  if (!content) return;
+
+  // Get all carousel items
+  const items = Array.from(content.querySelectorAll('.cmp-carousel__item'));
+  if (!items.length) return;
+
+  // Table header must match the block name exactly
   const headerRow = ['Carousel (carousel18)'];
   const rows = [headerRow];
 
-  // Get all carousel slides
-  const slides = Array.from(carouselContent.querySelectorAll(':scope > .cmp-carousel__item'));
-
-  slides.forEach((slide) => {
-    // --- IMAGE COLUMN ---
+  items.forEach((item) => {
+    // --- IMAGE CELL ---
     let imageCell = null;
-    const imageBlock = slide.querySelector('.cmp-image img');
+    const imageBlock = item.querySelector('.image .cmp-image');
     if (imageBlock) {
-      // Reference the actual image element
-      imageCell = imageBlock;
-    }
-
-    // --- TEXT COLUMN ---
-    const textColumn = [];
-
-    // Eyebrow (first .cmp-text p)
-    const eyebrowBlock = slide.querySelector('.cmp-text p');
-    if (eyebrowBlock) {
-      textColumn.push(eyebrowBlock.cloneNode(true));
-    }
-
-    // Title (h3.cmp-title__text)
-    const titleBlock = slide.querySelector('.cmp-title__text');
-    if (titleBlock) {
-      textColumn.push(titleBlock.cloneNode(true));
-    }
-
-    // Description(s): all .cmp-text (after eyebrow) that are not just CTA
-    const textBlocks = Array.from(slide.querySelectorAll('.cmp-text'));
-    textBlocks.forEach((block, idx) => {
-      // Only consider blocks after the first (eyebrow)
-      if (idx === 0) return;
-      const p = block.querySelector('p');
-      if (p) {
-        // If this is a CTA ("See how"), skip for now
-        const a = p.querySelector('a');
-        if (!a || p.textContent.trim().toLowerCase() !== 'see how') {
-          textColumn.push(p.cloneNode(true));
-        }
-      }
-    });
-
-    // CTA: last .cmp-text p containing a link with text "See how"
-    let ctaBlock = null;
-    for (let i = textBlocks.length - 1; i >= 0; i--) {
-      const p = textBlocks[i].querySelector('p');
-      if (p) {
-        const a = p.querySelector('a');
-        if (a && p.textContent.trim().toLowerCase() === 'see how') {
-          ctaBlock = p.cloneNode(true);
-          break;
-        }
+      const img = imageBlock.querySelector('img');
+      if (img) {
+        imageCell = img;
       }
     }
-    if (ctaBlock) {
-      textColumn.push(ctaBlock);
-    }
+    if (!imageCell) return; // skip slide if no image
 
-    // Add row for this slide
-    rows.push([
-      imageCell,
-      textColumn.length > 0 ? textColumn : ''
-    ]);
+    // --- TEXT CELL ---
+    const textCell = document.createElement('div');
+    textCell.style.display = 'contents'; // avoid extra wrapper
+    const cardModule = item.querySelector('.card-module');
+    if (cardModule) {
+      // Eyebrow (optional, usually first)
+      const eyebrow = cardModule.querySelector('.eyebrow2 .cmp-text p');
+      if (eyebrow) {
+        textCell.appendChild(eyebrow.cloneNode(true));
+      }
+      // Title (h3, required)
+      const title = cardModule.querySelector('.cmp-title__text');
+      if (title) {
+        textCell.appendChild(title.cloneNode(true));
+      }
+      // Description (all .cmp-text not eyebrow or CTA)
+      const descBlocks = Array.from(cardModule.querySelectorAll('.cmp-text'));
+      descBlocks.forEach((block) => {
+        // Only add paragraphs that are not eyebrow or CTA
+        if (!block.classList.contains('eyebrow2')) {
+          const p = block.querySelector('p');
+          if (p && (!p.querySelector('a') || p.textContent.trim() !== 'See how')) {
+            textCell.appendChild(p.cloneNode(true));
+          }
+        }
+      });
+      // CTA (last .cmp-text p with a link)
+      const cta = Array.from(cardModule.querySelectorAll('.cmp-text p a')).pop();
+      if (cta) {
+        const ctaP = document.createElement('p');
+        ctaP.appendChild(cta.cloneNode(true));
+        textCell.appendChild(ctaP);
+      }
+    }
+    rows.push([imageCell, textCell]);
   });
 
-  // Create and replace with table
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(table);
+  // Create the table block
+  const block = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(block);
 }

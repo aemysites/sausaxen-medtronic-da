@@ -1,18 +1,12 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: Extract background image URL from inline style and encode spaces
-  function getBackgroundImageUrl(el) {
-    const style = el.getAttribute('style') || '';
-    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/i);
+  // Helper: Find background image from inline style
+  function extractBgImageUrl(style) {
+    if (!style) return null;
+    const match = style.match(/background-image:\s*url\(['"]?([^'")]+)['"]?\)/i);
     if (match && match[1]) {
-      let url = match[1].trim();
-      // Remove any escaped characters
-      url = url.replace(/\\2f/g, '/').replace(/\\/g, '');
-      // Remove any surrounding quotes
-      url = url.replace(/^['"]|['"]$/g, '');
-      // Encode spaces as %20
-      url = url.replace(/\s/g, '%20');
-      return url;
+      // Unescape any encoded slashes (\2f)
+      return match[1].replace(/\\2f /g, '/').replace(/\\2f/g, '/');
     }
     return null;
   }
@@ -21,55 +15,69 @@ export default function parse(element, { document }) {
   const headerRow = ['Hero (hero14)'];
 
   // 2. Background image row
-  let bgImageUrl = null;
-  let bgContainer = null;
-  const containers = element.querySelectorAll('[style*="background-image"]');
-  if (containers.length > 0) {
-    bgContainer = containers[containers.length - 1]; // Use deepest
-    bgImageUrl = getBackgroundImageUrl(bgContainer);
+  let bgImgRow = [''];
+  // Find the container with the background image style
+  const bgContainer = element.querySelector('[style*="background-image"]');
+  let bgImgUrl = null;
+  if (bgContainer) {
+    bgImgUrl = extractBgImageUrl(bgContainer.getAttribute('style'));
   }
-  let bgImageCell = '';
-  if (bgImageUrl) {
-    // Create an image element for the background
+  if (bgImgUrl) {
+    // Create an <img> element for the background image
     const img = document.createElement('img');
-    img.src = bgImageUrl;
-    img.alt = '';
-    bgImageCell = img;
+    img.src = bgImgUrl;
+    bgImgRow = [img];
   }
 
-  // 3. Content row: Title, Subheading, CTA
-  let grid = element.querySelector('.aem-Grid.aem-Grid--11') || element.querySelector('.aem-Grid.aem-Grid--12');
-  if (!grid) {
-    grid = element.querySelector('.aem-Grid');
+  // 3. Content row (title, subheading, cta)
+  // Find the deepest .aem-Grid inside the block (contains text/button)
+  let contentGrid = null;
+  const grids = element.querySelectorAll('.aem-Grid');
+  if (grids.length) {
+    // Use the deepest grid (last one)
+    contentGrid = grids[grids.length - 1];
   }
-  let contentParts = [];
-  if (grid) {
-    const children = Array.from(grid.children);
-    children.forEach((child) => {
-      if (child.classList.contains('text')) {
-        const cmpText = child.querySelector('.cmp-text');
-        if (cmpText) {
-          contentParts.push(cmpText);
-        }
-      } else if (child.classList.contains('button')) {
-        const btn = child.querySelector('a');
-        if (btn) {
-          contentParts.push(btn);
-        }
+
+  // Collect content: eyebrow, heading, cta
+  let contentFragments = [];
+  if (contentGrid) {
+    // Eyebrow (optional)
+    const eyebrow = contentGrid.querySelector('.eyebrow2 .cmp-text');
+    if (eyebrow) {
+      contentFragments.push(eyebrow);
+    }
+    // Heading (optional)
+    const heading = contentGrid.querySelector('.h1 .cmp-text');
+    if (heading) {
+      // Convert <p> to <h1> for semantic heading if needed
+      const p = heading.querySelector('p');
+      if (p) {
+        const h1 = document.createElement('h1');
+        h1.innerHTML = p.innerHTML;
+        contentFragments.push(h1);
+      } else {
+        contentFragments.push(heading);
       }
-    });
+    }
+    // CTA (optional)
+    const ctaBtn = contentGrid.querySelector('.button a');
+    if (ctaBtn) {
+      contentFragments.push(ctaBtn);
+    }
   }
-
-  if (contentParts.length === 0) {
-    contentParts = Array.from(element.querySelectorAll('.cmp-text, .cmp-button'));
+  // Defensive fallback: if nothing found, use the whole contentGrid
+  if (contentFragments.length === 0 && contentGrid) {
+    contentFragments = [contentGrid];
   }
+  const contentRow = [contentFragments];
 
-  const rows = [
+  // Build table
+  const table = WebImporter.DOMUtils.createTable([
     headerRow,
-    [bgImageCell],
-    [contentParts]
-  ];
+    bgImgRow,
+    contentRow,
+  ], document);
 
-  const block = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(block);
+  // Replace original element
+  element.replaceWith(table);
 }
