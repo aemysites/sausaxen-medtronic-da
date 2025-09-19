@@ -291,7 +291,7 @@
     },
     {
       "name": "Columns",
-      "cluster": 24,  
+      "cluster": 24,
       "source": "Columns",
       "target": "Columns (columns24)",
       "key": "columns24",
