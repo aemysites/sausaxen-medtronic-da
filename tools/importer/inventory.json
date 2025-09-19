@@ -1,5 +1,75 @@
 {
-  "fragments": [],
+  "fragments": [
+    {
+      "name": "nav",
+      "path": "/nav",
+      "totalBoxes": 1,
+      "instances": [
+        {
+          "url": "https://www.medtronic.com/in-en/our-impact.html",
+          "urlHash": "1cb1b96977e91d26e2406d970c59af25a7db30ae",
+          "uuid": "1cb1b969-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-00-d76785946ea6e2b9207aa52263cba8862283f7f9",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[1]"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
+          "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
+          "uuid": "63714cd4-00-fb800061a6868607901a7d86210caf52d46011ee",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/our-company.html",
+          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+          "uuid": "867525b3-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]"
+        }
+      ],
+      "styles": {
+        "height": 700,
+        "background": "rgba(0, 0, 0, 0) url(\"https://www.medtronic.com/content/dam/medtronic-wide/public/brand-corporate-assets/imagery/lifestyle/general/engineering-the-extraordinary-life.jpg\") no-repeat scroll 50% 50% / cover padding-box border-box"
+      }
+    },
+    {
+      "name": "footer",
+      "path": "/footer",
+      "totalBoxes": 1,
+      "instances": [
+        {
+          "url": "https://www.medtronic.com/in-en/our-impact.html",
+          "urlHash": "1cb1b96977e91d26e2406d970c59af25a7db30ae",
+          "uuid": "1cb1b969-08-3bde66a67ef245aed9a507e31fb0329adc4a02a2",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[8]"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-03-312986026cd8ee832437867f6932c0cd7408977d",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[4]"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
+          "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
+          "uuid": "63714cd4-10-a975901ce174598bee364e208a56b03758dc393c",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[10]"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/our-company.html",
+          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+          "uuid": "867525b3-07-3bde66a67ef245aed9a507e31fb0329adc4a02a2",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[8]"
+        }
+      ],
+      "styles": {
+        "background": "rgb(245, 245, 245) url(\"https://www.medtronic.com/content/dam/medtronic-wide/public/brand-corporate-assets/imagery/lifestyle/general/our-impact-life.jpg\") no-repeat scroll 50% 50% / cover padding-box border-box"
+      }
+    }
+  ],
   "blocks": [
     {
       "name": "Columns",
@@ -190,7 +260,13 @@
           "url": "https://www.medtronic.com/in-en/index.html",
           "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
           "uuid": "3462ed27-01-5340e1e12d4ea571e39a11e9ba5eb58a20fc47cb",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]"
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-02-c5c9d58302c1278f1942a4eb0d3a66a5cd085d91",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]"
         }
       ]
     },
@@ -222,16 +298,7 @@
           "uuid": "867525b3-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]",
           "section": "section-9"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 20,
-      "source": "Hero",
-      "target": "Hero (hero19)",
-      "key": "hero20",
-      "instances": [
+        },
         {
           "url": "https://www.medtronic.com/in-en/our-company.html",
           "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
@@ -290,36 +357,6 @@
       ]
     },
     {
-      "name": "Columns",
-      "cluster": 24,
-      "source": "Columns",
-      "target": "Columns (columns24)",
-      "key": "columns24",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-company.html",
-          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
-          "uuid": "867525b3-03-b3fb3569666c185e0416e5449a88232afc86088d",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[4]/div[1]"
-        }
-      ]
-    },
-    {
-      "name": "Columns",
-      "cluster": 25,
-      "source": "Columns",
-      "target": "Columns (columns25)",
-      "key": "columns25",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-company.html",
-          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
-          "uuid": "867525b3-05-4a607e4dcc62d5c6dd7750947edf6cdb8a50efd1",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[6]/div[1]"
-        }
-      ]
-    },
-    {
       "name": "Hero",
       "cluster": 26,
       "source": "Hero",
@@ -332,21 +369,6 @@
           "uuid": "3462ed27-03-312986026cd8ee832437867f6932c0cd7408977d",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[4]",
           "section": "section-4"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 27,
-      "source": "Hero",
-      "target": "Hero (hero27)",
-      "key": "hero27",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/index.html",
-          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
-          "uuid": "3462ed27-02-c5c9d58302c1278f1942a4eb0d3a66a5cd085d91",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]"
         }
       ]
     },
@@ -410,6 +432,18 @@
       "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
       "uuid": "867525b3-01-3cfdac99b3120c30acca2c2aafc52daa86783b00",
       "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[2]"
+    },
+    {
+      "url": "https://www.medtronic.com/in-en/our-company.html",
+      "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+      "uuid": "867525b3-03-b3fb3569666c185e0416e5449a88232afc86088d",
+      "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[4]/div[1]"
+    },
+    {
+      "url": "https://www.medtronic.com/in-en/our-company.html",
+      "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+      "uuid": "867525b3-05-4a607e4dcc62d5c6dd7750947edf6cdb8a50efd1",
+      "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[6]/div[1]"
     }
   ],
   "sections": [
