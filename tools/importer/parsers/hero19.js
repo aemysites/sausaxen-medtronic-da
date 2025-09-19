@@ -1,12 +1,16 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background image URL from inline style
-  function extractBackgroundImageUrl(style) {
+  // Helper: extract background image URL from inline style
+  function getBackgroundImageUrl(style) {
     if (!style) return null;
     const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/);
     if (match && match[1]) {
-      let url = match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
-      url = url.replace(/^['"]|['"]$/g, '');
+      let url = match[1].replace(/^['"]|['"]$/g, '');
+      url = url.replace(/\\/g, '');
+      // If relative, prepend origin
+      if (url.startsWith('/')) {
+        url = window.location.origin + url;
+      }
       return url;
     }
     return null;
@@ -16,47 +20,50 @@ export default function parse(element, { document }) {
   const headerRow = ['Hero (hero19)'];
 
   // 2. Background image row
-  let bgImgUrl = null;
-  let bgImgEl = null;
-  const bgContainer = element.querySelector('[style*="background-image"]');
-  if (bgContainer) {
-    bgImgUrl = extractBackgroundImageUrl(bgContainer.getAttribute('style'));
-    if (bgImgUrl) {
-      bgImgEl = document.createElement('img');
-      bgImgEl.src = bgImgUrl;
-      bgImgEl.alt = '';
-      bgImgEl.style.display = 'none'; // Hide for import, used for asset reference
+  let bgImageUrl = null;
+  let bgImageEl = null;
+  // Find the deepest container with a background image
+  const containers = element.querySelectorAll('[style*="background-image"]');
+  for (const c of containers) {
+    const url = getBackgroundImageUrl(c.getAttribute('style'));
+    if (url) {
+      bgImageUrl = url;
+      break;
     }
   }
-  const bgRow = [bgImgEl ? bgImgEl : ''];
+  if (bgImageUrl) {
+    bgImageEl = document.createElement('img');
+    bgImageEl.src = bgImageUrl;
+    bgImageEl.alt = '';
+    bgImageEl.setAttribute('loading', 'lazy');
+  }
+  const imageRow = [bgImageEl ? bgImageEl : ''];
 
-  // 3. Content row: Collect all visible text blocks in order
+  // 3. Content row: Collect all heading and paragraph text in order
+  // Find all .cmp-text and .cmp-title blocks inside .text or .title containers
   const contentCell = [];
-  // Use a less specific selector to get all text/title blocks
-  const textBlocks = element.querySelectorAll('.cmp-text, .cmp-title');
-  textBlocks.forEach((block) => {
-    // If it's a .cmp-title, preserve heading tag
-    if (block.classList.contains('cmp-title')) {
-      const h1 = block.querySelector('h1');
-      if (h1) {
-        contentCell.push(h1.cloneNode(true));
-      }
-    }
-    // For .cmp-text, add all paragraphs
-    block.querySelectorAll('p').forEach((p) => {
-      contentCell.push(p.cloneNode(true));
-    });
+  // Get .cmp-text <p>
+  element.querySelectorAll('.cmp-text p').forEach(p => {
+    contentCell.push(p);
   });
-  const contentRow = [contentCell.length ? contentCell : ''];
+  // Get .cmp-title <h1>
+  element.querySelectorAll('.cmp-title h1').forEach(h1 => {
+    contentCell.push(h1);
+  });
+  // If nothing found, fallback to all <h1>, <h2>, <h3>, <p> in order
+  if (contentCell.length === 0) {
+    element.querySelectorAll('h1, h2, h3, p').forEach(el => {
+      if (el.textContent.trim()) contentCell.push(el);
+    });
+  }
+  const contentRow = [contentCell];
 
-  // Compose table
+  // Build table
   const cells = [
     headerRow,
-    bgRow,
-    contentRow,
+    imageRow,
+    contentRow
   ];
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-
-  // Replace original element
-  element.replaceWith(block);
+  const table = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(table);
 }

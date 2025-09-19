@@ -11,28 +11,29 @@
  */
 /* global WebImporter */
 /* eslint-disable no-console */
+import carousel2Parser from './parsers/carousel2.js';
+import hero1Parser from './parsers/hero1.js';
 import columns3Parser from './parsers/columns3.js';
-import hero2Parser from './parsers/hero2.js';
-import hero4Parser from './parsers/hero4.js';
-import cards5Parser from './parsers/cards5.js';
-import columns6Parser from './parsers/columns6.js';
+import columns4Parser from './parsers/columns4.js';
+import hero6Parser from './parsers/hero6.js';
 import columns7Parser from './parsers/columns7.js';
-import carousel10Parser from './parsers/carousel10.js';
+import hero8Parser from './parsers/hero8.js';
+import hero9Parser from './parsers/hero9.js';
+import cards10Parser from './parsers/cards10.js';
+import hero11Parser from './parsers/hero11.js';
+import columns5Parser from './parsers/columns5.js';
 import hero14Parser from './parsers/hero14.js';
-import columns1Parser from './parsers/columns1.js';
-import columns15Parser from './parsers/columns15.js';
-import columns17Parser from './parsers/columns17.js';
-import carousel18Parser from './parsers/carousel18.js';
-import hero19Parser from './parsers/hero19.js';
+import hero13Parser from './parsers/hero13.js';
+import hero15Parser from './parsers/hero15.js';
+import embedVideo12Parser from './parsers/embedVideo12.js';
 import carousel16Parser from './parsers/carousel16.js';
-import embedVideo21Parser from './parsers/embedVideo21.js';
-import hero23Parser from './parsers/hero23.js';
-import hero22Parser from './parsers/hero22.js';
-import columns29Parser from './parsers/columns29.js';
-import hero28Parser from './parsers/hero28.js';
-import hero26Parser from './parsers/hero26.js';
-import columns30Parser from './parsers/columns30.js';
-import hero31Parser from './parsers/hero31.js';
+import carousel18Parser from './parsers/carousel18.js';
+import hero17Parser from './parsers/hero17.js';
+import carousel20Parser from './parsers/carousel20.js';
+import columns22Parser from './parsers/columns22.js';
+import hero19Parser from './parsers/hero19.js';
+import columns23Parser from './parsers/columns23.js';
+import carousel21Parser from './parsers/carousel21.js';
 import headerParser from './parsers/header.js';
 import metadataParser from './parsers/metadata.js';
 import cleanupTransformer from './transformers/cleanup.js';
@@ -49,28 +50,29 @@ import {
 
 const parsers = {
   metadata: metadataParser,
+  carousel2: carousel2Parser,
+  hero1: hero1Parser,
   columns3: columns3Parser,
-  hero2: hero2Parser,
-  hero4: hero4Parser,
-  cards5: cards5Parser,
-  columns6: columns6Parser,
+  columns4: columns4Parser,
+  hero6: hero6Parser,
   columns7: columns7Parser,
-  carousel10: carousel10Parser,
+  hero8: hero8Parser,
+  hero9: hero9Parser,
+  cards10: cards10Parser,
+  hero11: hero11Parser,
+  columns5: columns5Parser,
   hero14: hero14Parser,
-  columns1: columns1Parser,
-  columns15: columns15Parser,
-  columns17: columns17Parser,
-  carousel18: carousel18Parser,
-  hero19: hero19Parser,
+  hero13: hero13Parser,
+  hero15: hero15Parser,
+  embedVideo12: embedVideo12Parser,
   carousel16: carousel16Parser,
-  embedVideo21: embedVideo21Parser,
-  hero23: hero23Parser,
-  hero22: hero22Parser,
-  columns29: columns29Parser,
-  hero28: hero28Parser,
-  hero26: hero26Parser,
-  columns30: columns30Parser,
-  hero31: hero31Parser,
+  carousel18: carousel18Parser,
+  hero17: hero17Parser,
+  carousel20: carousel20Parser,
+  columns22: columns22Parser,
+  hero19: hero19Parser,
+  columns23: columns23Parser,
+  carousel21: carousel21Parser,
   ...customParsers,
 };
 
