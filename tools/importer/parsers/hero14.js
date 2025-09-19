@@ -1,12 +1,12 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: Find background image from inline style
-  function extractBgImageUrl(style) {
+  // Helper to get background image URL from inline style
+  function getBackgroundImageUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image:\s*url\(['"]?([^'")]+)['"]?\)/i);
+    const match = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/i);
     if (match && match[1]) {
-      // Unescape any encoded slashes (\2f)
-      return match[1].replace(/\\2f /g, '/').replace(/\\2f/g, '/');
+      // Unescape any escaped slashes
+      return match[1].replace(/\\/g, '');
     }
     return null;
   }
@@ -16,60 +16,50 @@ export default function parse(element, { document }) {
 
   // 2. Background image row
   let bgImgRow = [''];
-  // Find the container with the background image style
-  const bgContainer = element.querySelector('[style*="background-image"]');
-  let bgImgUrl = null;
+  // Find the first inner container with a background-image style
+  let bgUrl = null;
+  let bgContainer = element.querySelector('[style*="background-image"]');
   if (bgContainer) {
-    bgImgUrl = extractBgImageUrl(bgContainer.getAttribute('style'));
+    bgUrl = getBackgroundImageUrl(bgContainer.getAttribute('style'));
   }
-  if (bgImgUrl) {
-    // Create an <img> element for the background image
+  if (bgUrl) {
     const img = document.createElement('img');
-    img.src = bgImgUrl;
+    img.src = bgUrl;
+    img.alt = '';
     bgImgRow = [img];
   }
 
-  // 3. Content row (title, subheading, cta)
-  // Find the deepest .aem-Grid inside the block (contains text/button)
-  let contentGrid = null;
-  const grids = element.querySelectorAll('.aem-Grid');
-  if (grids.length) {
-    // Use the deepest grid (last one)
-    contentGrid = grids[grids.length - 1];
-  }
-
-  // Collect content: eyebrow, heading, cta
-  let contentFragments = [];
-  if (contentGrid) {
-    // Eyebrow (optional)
-    const eyebrow = contentGrid.querySelector('.eyebrow2 .cmp-text');
-    if (eyebrow) {
-      contentFragments.push(eyebrow);
-    }
-    // Heading (optional)
-    const heading = contentGrid.querySelector('.h1 .cmp-text');
-    if (heading) {
-      // Convert <p> to <h1> for semantic heading if needed
-      const p = heading.querySelector('p');
-      if (p) {
-        const h1 = document.createElement('h1');
-        h1.innerHTML = p.innerHTML;
-        contentFragments.push(h1);
-      } else {
-        contentFragments.push(heading);
+  // 3. Content row (title, subheading, CTA)
+  // We'll collect all text and button content in visual order
+  let contentElems = [];
+  // Find the deepest .cmp-container (the one with the text/button)
+  let innerContainer = element.querySelector('.cmp-container .aem-Grid');
+  if (innerContainer) {
+    // Get all direct children (columns)
+    const columns = Array.from(innerContainer.children);
+    columns.forEach(col => {
+      // Eyebrow (subheading)
+      if (col.classList.contains('eyebrow2')) {
+        const eyebrow = col.querySelector('.cmp-text');
+        if (eyebrow) contentElems.push(eyebrow);
       }
-    }
-    // CTA (optional)
-    const ctaBtn = contentGrid.querySelector('.button a');
-    if (ctaBtn) {
-      contentFragments.push(ctaBtn);
-    }
+      // Heading
+      else if (col.classList.contains('h1')) {
+        const heading = col.querySelector('.cmp-text');
+        if (heading) contentElems.push(heading);
+      }
+      // CTA button
+      else if (col.classList.contains('button')) {
+        const btn = col.querySelector('a');
+        if (btn) contentElems.push(btn);
+      }
+    });
   }
-  // Defensive fallback: if nothing found, use the whole contentGrid
-  if (contentFragments.length === 0 && contentGrid) {
-    contentFragments = [contentGrid];
+  // Defensive: fallback to all text and button descendants if above fails
+  if (contentElems.length === 0) {
+    contentElems = Array.from(element.querySelectorAll('.cmp-text, a.cmp-button'));
   }
-  const contentRow = [contentFragments];
+  const contentRow = [contentElems];
 
   // Build table
   const table = WebImporter.DOMUtils.createTable([
@@ -78,6 +68,5 @@ export default function parse(element, { document }) {
     contentRow,
   ], document);
 
-  // Replace original element
   element.replaceWith(table);
 }

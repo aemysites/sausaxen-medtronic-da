@@ -3,68 +3,82 @@ export default function parse(element, { document }) {
   // 1. Header row
   const headerRow = ['Hero (hero23)'];
 
-  // 2. Background image row (extract from inline style)
-  let bgImageRow;
-  // Find the deepest container with a background-image style
-  const bgContainer = element.querySelector('[style*="background-image"]');
-  let bgImgEl = null;
-  if (bgContainer) {
-    const style = bgContainer.getAttribute('style');
-    const match = style.match(/background-image:\s*url\(([^)]+)\)/);
+  // 2. Extract background image from style attribute
+  let bgImgUrl = '';
+  const bgDiv = element.querySelector('[style*="background-image"]');
+  if (bgDiv) {
+    const style = bgDiv.getAttribute('style') || '';
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/i);
     if (match && match[1]) {
-      // Clean up the URL (decode any escaped chars)
-      let url = match[1].replace(/\\2f/g, '/').replace(/\s/g, '');
-      // Remove any leading/trailing quotes
-      url = url.replace(/^['"]|['"]$/g, '');
-      // Create image element
-      bgImgEl = document.createElement('img');
-      bgImgEl.src = url;
-      bgImgEl.alt = '';
-      bgImageRow = [bgImgEl];
+      // Clean up the url (handle escaped slashes)
+      bgImgUrl = match[1]
+        .replace(/\\2f /g, '/')
+        .replace(/\\/g, '')
+        .replace(/^['"]|['"]$/g, '');
+      // If relative, prepend origin
+      if (bgImgUrl.startsWith('/')) {
+        bgImgUrl = `${document.location.origin}${bgImgUrl}`;
+      }
     }
-  }
-  if (!bgImageRow) {
-    bgImageRow = ['']; // fallback empty cell
   }
 
-  // 3. Content row (title, subheading, CTA)
-  // Find text blocks
+  let bgImgElem = '';
+  if (bgImgUrl) {
+    bgImgElem = document.createElement('img');
+    bgImgElem.src = bgImgUrl;
+    bgImgElem.alt = '';
+  }
+
+  // 3. Extract text content (eyebrow, heading, subheading, CTA)
+  // Find the deepest .aem-Grid with text/button children
   const grid = element.querySelector('.aem-Grid.aem-Grid--11');
-  let contentEls = [];
+  let eyebrow = '', heading = '', subheading = '', cta = '';
   if (grid) {
-    // Eyebrow (Who we are)
-    const eyebrow = grid.querySelector('.eyebrow2 .cmp-text');
-    if (eyebrow) {
-      contentEls.push(eyebrow);
+    // Eyebrow
+    const eyebrowDiv = grid.querySelector('.eyebrow2 .cmp-text p');
+    if (eyebrowDiv) {
+      eyebrow = eyebrowDiv.cloneNode(true);
     }
-    // Subheading (Engineering the extraordinary)
-    const subheading = grid.querySelector('.h1 .cmp-text');
-    if (subheading) {
-      contentEls.push(subheading);
+    // Heading ("Engineering the extraordinary")
+    const headingDiv = grid.querySelector('.h1 .cmp-text');
+    if (headingDiv) {
+      // Merge all <p> into one <div>
+      const hDiv = document.createElement('div');
+      Array.from(headingDiv.children).forEach(child => {
+        hDiv.appendChild(child.cloneNode(true));
+      });
+      heading = hDiv;
     }
-    // Title (Groundbreaking healthcare...)
-    const title = grid.querySelector('.intro-heading .cmp-title');
-    if (title) {
-      contentEls.push(title);
+    // Subheading (long h1)
+    const subheadingDiv = grid.querySelector('.intro-heading .cmp-title__text');
+    if (subheadingDiv) {
+      // Use as <h2> for semantics
+      const h2 = document.createElement('h2');
+      h2.textContent = subheadingDiv.textContent;
+      subheading = h2;
     }
     // CTA button
-    const button = grid.querySelector('.button .cmp-button');
-    if (button) {
-      contentEls.push(button);
+    const ctaDiv = grid.querySelector('.button .cmp-button');
+    if (ctaDiv) {
+      cta = ctaDiv.cloneNode(true);
     }
   }
-  // Defensive: if nothing found, fallback to all text children
-  if (contentEls.length === 0) {
-    contentEls = Array.from(element.querySelectorAll('p, h1, h2, h3, a'));
-  }
-  const contentRow = [contentEls];
 
-  // Build the table
-  const cells = [
+  // Compose content cell for row 3
+  const contentCell = [];
+  if (eyebrow) contentCell.push(eyebrow);
+  if (heading) contentCell.push(heading);
+  if (subheading) contentCell.push(subheading);
+  if (cta) contentCell.push(cta);
+
+  // Build table rows
+  const rows = [
     headerRow,
-    bgImageRow,
-    contentRow,
+    [bgImgElem ? bgImgElem : ''],
+    [contentCell.length ? contentCell : ''],
   ];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+
+  // Create block table and replace element
+  const table = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(table);
 }

@@ -1,13 +1,16 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
   // Helper to extract background image URL from inline style
-  function getBackgroundImageUrl(style) {
+  function extractBgUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/i);
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/i);
     if (match && match[1]) {
-      let url = match[1].replace(/\\2f /g, '/').replace(/\s/g, '');
-      // Remove any surrounding quotes
-      url = url.replace(/^['"]|['"]$/g, '');
+      // Remove leading \2f and decode URI if present
+      let url = match[1].replace(/^['"]?|['"]?$/g, '');
+      // Handle encoded \2f (escaped slash)
+      url = url.replace(/\\2f\s*/g, '/');
+      // Remove any leading whitespace
+      url = url.trim();
       return url;
     }
     return null;
@@ -17,72 +20,49 @@ export default function parse(element, { document }) {
   const headerRow = ['Hero (hero4)'];
 
   // 2. Background image row
-  let bgImageUrl = null;
-  // Find the first child with a background-image style
-  const bgDiv = Array.from(element.querySelectorAll('div')).find(div => {
-    return div.style && div.style.backgroundImage;
-  });
-  if (bgDiv && bgDiv.style.backgroundImage) {
-    bgImageUrl = getBackgroundImageUrl(bgDiv.getAttribute('style'));
+  let bgImgRow = [''];
+  // Try to find the background image from inline style
+  let bgUrl = null;
+  // The background image is on the 2nd level container
+  const firstContainer = element.querySelector(':scope > div');
+  if (firstContainer && firstContainer.hasAttribute('style')) {
+    bgUrl = extractBgUrl(firstContainer.getAttribute('style'));
   }
-  let bgImageCell;
-  if (bgImageUrl) {
+  if (bgUrl) {
     const img = document.createElement('img');
-    img.src = bgImageUrl;
-    img.alt = '';
-    bgImageCell = img;
-  } else {
-    bgImageCell = '';
+    img.src = bgUrl;
+    bgImgRow = [img];
   }
 
-  // 3. Content row (title, subheading, etc)
-  // Find the deepest .aem-Grid with text children
-  let contentGrid = null;
-  const grids = element.querySelectorAll('.aem-Grid');
-  for (const grid of grids) {
-    if (grid.querySelector('.text.h1, .text.intro-heading')) {
-      contentGrid = grid;
-      break;
-    }
+  // 3. Content row (title, subheading, CTA)
+  // Find the inner grid that contains text blocks
+  let contentRow = [''];
+  let contentParts = [];
+  // The structure is: element > div > div > div > div > div.aem-Grid
+  let grid = element.querySelector('.aem-Grid.aem-Grid--10');
+  if (grid) {
+    // Find all text containers inside the grid
+    const textBlocks = grid.querySelectorAll(':scope > div');
+    textBlocks.forEach((block) => {
+      // Find the cmp-text child (the actual content)
+      const cmpText = block.querySelector('.cmp-text');
+      if (cmpText && cmpText.textContent.trim().length > 0) {
+        // Use the cmp-text div directly for structure resilience
+        contentParts.push(cmpText);
+      }
+    });
+  }
+  if (contentParts.length) {
+    contentRow = [contentParts];
   }
 
-  let title = '', subheading = '', cta = '';
-  if (contentGrid) {
-    // Title: .text.h1 > .cmp-text > p
-    const titleDiv = contentGrid.querySelector('.text.h1 .cmp-text p');
-    if (titleDiv) {
-      const h1 = document.createElement('h1');
-      h1.textContent = titleDiv.textContent.trim();
-      title = h1;
-    }
-    // Subheading: .text.intro-heading > .cmp-text > p
-    const subheadingDiv = contentGrid.querySelector('.text.intro-heading .cmp-text p');
-    if (subheadingDiv) {
-      const p = document.createElement('p');
-      p.textContent = subheadingDiv.textContent.trim();
-      subheading = p;
-    }
-    // CTA: Not present in this example, but if there is a link, add it
-    const ctaLink = contentGrid.querySelector('a');
-    if (ctaLink) {
-      cta = ctaLink;
-    }
-  }
-
-  // Compose content cell
-  const contentCell = [];
-  if (title) contentCell.push(title);
-  if (subheading) contentCell.push(subheading);
-  if (cta) contentCell.push(cta);
-
-  // Table rows
-  const rows = [
+  // Compose the table
+  const table = WebImporter.DOMUtils.createTable([
     headerRow,
-    [bgImageCell],
-    [contentCell]
-  ];
+    bgImgRow,
+    contentRow,
+  ], document);
 
-  // Create and replace
-  const table = WebImporter.DOMUtils.createTable(rows, document);
+  // Replace the original element
   element.replaceWith(table);
 }

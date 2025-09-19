@@ -1,24 +1,25 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background image URL from style attribute
+  // Helper to extract background image URL from inline style
   function extractBgUrl(style) {
     if (!style) return null;
     const match = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/);
     if (match && match[1]) {
       let url = match[1];
-      // Remove escaped characters
-      url = url.replace(/\\2f /g, '/').replace(/\\/g, '');
+      // Remove escaped slashes
+      url = url.replace(/\\2f /g, '/').replace(/\\2f/g, '/').replace(/\s/g, '');
       // If relative, prepend origin
       if (url.startsWith('/')) {
-        url = window.location.origin + url;
+        url = document.location.origin + url;
       }
       return url;
     }
     return null;
   }
 
-  // Helper to create an image element from a URL
-  function createImg(url) {
+  // Helper to create an <img> from a background-image style
+  function bgImgElement(style) {
+    const url = extractBgUrl(style);
     if (!url) return null;
     const img = document.createElement('img');
     img.src = url;
@@ -26,72 +27,56 @@ export default function parse(element, { document }) {
     return img;
   }
 
-  // Find the carousel block
-  const carousel = element.querySelector('.cmp-carousel');
-  if (!carousel) return;
-
-  // Get all slides
-  const slides = carousel.querySelectorAll('.cmp-carousel__item');
+  // Find carousel items
+  const carouselRoot = element.querySelector('.cmp-carousel__content');
+  if (!carouselRoot) return;
+  const items = carouselRoot.querySelectorAll(':scope > .cmp-carousel__item');
 
   // Table header
   const headerRow = ['Carousel (carousel10)'];
   const rows = [headerRow];
 
-  slides.forEach((slide) => {
-    // Find the hero container with background image
-    const hero = slide.querySelector('.hero-module');
-    let imgUrl = null;
+  items.forEach((item) => {
+    // Find image (from background-image style)
+    let img = null;
+    let textCellContent = [];
+
+    // Find the hero container with background-image
+    const hero = item.querySelector('.hero-module');
     if (hero) {
-      const heroBg = hero.querySelector('.cmp-container');
+      const heroBg = hero.querySelector('.cmp-container[style*="background-image"]');
       if (heroBg) {
-        imgUrl = extractBgUrl(heroBg.getAttribute('style'));
+        img = bgImgElement(heroBg.getAttribute('style'));
+      }
+      // Find all text blocks inside the hero
+      const textBlocks = heroBg ? heroBg.querySelectorAll('.cmp-text') : [];
+      textBlocks.forEach((tb) => {
+        // Only add if not empty
+        if (tb.textContent.trim()) {
+          textCellContent.push(tb);
+        }
+      });
+      // Find CTA button (if present)
+      const btn = heroBg ? heroBg.querySelector('.cmp-button') : null;
+      if (btn) {
+        textCellContent.push(btn);
+      }
+      // Find ISI/ISW link (if present)
+      const isiIsw = heroBg ? heroBg.querySelector('.isi-isw a') : null;
+      if (isiIsw) {
+        textCellContent.push(isiIsw);
       }
     }
-    const imgEl = createImg(imgUrl);
 
-    // Compose text content
-    const textContent = document.createElement('div');
-    // Eyebrow
-    const eyebrow = slide.querySelector('.eyebrow2 .cmp-text');
-    if (eyebrow) {
-      textContent.appendChild(eyebrow.cloneNode(true));
-    }
-    // Heading/title
-    let heading = slide.querySelector('.text:not(.eyebrow2) .cmp-text h1, .text:not(.eyebrow2) .cmp-text h2, .text:not(.eyebrow2) .cmp-text h3');
-    if (!heading) {
-      // Sometimes heading is inside .cmp-text directly
-      heading = slide.querySelector('.cmp-text h1, .cmp-text h2, .cmp-text h3');
-    }
-    if (heading) {
-      textContent.appendChild(heading.cloneNode(true));
-    }
-    // Intro/description
-    const intro = slide.querySelector('.intro-heading .cmp-text');
-    if (intro) {
-      textContent.appendChild(intro.cloneNode(true));
-    }
-    // Additional description
-    const desc = slide.querySelector('.text.no-bottom-margin-p .cmp-text');
-    if (desc) {
-      textContent.appendChild(desc.cloneNode(true));
-    }
-    // CTA button
-    const button = slide.querySelector('.button .cmp-button');
-    if (button) {
-      textContent.appendChild(button.cloneNode(true));
-    }
-    // ISI/ISW link
-    const isiIsw = slide.querySelector('.isi-isw .redirect-isi-isw, .isi-isw .ext_link');
-    if (isiIsw) {
-      textContent.appendChild(isiIsw.cloneNode(true));
-    }
+    // Defensive: If no image found, skip this slide
+    if (!img) return;
+    // Defensive: If no text, use empty string
+    if (textCellContent.length === 0) textCellContent = [''];
 
-    // Only add text cell if it has content
-    const textCell = textContent.childNodes.length > 0 ? textContent : '';
-    rows.push([imgEl, textCell]);
+    rows.push([img, textCellContent]);
   });
 
-  // Create block table
+  // Create table block
   const block = WebImporter.DOMUtils.createTable(rows, document);
   element.replaceWith(block);
 }

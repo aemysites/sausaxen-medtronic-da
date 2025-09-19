@@ -1,92 +1,87 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background-image url from style string
-  function extractBgUrl(style) {
+  // Helper to get background image URL from inline style
+  function getBgImageUrl(style) {
     if (!style) return null;
-    const match = style.match(/background-image:\s*url\(["']?(.*?)["']?\)/i);
+    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/);
     if (match && match[1]) {
-      // Remove escaped chars (e.g., \2f)
-      let url = match[1].replace(/\\([0-9a-f]{2})/gi, (m, hex) => String.fromCharCode(parseInt(hex, 16)));
-      url = url.replace(/^\/\//, '/');
-      url = url.replace(/\s+/g, '');
+      let url = match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
+      url = url.replace(/^['"]|['"]$/g, '');
       return url;
     }
     return null;
   }
 
-  // Helper to build a slide row: [image, content]
-  function buildSlideRow(carouselItem) {
-    // Find the deepest container with background-image
-    let bgContainer = carouselItem.querySelector('[style*="background-image"]');
-    let imageUrl = bgContainer ? extractBgUrl(bgContainer.getAttribute('style')) : null;
-    let imgEl = null;
-    if (imageUrl) {
-      imgEl = document.createElement('img');
-      imgEl.src = imageUrl;
-      imgEl.setAttribute('loading', 'lazy');
-    }
-
-    // Find the content container (the innermost .cmp-container inside the slide)
-    let contentContainer = carouselItem.querySelector('.cmp-container');
-    let contentElements = [];
-    if (contentContainer) {
-      // Get all direct children in order, and collect their text content
-      Array.from(contentContainer.children).forEach((child) => {
-        // Eyebrow
-        const eyebrow = child.querySelector('.eyebrow2 .cmp-text');
-        if (eyebrow) {
-          contentElements.push(eyebrow.cloneNode(true));
-        }
-        // Title
-        const title = child.querySelector('.title .cmp-title__text');
-        if (title) {
-          if (title.tagName.toLowerCase() === 'h2') {
-            contentElements.push(title.cloneNode(true));
-          } else {
-            const h2 = document.createElement('h2');
-            h2.innerHTML = title.innerHTML;
-            contentElements.push(h2);
-          }
-        }
-        // Description (any .cmp-text not in eyebrow)
-        const descs = child.querySelectorAll('.cmp-text');
-        descs.forEach((desc) => {
-          if (!desc.closest('.eyebrow2')) {
-            contentElements.push(desc.cloneNode(true));
-          }
-        });
-        // CTA
-        const btn = child.querySelector('.button a.cmp-button');
-        if (btn) {
-          contentElements.push(btn.cloneNode(true));
-        }
-      });
-    }
-    // Remove duplicates (by node outerHTML)
-    const seen = new Set();
-    contentElements = contentElements.filter((el) => {
-      const html = el.outerHTML;
-      if (seen.has(html)) return false;
-      seen.add(html);
-      return true;
-    });
-    return [imgEl, contentElements.length ? contentElements : ''];
+  // Helper to create an <img> from a background image URL
+  function createImg(url) {
+    if (!url) return null;
+    const img = document.createElement('img');
+    img.src = url;
+    img.loading = 'lazy';
+    return img;
   }
 
-  const carousels = Array.from(element.querySelectorAll('.carousel, .carousel-slider'));
-  const rows = [];
-  const headerRow = ['Carousel (carousel16)'];
-  rows.push(headerRow);
+  // Helper to extract all text content blocks from the text container
+  function extractTextContent(textContainer) {
+    const content = [];
+    // Eyebrow (optional)
+    const eyebrow = textContainer.querySelector('.eyebrow2 .cmp-text');
+    if (eyebrow) {
+      content.push(eyebrow.cloneNode(true));
+    }
+    // Title (h2)
+    const title = textContainer.querySelector('.title .cmp-title__text');
+    if (title) {
+      content.push(title.cloneNode(true));
+    }
+    // All description paragraphs (not eyebrow)
+    const descBlocks = textContainer.querySelectorAll('.text:not(.eyebrow2) .cmp-text p');
+    descBlocks.forEach(p => {
+      content.push(p.cloneNode(true));
+    });
+    // CTA button (optional)
+    const button = textContainer.querySelector('.button a.cmp-button');
+    if (button) {
+      content.push(button.cloneNode(true));
+    }
+    return content.length > 0 ? content : [''];
+  }
 
-  carousels.forEach((carousel) => {
-    const content = carousel.querySelector('.cmp-carousel__content');
-    if (!content) return;
-    const items = Array.from(content.querySelectorAll('.cmp-carousel__item'));
-    items.forEach((item) => {
-      rows.push(buildSlideRow(item));
+  // Find all carousels in the block
+  const carousels = Array.from(element.querySelectorAll(':scope > div.carousel'));
+  const headerRow = ['Carousel (carousel16)'];
+  const rows = [headerRow];
+
+  carousels.forEach(carousel => {
+    // Each carousel has .cmp-carousel__content > .cmp-carousel__item (one per slide)
+    const items = Array.from(carousel.querySelectorAll('.cmp-carousel__content > .cmp-carousel__item'));
+    items.forEach(item => {
+      // Find the image background
+      const heroContainer = item.querySelector('.cmp-container[style*="background-image"]');
+      const bgUrl = heroContainer ? getBgImageUrl(heroContainer.getAttribute('style')) : null;
+      const img = bgUrl ? createImg(bgUrl) : '';
+
+      // Find the text content container (usually a .cmp-container inside the hero)
+      let textContainer = null;
+      const sectionContainer = heroContainer ? heroContainer.querySelector('.section .cmp-container') : null;
+      if (sectionContainer) {
+        textContainer = sectionContainer;
+      }
+
+      // Compose the text cell
+      let textCellContent = [''];
+      if (textContainer) {
+        textCellContent = extractTextContent(textContainer);
+      }
+
+      rows.push([
+        img,
+        textCellContent
+      ]);
     });
   });
 
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(table);
+  // Create the block table
+  const block = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(block);
 }

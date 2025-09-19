@@ -1,72 +1,58 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background image from style attribute
-  function extractBackgroundImage(el) {
-    let url = '';
-    if (el && el.hasAttribute('style')) {
-      const style = el.getAttribute('style');
-      const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/);
-      if (match && match[1]) {
-        url = match[1]
-          .replace(/\\2f/g, '/') // Replace \2f with /
-          .replace(/\s/g, '');
-        // Remove any surrounding quotes
-        url = url.replace(/^['"]|['"]$/g, '');
-        // If relative, prepend origin
-        if (url.startsWith('/')) {
-          url = document.location.origin + url;
-        }
-      }
+  // Helper to get background image from inline style
+  function getBackgroundImageUrl(el) {
+    const style = el.getAttribute('style') || '';
+    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/);
+    if (match && match[1]) {
+      let url = match[1]
+        .replace(/\\2f/g, '/')
+        .replace(/\\/g, '')
+        .replace(/^['"]|['"]$/g, '');
+      url = url.replace(/\s*\/\s*/g, '/').replace(/\s+/g, '');
+      // Remove window.location.origin logic (do not prepend null)
+      return url;
     }
-    return url;
+    return null;
   }
 
-  // Find the background image from the first .cmp-container with style
-  const bgContainer = element.querySelector('.cmp-container[style]');
-  const bgUrl = extractBackgroundImage(bgContainer);
-
-  let bgImgEl = null;
-  if (bgUrl) {
-    bgImgEl = document.createElement('img');
-    bgImgEl.src = bgUrl;
-    bgImgEl.alt = '';
-    bgImgEl.loading = 'lazy';
-    bgImgEl.style.maxWidth = '100%';
+  // Find the background image
+  let bgImageUrl = null;
+  const bgContainer = element.querySelector('[style*="background-image"]');
+  if (bgContainer) {
+    bgImageUrl = getBackgroundImageUrl(bgContainer);
   }
 
-  // Find the main content container (deepest .cmp-container)
-  const contentContainer = element.querySelector('.cmp-container:not([style])');
-  let contentGrid = contentContainer;
-  if (!contentGrid) {
-    contentGrid = element;
+  // Compose background image cell
+  let bgCell = '';
+  if (bgImageUrl) {
+    const img = document.createElement('img');
+    img.src = bgImageUrl;
+    img.alt = '';
+    bgCell = img;
   }
 
-  // Find all text blocks and button
-  const texts = Array.from(contentGrid.querySelectorAll('.cmp-text'));
-  const buttonEl = contentGrid.querySelector('.cmp-button');
-
-  // Compose content cell
-  const contentCell = [];
-  texts.forEach((txt) => {
-    if (txt && txt.textContent.trim()) {
-      contentCell.push(txt);
-    }
+  // Gather all text and button content for the text cell
+  let contentCell = [];
+  // Find all .cmp-text elements inside the block
+  const cmpTexts = element.querySelectorAll('.cmp-text');
+  cmpTexts.forEach((cmpText) => {
+    Array.from(cmpText.children).forEach((child) => {
+      contentCell.push(child.cloneNode(true));
+    });
   });
-  if (buttonEl) {
-    contentCell.push(buttonEl);
-  }
+  // Find all .cmp-button links
+  const cmpButtons = element.querySelectorAll('.cmp-button');
+  cmpButtons.forEach((btn) => {
+    contentCell.push(btn.cloneNode(true));
+  });
 
-  // Table structure
   const headerRow = ['Hero (hero2)'];
-  const imageRow = [bgImgEl ? bgImgEl : ''];
+  const bgRow = [bgCell || ''];
   const contentRow = [contentCell.length ? contentCell : ''];
 
-  const cells = [
-    headerRow,
-    imageRow,
-    contentRow,
-  ];
+  const cells = [headerRow, bgRow, contentRow];
+  const table = WebImporter.DOMUtils.createTable(cells, document);
 
-  const block = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(block);
+  element.replaceWith(table);
 }
