@@ -5,8 +5,17 @@
 
 .hero {
   position: relative;
-  padding: 40px 24px;
-  min-height: 300px;
+  padding: 0;
+  min-height: 520px;
+  background: linear-gradient(90deg, #1C2151 60%, #232965 100%);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  gap: 0;
 }
 
 .hero h1,
@@ -43,5 +52,173 @@
 @media (width >= 900px) {
   .hero {
     padding: 40px 32px;
+  }
+}
+
+.hero > div:first-child {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 340px;
+  position: relative;
+  padding-left: 0;
+  box-sizing: border-box;
+  background: url('https://www.medtronic.com/content/dam/medtronic-wide/public/brand-corporate-assets/imagery/concept/cardiac-surgeries-graphic.jpg') left center no-repeat;
+  background-size: contain;
+}
+
+.hero > div:first-child img {
+  display: block;
+  max-width: 380px;
+  width: 100%;
+  max-height: 420px;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero > div:last-child {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  min-height: 340px;
+  box-sizing: border-box;
+  padding: 0 2vw 0 0;
+}
+
+.hero > div:last-child > div {
+  max-width: 600px;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.hero h3 {
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  color: #B2B8FA;
+  text-transform: uppercase;
+  font-weight: 400;
+  margin-bottom: 20px;
+  margin-top: 0;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.hero h2 {
+  font-size: 52px;
+  font-weight: 300;
+  color: #FFF;
+  margin-bottom: 32px;
+  margin-top: 0;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-align: left;
+}
+
+.hero p {
+  font-size: 19px;
+  line-height: 1.6;
+  color: #E3E6F5;
+  margin-bottom: 28px;
+  margin-top: 0;
+  max-width: 560px;
+  text-align: left;
+}
+
+.hero .button-container {
+  margin-top: 18px;
+  margin-bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hero .button-container .button {
+  box-sizing: border-box;
+  padding: 14px 48px;
+  border: 2px solid #FFF;
+  background: transparent;
+  color: #FFF;
+  border-radius: 2.4em;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 0;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.hero .button-container .button:hover,
+.hero .button-container .button:focus {
+  background: #FFF;
+  color: #232965;
+  border-color: #232965;
+  text-decoration: none;
+}
+
+@media (width <= 900px) {
+  .hero {
+    flex-direction: column;
+    min-height: 360px;
+    width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    padding: 0;
+  }
+
+  .hero > div:first-child,
+  .hero > div:last-child {
+    min-height: unset;
+    padding: 0 5vw;
+    justify-content: center;
+  }
+
+  .hero > div:first-child {
+    margin-top: 32px;
+    margin-bottom: 0;
+    background-position: center top;
+    background-size: 220px auto;
+  }
+
+  .hero > div:first-child img {
+    max-width: 220px;
+    height: auto;
+  }
+
+  .hero > div:last-child {
+    margin-bottom: 32px;
+    padding: 0 5vw;
+  }
+
+  .hero > div:last-child > div {
+    max-width: 98vw;
+    margin: 0 auto;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .hero p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .hero .button-container {
+    justify-content: center;
   }
 }
