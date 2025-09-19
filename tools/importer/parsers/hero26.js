@@ -1,78 +1,91 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to get background image from inline style
-  function extractBackgroundImageUrl(style) {
-    if (!style) return null;
-    const match = style.match(/background-image:\s*url\(['"]?([^'")]+)['"]?\)/i);
+  // Helper: Extract background image URL from style
+  function getBackgroundImageUrl(el) {
+    const style = el.getAttribute('style') || '';
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/);
     if (match && match[1]) {
-      // Remove any escaped chars (\2f for /)
-      return match[1].replace(/\\2f /g, '/').replace(/\\2f/g, '/');
+      let url = match[1]
+        .replace(/\\2f/g, '/')
+        .replace(/(^['"]|['"]$)/g, '')
+        .replace(/\s/g, ''); // Remove any spaces
+      if (url.startsWith('/')) {
+        url = `https://www.medtronic.com${url}`;
+      }
+      return url;
     }
     return null;
   }
 
-  // 1. Header row
+  // Find background image
+  let bgUrl = null;
+  const bgDiv = element.querySelector(':scope > div');
+  if (bgDiv) {
+    bgUrl = getBackgroundImageUrl(bgDiv);
+  }
+
+  // Compose background image cell
+  let bgCell = '';
+  if (bgUrl) {
+    const img = document.createElement('img');
+    img.src = bgUrl;
+    img.alt = '';
+    img.loading = 'lazy';
+    bgCell = img;
+  }
+
+  // Find content container (the circle-content block)
+  const contentCol = element.querySelector('.circle-content');
+  let contentCell = '';
+  if (contentCol) {
+    // Eyebrow text
+    const eyebrowTextDiv = contentCol.querySelector('.eyebrow2 .cmp-text');
+    let eyebrowText = null;
+    if (eyebrowTextDiv) {
+      eyebrowText = eyebrowTextDiv.querySelector('p');
+    }
+
+    // Title
+    const titleDiv = contentCol.querySelector('.title .cmp-title h2');
+    let title = null;
+    if (titleDiv) {
+      title = titleDiv;
+    }
+
+    // Description
+    const descDiv = contentCol.querySelector('.text.no-bottom-margin-p .cmp-text');
+    let desc = null;
+    if (descDiv) {
+      desc = descDiv.querySelector('p');
+    }
+
+    // CTA Button
+    const btnDiv = contentCol.querySelector('.button .cmp-button');
+    let cta = null;
+    if (btnDiv) {
+      cta = btnDiv;
+    }
+
+    // Compose content cell
+    const cellContent = [];
+    if (eyebrowText) cellContent.push(eyebrowText);
+    if (title) cellContent.push(title);
+    if (desc) cellContent.push(desc);
+    if (cta) cellContent.push(cta);
+    contentCell = cellContent;
+  }
+
+  // Compose table rows
   const headerRow = ['Hero (hero26)'];
+  const bgRow = [bgCell];
+  const contentRow = [contentCell];
 
-  // 2. Background image row
-  let bgImgUrl = null;
-  let bgImgEl = null;
-  const containerDiv = element.querySelector(':scope > div');
-  if (containerDiv && containerDiv.getAttribute('style')) {
-    bgImgUrl = extractBackgroundImageUrl(containerDiv.getAttribute('style'));
-  }
-  if (bgImgUrl) {
-    bgImgEl = document.createElement('img');
-    bgImgEl.src = bgImgUrl.startsWith('http') ? bgImgUrl : `https://www.medtronic.com${bgImgUrl}`;
-    bgImgEl.alt = '';
-  }
-  const bgRow = [bgImgEl ? bgImgEl : ''];
-
-  // 3. Content row: Title, subheading, CTA
-  let contentContainer = null;
-  const cmpContainers = element.querySelectorAll('.cmp-container');
-  if (cmpContainers.length > 1) {
-    contentContainer = cmpContainers[cmpContainers.length - 1];
-  } else if (cmpContainers.length === 1) {
-    contentContainer = cmpContainers[0];
-  }
-
-  let contentParts = [];
-  if (contentContainer) {
-    // Eyebrow image (optional)
-    const eyebrowImg = contentContainer.querySelector('.cmp-image img');
-    // Eyebrow text (optional)
-    const eyebrowText = contentContainer.querySelector('.eyebrow2 .cmp-text p');
-    if (eyebrowImg) {
-      contentParts.push(eyebrowImg);
-    }
-    if (eyebrowText && eyebrowText.textContent.replace(/\u00a0/g, '').trim()) {
-      contentParts.push(eyebrowText);
-    }
-    // Title (h2)
-    const title = contentContainer.querySelector('.cmp-title__text');
-    if (title) {
-      contentParts.push(title);
-    }
-    // Description (first .cmp-text after title)
-    const desc = contentContainer.querySelector('.no-bottom-margin-p .cmp-text p');
-    if (desc) {
-      contentParts.push(desc);
-    }
-    // CTA button (a.cmp-button)
-    const cta = contentContainer.querySelector('a.cmp-button');
-    if (cta) {
-      contentParts.push(cta);
-    }
-  }
-  const contentRow = [contentParts.length ? contentParts : ''];
-
-  // Build the table
   const table = WebImporter.DOMUtils.createTable([
     headerRow,
     bgRow,
     contentRow
   ], document);
 
+  // Replace the original element
   element.replaceWith(table);
 }

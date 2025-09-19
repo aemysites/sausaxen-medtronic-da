@@ -1,71 +1,54 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Header row as per block requirement
+  // Block header row
   const headerRow = ['Embed (embedVideo21)'];
 
-  // Find the main dynamic media div
-  const dm = element.querySelector('[data-asset-path][data-asset-type]');
-  let videoUrl = null;
+  // Find the main video wrapper
+  const dynamicMedia = element.querySelector('[data-asset-type="videoavs"]');
   let posterUrl = null;
+  let videoUrl = null;
 
-  if (dm) {
-    // Try to construct a public video URL from asset-path and asset-name
-    const assetPath = dm.getAttribute('data-asset-path');
-    const assetName = dm.getAttribute('data-asset-name');
-    const videoServer = dm.getAttribute('data-videoserver') || 'https://medtronic.scene7.com/is/content/';
-    if (assetPath && assetName && videoServer) {
-      videoUrl = `${videoServer}${assetPath}/${assetName}`;
+  if (dynamicMedia) {
+    // Get poster from .s7videoelement or <video> tag
+    const videoElement = dynamicMedia.querySelector('.s7videoelement, video');
+    if (videoElement) {
+      posterUrl = videoElement.getAttribute('poster') || videoElement.querySelector('video')?.getAttribute('poster');
     }
-    // Poster image
-    const videoEl = dm.querySelector('video');
-    if (videoEl && videoEl.hasAttribute('poster')) {
-      posterUrl = videoEl.getAttribute('poster');
-    } else {
-      const videoDiv = dm.querySelector('[poster]');
-      if (videoDiv && videoDiv.getAttribute('poster')) {
-        posterUrl = videoDiv.getAttribute('poster');
-      }
+    // Construct a video URL from data attributes
+    const assetPath = dynamicMedia.getAttribute('data-asset-path');
+    const videoServer = dynamicMedia.getAttribute('data-videoserver');
+    if (assetPath && videoServer) {
+      videoUrl = `${videoServer}${assetPath}.mp4`;
     }
   }
 
-  // Compose the cell content as per block requirement: image above link
+  // Only include poster image and video link (no extraneous text)
   const cellContent = [];
   if (posterUrl) {
-    const imgEl = document.createElement('img');
-    imgEl.src = posterUrl;
-    imgEl.alt = '';
-    cellContent.push(imgEl);
+    const img = document.createElement('img');
+    img.src = posterUrl;
+    img.alt = '';
+    cellContent.push(img);
   }
   if (videoUrl) {
-    const linkEl = document.createElement('a');
-    linkEl.href = videoUrl;
-    linkEl.textContent = videoUrl;
-    cellContent.push(document.createElement('br'), linkEl);
+    if (cellContent.length > 0) cellContent.push(document.createElement('br'));
+    const a = document.createElement('a');
+    a.href = videoUrl;
+    a.textContent = videoUrl;
+    cellContent.push(a);
   }
 
-  // Only include text that is visually relevant and not UI chrome
-  // We'll look for visually prominent headings or paragraphs
-  // For this block, we want to include only main visible text, not UI labels
-  // Find all <h1>, <h2>, <h3>, <h4>, <h5>, <h6>, <p> inside the element
-  const textEls = element.querySelectorAll('h1, h2, h3, h4, h5, h6, p');
-  textEls.forEach(te => {
-    if (te.textContent.trim()) {
-      const textDiv = document.createElement('div');
-      textDiv.textContent = te.textContent.trim();
-      cellContent.push(document.createElement('br'), textDiv);
-    }
-  });
-
-  // If neither video nor poster, fallback to the whole element's content
-  if (!cellContent.length) {
-    cellContent.push(...element.childNodes);
+  // Fallback: if no video URL, output a message
+  if (!videoUrl) {
+    const fallback = document.createElement('div');
+    fallback.textContent = '[video embed could not be determined]';
+    cellContent.push(fallback);
   }
 
-  const tableRows = [
+  const table = WebImporter.DOMUtils.createTable([
     headerRow,
-    [cellContent]
-  ];
+    [cellContent],
+  ], document);
 
-  const table = WebImporter.DOMUtils.createTable(tableRows, document);
   element.replaceWith(table);
 }
