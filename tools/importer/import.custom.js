@@ -76,6 +76,9 @@ export const customTransformers = {
           let element5 = doc.querySelector("#fsvs-pagination");
           console.log('Before removal - #fsvs-pagination found:', !!element5);
           element5?.remove();
+          doc.querySelector(".modal-dialog")?.remove();
+          doc.querySelector("#outdated")?.remove();
+          doc.querySelector("#modalAcknowledge")?.remove();
           console.log('After removal - #fsvs-pagination still exists:', !!doc.querySelector("#fsvs-pagination"));
            console.log('All element removals completed');
         } else {
