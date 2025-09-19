@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .hero-container .hero-wrapper {
   max-width: unset;
   padding: 0;
@@ -5,8 +6,24 @@
 
 .hero {
   position: relative;
-  padding: 40px 24px;
-  min-height: 300px;
+  padding: 0;
+  min-height: 700px;
+  background:
+    linear-gradient(90deg, #151248 0%, rgb(21 18 72 / 70%) 45%, rgb(21 18 72 / 20%) 75%, rgb(21 18 72 / 0%) 100%),
+    url('./media_16598ead8162ced6fa4d2429402c8b7e3d9cec906.jpg?width=2000&format=jpg&optimize=medium') center center / cover no-repeat;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  box-sizing: border-box;
+  gap: 0;
+  height: 100vh;
+  justify-content: flex-start;
+  overflow: hidden;
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .hero h1,
@@ -43,5 +60,606 @@
 @media (width >= 900px) {
   .hero {
     padding: 40px 32px;
+  }
+}
+
+.hero > div:first-child {
+  flex: 1 1 50%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 340px;
+  position: relative;
+  padding-left: 0;
+  box-sizing: border-box;
+  background: url('https://www.medtronic.com/content/dam/medtronic-wide/public/brand-corporate-assets/imagery/concept/cardiac-surgeries-graphic.jpg') left center no-repeat;
+  background-size: contain;
+}
+
+.hero > div:first-child img {
+  display: block;
+  max-width: 380px;
+  width: 100%;
+  max-height: 420px;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero > div:last-child {
+  flex: 1 1 50%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 100%;
+  min-height: 340px;
+  box-sizing: border-box;
+  padding: 0 2vw 0 0;
+  position: relative;
+  z-index: 2;
+  flex-direction: column;
+  width: 34vw;
+  max-width: 440px;
+  min-width: 320px;
+  padding-left: 8vw;
+  padding-right: 2vw;
+}
+
+.hero > div:last-child > div {
+  max-width: 600px;
+  width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  justify-content: center;
+}
+
+.hero h3 {
+  font-size: 13px;
+  letter-spacing: 1.5px;
+  color: #B2B8FA;
+  text-transform: uppercase;
+  font-weight: 400;
+  margin-bottom: 20px;
+  margin-top: 0;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.hero h2 {
+  font-size: 52px;
+  font-weight: 300;
+  color: #FFF;
+  margin-bottom: 32px;
+  margin-top: 0;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  text-align: left;
+}
+
+.hero p {
+  font-size: 19px;
+  line-height: 1.6;
+  color: #E3E6F5;
+  margin-bottom: 28px;
+  margin-top: 0;
+  max-width: 560px;
+  text-align: left;
+}
+
+.hero .button-container {
+  margin-top: 24px;
+  margin-bottom: 0;
+  width: auto;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hero .button-container .button {
+  box-sizing: border-box;
+  padding: 14px 48px;
+  border: 2px solid #FFF;
+  background: transparent;
+  color: #FFF;
+  border-radius: 2.4em;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 0;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.hero .button-container .button:hover,
+.hero .button-container .button:focus {
+  background: #FFF;
+  color: #232965;
+  border-color: #232965;
+  text-decoration: none;
+}
+
+@media (width <= 900px) {
+  .hero {
+    flex-direction: column;
+    min-height: 360px;
+    width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+    padding: 0;
+  }
+
+  .hero > div:first-child,
+  .hero > div:last-child {
+    min-height: unset;
+    padding: 0 5vw;
+    justify-content: center;
+  }
+
+  .hero > div:first-child {
+    margin-top: 32px;
+    margin-bottom: 0;
+    background-position: center top;
+    background-size: 220px auto;
+  }
+
+  .hero > div:first-child img {
+    max-width: 220px;
+    height: auto;
+  }
+
+  .hero > div:last-child {
+    margin-bottom: 32px;
+    padding: 0 5vw;
+  }
+
+  .hero > div:last-child > div {
+    max-width: 98vw;
+    margin: 0 auto;
+    align-items: center;
+    text-align: center;
+  }
+
+  .hero h2 {
+    font-size: 32px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .hero p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+
+  .hero .button-container {
+    justify-content: center;
+  }
+}
+
+
+.hero.hero4 {
+  background: #f7f7fa;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  height: 100vh;
+  min-height: 520px;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.hero.hero4 > div:first-child {
+  flex: 1.07 1 0;
+  order: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+  height: 100%;
+  min-height: 520px;
+  padding: 0;
+}
+
+.hero.hero4 > div:first-child picture,
+.hero.hero4 > div:first-child img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 520px;
+  max-height: 100vh;
+  object-fit: cover;
+  border-radius: 0;
+}
+
+.hero.hero4 > div:last-child {
+  flex: 0.93 1 0;
+  order: 2;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 520px;
+  height: 100%;
+  padding-left: 36px;
+  box-sizing: border-box;
+}
+
+.hero.hero4 > div:last-child > div {
+  max-width: 480px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12px;
+}
+
+.hero.hero4 h1 {
+  font-size: 2.7rem;
+  font-weight: 300;
+  color: #312981;
+  margin: 0 0 18px;
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+}
+
+.hero.hero4 p {
+  font-size: 1.1rem;
+  color: #5a5a70;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+}
+
+@media (width <= 1100px) {
+  .hero.hero4 {
+    height: 340px;
+    min-height: 340px;
+  }
+
+  .hero.hero4 > div:first-child,
+  .hero.hero4 > div:last-child {
+    min-height: 340px;
+    height: 100%;
+  }
+
+  .hero.hero4 > div:first-child picture,
+  .hero.hero4 > div:first-child img {
+    min-height: 340px;
+    max-height: 340px;
+  }
+}
+
+@media (width <= 900px) {
+  .hero.hero4 {
+    flex-direction: column;
+    height: auto;
+    min-height: 0;
+  }
+
+  .hero.hero4 > div:first-child,
+  .hero.hero4 > div:last-child {
+    width: 100%;
+    max-width: none;
+    min-height: unset;
+    height: auto;
+    padding: 0 5vw;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero.hero4 > div:first-child {
+    padding-top: 32px;
+    padding-bottom: 0;
+    min-height: 0;
+  }
+
+  .hero.hero4 > div:first-child picture,
+  .hero.hero4 > div:first-child img {
+    height: 220px;
+    min-height: 0;
+    max-height: 220px;
+    width: 100vw;
+    max-width: 100vw;
+    object-fit: cover;
+  }
+
+  .hero.hero4 > div:last-child {
+    padding: 24px 0 0;
+    min-height: 0;
+  }
+
+  .hero.hero4 > div:last-child > div {
+    max-width: 98vw;
+    margin: 0 auto;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  .hero.hero4 h1 {
+    font-size: 2rem;
+  }
+
+  .hero.hero4 p {
+    font-size: 1rem;
+  }
+}
+
+
+.hero-container > .hero-wrapper {
+  max-width: unset;
+  padding: 0;
+  margin-top: 0;
+}
+
+.hero p:first-child {
+  color: #fff;
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 2.5px;
+  margin-bottom: 26px;
+  margin-top: 0;
+  opacity: 0.85;
+}
+
+.hero p:nth-child(2) {
+  color: #fff;
+  font-size: 48px;
+  font-weight: 300;
+  line-height: 1.1;
+  margin: 0 0 34px;
+  max-width: 100%;
+}
+
+.hero h1 {
+  color: #fff;
+  font-size: 24px;
+  font-weight: 400;
+  line-height: 1.2;
+  margin: 0 0 36px;
+  opacity: 0.95;
+  max-width: 400px;
+}
+
+.hero .button-container .button,
+.hero a.button {
+  padding: 16px 32px;
+  border: 2px solid #fff;
+  background: transparent;
+  color: #fff;
+  border-radius: 2.4em;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.25;
+  margin: 0;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.hero .button-container .button:hover,
+.hero .button-container .button:focus,
+.hero a.button:hover,
+.hero a.button:focus {
+  background: #fff;
+  color: #151248;
+  border-color: #151248;
+  text-decoration: none;
+}
+
+@media (width <= 900px) {
+  .hero {
+    flex-direction: column;
+    min-height: 400px;
+    height: auto;
+    padding: 0;
+    background-position: center top;
+    background-size: cover;
+  }
+
+  .hero > div:last-child {
+    width: 98vw;
+    max-width: 98vw;
+    min-height: unset;
+    height: auto;
+    padding: 12vw 6vw;
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .hero > div:last-child > div {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+
+  .hero p:nth-child(2) {
+    font-size: 34px;
+    margin-bottom: 18px;
+  }
+
+  .hero h1 {
+    font-size: 18px;
+    margin-bottom: 18px;
+    max-width: 96vw;
+  }
+
+  .hero .button-container {
+    margin-top: 18px;
+    justify-content: flex-start;
+  }
+}
+
+
+.hero.hero19 {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  height: 350px;
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+  background: none;
+  overflow: hidden;
+  position: relative;
+  box-sizing: border-box;
+}
+
+.hero.hero19 > div {
+  min-width: 0;
+  height: 100%;
+}
+
+.hero.hero19 > div:first-child {
+  flex: 1 1 0;
+  order: 2;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.hero.hero19 > div:first-child > div,
+.hero.hero19 > div:first-child picture,
+.hero.hero19 > div:first-child img {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+  border: 0;
+  box-shadow: none;
+  position: relative;
+  top: 0;
+  left: 0;
+}
+
+.hero.hero19 > div:first-child picture {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero.hero19 > div:first-child::after {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: linear-gradient(to left, rgb(255 255 255 / 0%) 58%, #fff 100%);
+  z-index: 1;
+}
+
+.hero.hero19 > div:last-child {
+  flex: 1 1 0;
+  order: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100%;
+  padding-left: 6vw;
+  padding-right: 2vw;
+  max-width: 650px;
+  min-width: 320px;
+  box-sizing: border-box;
+  background: transparent;
+  z-index: 2;
+}
+
+.hero.hero19 > div:last-child > div {
+  width: 100%;
+  max-width: 490px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+.hero.hero19 > div:last-child p:first-child {
+  color: #858585;
+  font-size: 12px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin-bottom: 1.4em;
+  margin-top: 0;
+  font-weight: 400;
+}
+
+.hero.hero19 > div:last-child p:nth-child(2) {
+  color: #373A8B;
+  font-size: 48px;
+  font-weight: 400;
+  line-height: 1.05;
+  margin: 0 0 1em;
+  letter-spacing: normal;
+}
+
+.hero.hero19 > div:last-child h1 {
+  color: #444;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
+  margin: 0;
+}
+
+@media (width <= 900px) {
+  .hero.hero19 {
+    flex-direction: column;
+    height: auto;
+    min-height: 360px;
+    width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .hero.hero19 > div:first-child,
+  .hero.hero19 > div:last-child {
+    width: 100%;
+    min-width: 0;
+    height: auto;
+    padding: 0 5vw;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero.hero19 > div:first-child::after {
+    left: 0;
+    background: linear-gradient(to left, rgb(255 255 255 / 0%) 80%, #fff 100%);
+  }
+
+  .hero.hero19 > div:last-child {
+    padding: 32px 0;
+    max-width: 98vw;
+  }
+
+  .hero.hero19 > div:last-child > div {
+    max-width: 95vw;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .hero.hero19 > div:last-child p:nth-child(2) {
+    font-size: 32px;
+  }
+
+  .hero.hero19 > div:last-child h1 {
+    font-size: 16px;
+    margin-bottom: 18px;
+    max-width: 96vw;
   }
 }
