@@ -1,58 +1,70 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the main grid for the columns
-  let mainGrid = element.querySelector('.aem-Grid.aem-Grid--8') || element.querySelector('.aem-Grid.aem-Grid--12');
-  if (!mainGrid) {
-    mainGrid = element.querySelector('.aem-Grid');
-  }
-  if (!mainGrid) {
-    mainGrid = element;
+  // Helper: get all direct children with a class
+  function getDirectChildrenByClass(parent, className) {
+    return Array.from(parent.children).filter(child => child.classList.contains(className));
   }
 
-  // Find all direct children that are columns (container or image)
-  const columns = Array.from(mainGrid.children).filter((c) =>
-    c.classList.contains('container') || c.classList.contains('image')
-  );
+  // Find the two main columns in the visual layout
+  // 1. Left column: contains the blue bar image, mission text, heading, description, link
+  // 2. Right column: contains the large illustration image
 
-  // For each column, extract all content blocks (text, image, etc.)
-  const contentRow = columns.map((col) => {
-    // If it's a container, flatten its cmp-container > .aem-Grid > children
-    if (col.classList.contains('container')) {
-      const cmpContainer = col.querySelector('.cmp-container');
-      const innerGrid = cmpContainer ? cmpContainer.querySelector('.aem-Grid') : null;
-      if (innerGrid) {
-        // Collect all content blocks (text, image, etc.)
-        return Array.from(innerGrid.children).map((child) => {
-          // If child contains .cmp-text, return that node
-          const cmpText = child.querySelector('.cmp-text');
-          if (cmpText) return cmpText;
-          // If child contains an image, return the <img>
-          const img = child.querySelector('img');
-          if (img) return img;
-          // Otherwise, return the child itself
-          return child;
-        });
-      } else if (cmpContainer) {
-        // Fallback: just return cmp-container's children
-        return Array.from(cmpContainer.children);
-      } else {
-        // Fallback: just return the col
-        return [col];
+  // The structure is deeply nested, so we need to traverse down to the two main columns
+  // Step 1: Find the first .aem-Grid with 8 columns (left+right)
+  const outerGrid = element.querySelector('.aem-Grid.aem-Grid--8');
+  if (!outerGrid) return;
+
+  // Step 2: Find the left and right column containers
+  // Left: .container.responsivegrid.left-pad.right-pad
+  // Right: .image.aem-GridColumn--default--5
+  let leftCol, rightCol;
+  const children = Array.from(outerGrid.children);
+  // The left column is the first .container.responsivegrid
+  leftCol = children.find(child => child.classList.contains('container') && child.classList.contains('responsivegrid'));
+  // The right column is the first .image (not inside leftCol)
+  rightCol = children.find(child => child.classList.contains('image'));
+
+  // Defensive: If not found, fallback to first and second child
+  if (!leftCol || !rightCol) {
+    leftCol = children[0];
+    rightCol = children[1];
+  }
+
+  // LEFT COLUMN: Compose all content blocks in leftCol
+  // It has a .aem-Grid with 3 content blocks: blue bar image, eyebrow text, heading, description, link
+  let leftContent = [];
+  const leftGrid = leftCol.querySelector('.aem-Grid');
+  if (leftGrid) {
+    const leftBlocks = Array.from(leftGrid.children);
+    leftBlocks.forEach(block => {
+      // Only add blocks that have content
+      if (block.textContent.trim() || block.querySelector('img')) {
+        leftContent.push(block);
       }
-    } else if (col.classList.contains('image')) {
-      // For image columns, just return the <img> if present
-      const img = col.querySelector('img');
-      if (img) return [img];
-      return [col];
-    }
-    return [col];
-  });
+    });
+  } else {
+    leftContent.push(leftCol);
+  }
 
-  // Flatten any single-element arrays
-  const normalizedContentRow = contentRow.map((cell) => (cell.length === 1 ? cell[0] : cell));
+  // RIGHT COLUMN: The image is inside a .cmp-image
+  let rightContent = [];
+  const cmpImage = rightCol.querySelector('.cmp-image');
+  if (cmpImage) {
+    rightContent.push(cmpImage);
+  } else {
+    // fallback: any images
+    const imgs = rightCol.querySelectorAll('img');
+    rightContent = Array.from(imgs);
+  }
 
+  // Compose the table rows
   const headerRow = ['Columns (columns15)'];
-  const cells = [headerRow, normalizedContentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  const contentRow = [leftContent, rightContent];
+
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    contentRow
+  ], document);
+
   element.replaceWith(table);
 }

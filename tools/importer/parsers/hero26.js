@@ -1,97 +1,89 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to get background image from inline style
+  // Helper: Extract background image from style attribute
   function getBackgroundImageUrl(el) {
     const style = el.getAttribute('style') || '';
-    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/i);
+    const match = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/);
     if (match && match[1]) {
-      // Remove any escaped characters
-      let url = match[1].replace(/\\/g, '');
-      // Remove surrounding quotes if present
-      url = url.replace(/^['"]|['"]$/g, '');
-      // If relative, prepend domain
-      if (url.startsWith('/')) {
-        url = `https://www.medtronic.com${url}`;
-      }
-      return url;
+      // decode any escaped chars
+      return match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
     }
     return null;
   }
 
-  // Find the main container with background image
-  const bgContainer = element.querySelector(':scope > div');
-  const bgImageUrl = bgContainer ? getBackgroundImageUrl(bgContainer) : null;
+  // Find the background image from the innermost .cmp-container or fallback to top-level
+  let bgImageUrl = null;
+  const containers = element.querySelectorAll(':scope > div > div');
+  for (const c of containers) {
+    bgImageUrl = getBackgroundImageUrl(c);
+    if (bgImageUrl) break;
+  }
+  if (!bgImageUrl) {
+    bgImageUrl = getBackgroundImageUrl(element);
+  }
 
-  // Compose background image element if present
-  let bgImageEl = null;
+  // Compose background image cell (row 2)
+  let bgImageCell = '';
   if (bgImageUrl) {
-    bgImageEl = document.createElement('img');
-    bgImageEl.src = bgImageUrl;
-    bgImageEl.alt = '';
-    bgImageEl.setAttribute('loading', 'eager');
-    bgImageEl.style.width = '100%';
-    bgImageEl.style.height = 'auto';
+    let src = bgImageUrl;
+    if (!/^https?:\/\//.test(src)) {
+      src = 'https://www.medtronic.com' + src;
+    }
+    const img = document.createElement('img');
+    img.src = src;
+    img.alt = '';
+    bgImageCell = img;
   }
 
-  // Find the content area (the circle-content container)
-  let contentContainer = null;
-  const grid = bgContainer ? bgContainer.querySelector('.aem-Grid') : null;
-  if (grid) {
-    contentContainer = grid.querySelector('.circle-content');
+  // Find the main content container (circle-content preferred)
+  let contentContainer = element.querySelector('.circle-content');
+  if (!contentContainer) {
+    contentContainer = element.querySelector('.cmp-container');
   }
 
-  // Defensive: If not found, fallback to first .cmp-container inside
-  if (!contentContainer && bgContainer) {
-    contentContainer = bgContainer.querySelector('.cmp-container');
-  }
-
-  // Extract content elements
-  let eyebrowImg = null, eyebrowText = null, title = null, description = null, cta = null;
+  // Compose content cell (row 3): only necessary elements, no wrappers or empty paragraphs
+  const contentParts = [];
   if (contentContainer) {
-    // Eyebrow image (decorative bar)
-    const imgWrap = contentContainer.querySelector('.image .cmp-image img');
-    if (imgWrap) {
-      eyebrowImg = imgWrap;
+    // Eyebrow text (skip empty or whitespace-only)
+    const eyebrowText = contentContainer.querySelector('.eyebrow2 .cmp-text');
+    if (eyebrowText) {
+      // Only include non-empty text
+      const eyebrowClone = eyebrowText.cloneNode(true);
+      // Remove empty or whitespace-only paragraphs
+      eyebrowClone.querySelectorAll('p').forEach(p => { if (!p.textContent.trim()) p.remove(); });
+      if (eyebrowClone.textContent.trim()) {
+        contentParts.push(...Array.from(eyebrowClone.childNodes));
+      }
     }
-    // Eyebrow text
-    const eyebrowDiv = contentContainer.querySelector('.text.eyebrow2 .cmp-text p');
-    if (eyebrowDiv && eyebrowDiv.textContent.trim()) {
-      eyebrowText = eyebrowDiv;
+    // Title (h2)
+    const title = contentContainer.querySelector('.cmp-title h2');
+    if (title) {
+      contentParts.push(title.cloneNode(true));
     }
-    // Title
-    const titleDiv = contentContainer.querySelector('.title .cmp-title h2');
-    if (titleDiv) {
-      title = titleDiv;
+    // Paragraph (skip empty or whitespace-only)
+    const paragraph = contentContainer.querySelector('.no-bottom-margin-p .cmp-text');
+    if (paragraph) {
+      const paraClone = paragraph.cloneNode(true);
+      // Remove empty or whitespace-only paragraphs
+      paraClone.querySelectorAll('p').forEach(p => { if (!p.textContent.trim()) p.remove(); });
+      if (paraClone.textContent.trim()) {
+        contentParts.push(...Array.from(paraClone.childNodes));
+      }
     }
-    // Description
-    const descDiv = contentContainer.querySelector('.text.no-bottom-margin-p .cmp-text p');
-    if (descDiv) {
-      description = descDiv;
-    }
-    // CTA button
-    const ctaLink = contentContainer.querySelector('.button a.cmp-button');
-    if (ctaLink) {
-      cta = ctaLink;
+    // CTA Button
+    const button = contentContainer.querySelector('.cmp-button');
+    if (button) {
+      contentParts.push(button.cloneNode(true));
     }
   }
 
-  // Compose content cell for row 3
-  const contentCell = [];
-  if (eyebrowImg) contentCell.push(eyebrowImg);
-  if (eyebrowText) contentCell.push(eyebrowText);
-  if (title) contentCell.push(title);
-  if (description) contentCell.push(description);
-  if (cta) contentCell.push(cta);
-
-  // Compose the table rows
+  // Build table rows
   const headerRow = ['Hero (hero26)'];
-  const bgRow = [bgImageEl ? bgImageEl : ''];
-  const contentRow = [contentCell.length ? contentCell : ''];
+  const bgRow = [bgImageCell];
+  const contentRow = [contentParts];
 
-  // Create the block table
   const cells = [headerRow, bgRow, contentRow];
   const block = WebImporter.DOMUtils.createTable(cells, document);
 
-  // Replace the original element
   element.replaceWith(block);
 }

@@ -1,48 +1,68 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Always use the block name in the header row
+  // Block name header row
   const headerRow = ['Hero (hero27)'];
 
-  // Find the largest containing div (hero container)
-  let heroContainer = element.closest('div');
-  if (!heroContainer) heroContainer = element;
+  // Find background image: look for an <img> in previous siblings or parent
+  let backgroundImg = '';
+  let imgEl = null;
+  if (element.previousElementSibling) {
+    imgEl = element.previousElementSibling.querySelector('img');
+  }
+  if (!imgEl && element.parentElement) {
+    imgEl = element.parentElement.querySelector('img');
+  }
+  if (imgEl && imgEl.src) {
+    const img = document.createElement('img');
+    img.src = imgEl.src;
+    backgroundImg = img;
+  }
+  const imageRow = [backgroundImg || ''];
 
-  // Find a background image (img not inside carousel controls)
-  let imageCell = '';
-  const imgs = heroContainer.querySelectorAll('img');
-  for (const img of imgs) {
-    if (!img.closest('.cmp-carousel__actions')) {
-      imageCell = document.createElement('img');
-      imageCell.src = img.src;
-      break;
+  // Find content: headings, paragraphs, CTA (from next sibling or parent)
+  let contentBlock = '';
+  let found = false;
+  // Find the first element after the carousel nav that is not a nav or button group
+  let contentContainer = element.nextElementSibling;
+  // If next sibling is not a content container, search parent for a likely content area
+  if (!contentContainer || contentContainer.classList.contains('cmp-carousel__actions')) {
+    // Try to find a main content container inside the parent
+    const candidates = Array.from(element.parentElement.children).filter(
+      el => el !== element && !el.classList.contains('cmp-carousel__actions')
+    );
+    contentContainer = candidates.find(
+      el => el.querySelector('h1, h2, h3, h4, h5, h6, p, a, button')
+    );
+  }
+  if (contentContainer) {
+    const frag = document.createDocumentFragment();
+    // Headings
+    ['h1','h2','h3','h4','h5','h6'].forEach(tag => {
+      contentContainer.querySelectorAll(tag).forEach(el => {
+        frag.appendChild(el.cloneNode(true));
+        found = true;
+      });
+    });
+    // Paragraphs
+    contentContainer.querySelectorAll('p').forEach(el => {
+      frag.appendChild(el.cloneNode(true));
+      found = true;
+    });
+    // CTA links/buttons
+    contentContainer.querySelectorAll('a,button').forEach(el => {
+      frag.appendChild(el.cloneNode(true));
+      found = true;
+    });
+    if (found) {
+      const wrapper = document.createElement('div');
+      wrapper.appendChild(frag);
+      contentBlock = wrapper;
     }
   }
+  // Always output three rows per block spec
+  const rows = [headerRow, imageRow, [contentBlock || '']];
 
-  // Extract all visible text content from ALL descendants (not inside carousel controls)
-  // Use less specific selector to include all text blocks
-  let contentCell = '';
-  let contentBlock = document.createElement('div');
-  heroContainer.querySelectorAll('*:not(.cmp-carousel__actions *)').forEach(el => {
-    // Only include elements with visible text and not images or carousel controls
-    if (
-      el.nodeType === 1 &&
-      !el.closest('.cmp-carousel__actions') &&
-      el !== imageCell &&
-      el.textContent && el.textContent.trim() &&
-      !el.matches('img')
-    ) {
-      contentBlock.appendChild(el.cloneNode(true));
-    }
-  });
-  if (contentBlock.childNodes.length) {
-    contentCell = contentBlock;
-  }
+  const table = WebImporter.DOMUtils.createTable(rows, document);
 
-  // Build the table
-  const table = WebImporter.DOMUtils.createTable([
-    headerRow,
-    [imageCell],
-    [contentCell],
-  ], document);
   element.replaceWith(table);
 }

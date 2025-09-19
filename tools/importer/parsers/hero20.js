@@ -1,20 +1,16 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to extract background image URL from inline style
-  function getBackgroundImageUrl(style) {
-    if (!style) return null;
+  // Helper: Extract background image URL from inline style
+  function getBackgroundImageUrl(el) {
+    const style = el.getAttribute('style') || '';
     const match = style.match(/background-image:\s*url\(([^)]+)\)/);
     if (match && match[1]) {
-      let url = match[1].trim();
-      // Remove any escaped characters
-      url = url.replace(/\\/g, '');
-      // Remove any surrounding quotes
-      url = url.replace(/^['"]|['"]$/g, '');
-      // If relative, prepend origin
-      if (url.startsWith('/')) {
-        url = window.location.origin + url;
+      let url = match[1].replace(/\\2f/g, '/').replace(/\s+/g, '').replace(/(^['"]|['"]$)/g, '');
+      url = url.trim();
+      // Only return if it looks like a valid path
+      if (/^https?:\/\//.test(url) || url.startsWith('/')) {
+        return url;
       }
-      return url;
     }
     return null;
   }
@@ -24,73 +20,61 @@ export default function parse(element, { document }) {
 
   // 2. Background image row
   let bgImgUrl = null;
-  // Find the first element with a background-image style
-  let bgDiv = null;
-  const allDivs = element.querySelectorAll('div');
-  for (const div of allDivs) {
-    const style = div.getAttribute('style');
-    if (style && style.includes('background-image')) {
-      bgImgUrl = getBackgroundImageUrl(style);
-      bgDiv = div;
-      break;
-    }
+  const bgDiv = element.querySelector('[style*="background-image"]');
+  if (bgDiv) {
+    bgImgUrl = getBackgroundImageUrl(bgDiv);
   }
-
   let bgImgEl = null;
   if (bgImgUrl) {
     bgImgEl = document.createElement('img');
     bgImgEl.src = bgImgUrl;
     bgImgEl.alt = '';
-    bgImgEl.loading = 'eager';
-    bgImgEl.style.width = '100%';
-    bgImgEl.style.height = 'auto';
   }
   const bgRow = [bgImgEl ? bgImgEl : ''];
 
-  // 3. Content row (title, subheading, paragraph)
-  // Find all text blocks in the deepest grid
-  let contentRow = [''];
-  let contentContainer = null;
-  // Find the deepest aem-Grid
-  let grids = element.querySelectorAll('.aem-Grid');
-  let deepestGrid = null;
-  let maxDepth = -1;
-  for (const grid of grids) {
-    let depth = 0;
-    let node = grid;
-    while (node.parentElement && node.parentElement !== element) {
-      node = node.parentElement;
-      depth++;
-    }
-    if (depth > maxDepth) {
-      maxDepth = depth;
-      deepestGrid = grid;
-    }
+  // 3. Content row (eyebrow, title, subheading)
+  let contentGrid = null;
+  const grids = element.querySelectorAll('.aem-Grid');
+  if (grids.length) {
+    contentGrid = grids[grids.length - 1];
   }
-  if (deepestGrid) {
-    // Get all direct children with class 'text'
-    const textBlocks = deepestGrid.querySelectorAll(':scope > div.text');
-    // Compose a container for all text blocks
-    contentContainer = document.createElement('div');
-    for (const block of textBlocks) {
-      // Find the cmp-text child
-      const cmpText = block.querySelector('.cmp-text');
-      if (cmpText) {
-        // Append all children (paragraphs)
-        for (const child of cmpText.children) {
-          contentContainer.appendChild(child.cloneNode(true));
+  if (!contentGrid) contentGrid = element;
+
+  // Extract text blocks
+  const textBlocks = contentGrid.querySelectorAll(':scope > div .cmp-text');
+  const contentCell = [];
+  // Remove empty spans and style title as heading
+  textBlocks.forEach((block, i) => {
+    Array.from(block.childNodes).forEach(node => {
+      if (node.nodeType === 1) {
+        // element
+        // For the title block, wrap first <p> as heading
+        if (i === 1 && node.tagName === 'P') {
+          const h = document.createElement('h2');
+          h.innerHTML = node.innerHTML;
+          contentCell.push(h);
+        } else if (node.tagName === 'P' && node.textContent.trim() !== '') {
+          contentCell.push(node.cloneNode(true));
+        }
+      } else if (node.nodeType === 3) {
+        // text
+        if (node.textContent.trim() !== '') {
+          const span = document.createElement('span');
+          span.textContent = node.textContent;
+          contentCell.push(span);
         }
       }
-    }
-    contentRow = [contentContainer];
-  }
+    });
+  });
 
-  // Compose table
+  const contentRow = [contentCell.length ? contentCell : ''];
+
   const cells = [
     headerRow,
     bgRow,
-    contentRow
+    contentRow,
   ];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
-  element.replaceWith(table);
+
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+  element.replaceWith(block);
 }

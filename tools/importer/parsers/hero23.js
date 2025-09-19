@@ -1,59 +1,72 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: Extract background image URL from inline style
-  function getBackgroundImageUrl(el) {
-    const style = el.getAttribute('style') || '';
-    const match = style.match(/background-image\s*:\s*url\(([^)]+)\)/);
-    if (match && match[1]) {
-      let url = match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
-      url = url.replace(/^['"]|['"]$/g, ''); // Remove quotes
-      // If relative, prepend origin
-      if (/^\//.test(url)) {
-        url = window.location.origin + url;
-      }
-      return url;
-    }
-    return null;
-  }
-
-  // 1. Header row
+  // 1. Table header row
   const headerRow = ['Hero (hero23)'];
 
   // 2. Background image row
-  let bgContainer = element.querySelector('[style*="background-image"]');
-  let bgUrl = bgContainer ? getBackgroundImageUrl(bgContainer) : null;
-  let bgImgEl = null;
-  if (bgUrl) {
-    bgImgEl = document.createElement('img');
-    bgImgEl.src = bgUrl;
-    bgImgEl.alt = '';
-    bgImgEl.loading = 'eager';
-    bgImgEl.style.width = '100%';
+  let bgImgRow = [''];
+  // Find background image from inline style
+  let bgUrl = '';
+  const bgContainer = element.querySelector('[style*="background-image"]');
+  if (bgContainer) {
+    const style = bgContainer.getAttribute('style');
+    const match = style.match(/background-image:\s*url\(([^)]+)\)/);
+    if (match && match[1]) {
+      bgUrl = match[1]
+        .replace(/\\2f/g, '/')
+        .replace(/\s+/g, '') // Remove all whitespace
+        .replace(/'/g, '')
+        .replace(/\"/g, '')
+        .trim();
+      // Remove leading slash if present
+      if (!bgUrl.startsWith('/')) bgUrl = '/' + bgUrl;
+      // Create image element
+      const img = document.createElement('img');
+      img.src = bgUrl;
+      bgImgRow = [img];
+    }
   }
-  const bgRow = [bgImgEl ? bgImgEl : ''];
 
-  // 3. Content row
-  // Only immediate children of the deepest .aem-Grid
-  let grid = element.querySelector('.aem-Grid.aem-Grid--11') || element.querySelector('.aem-Grid.aem-Grid--12');
-  let contentEls = [];
-  if (grid) {
-    // Eyebrow (Who we are)
-    const eyebrow = grid.querySelector('.eyebrow2 .cmp-text');
-    if (eyebrow) contentEls.push(eyebrow);
-    // Main heading (Engineering the extraordinary)
-    const h1block = grid.querySelector('.h1 .cmp-text');
-    if (h1block) contentEls.push(h1block);
-    // Subheading (Groundbreaking healthcare...)
-    const introHeading = grid.querySelector('.intro-heading .cmp-title');
-    if (introHeading) contentEls.push(introHeading);
-    // Button (See how)
-    const ctaBtn = grid.querySelector('.button .cmp-button');
-    if (ctaBtn) contentEls.push(ctaBtn);
+  // 3. Content row: Title, Subheading, CTA
+  // We'll collect all relevant content from the nested grid structure
+  const contentEls = [];
+  // Eyebrow
+  const eyebrow = element.querySelector('.eyebrow2 .cmp-text');
+  if (eyebrow) {
+    contentEls.push(eyebrow);
   }
-  const contentRow = [contentEls.length ? contentEls : ''];
+  // Main heading ("Engineering the extraordinary")
+  const mainHeading = element.querySelector('.h1 .cmp-text');
+  if (mainHeading) {
+    // Convert to h2 for semantic heading if not already
+    const h2 = document.createElement('h2');
+    h2.innerHTML = mainHeading.innerHTML;
+    contentEls.push(h2);
+  }
+  // Subheading (longer text)
+  const subheading = element.querySelector('.intro-heading .cmp-title');
+  if (subheading) {
+    const h1 = subheading.querySelector('h1');
+    if (h1) {
+      const p = document.createElement('p');
+      p.innerHTML = h1.innerHTML;
+      contentEls.push(p);
+    }
+  }
+  // CTA button
+  const cta = element.querySelector('.button a.cmp-button');
+  if (cta) {
+    contentEls.push(cta);
+  }
 
-  // Build table
-  const cells = [headerRow, bgRow, contentRow];
-  const table = WebImporter.DOMUtils.createTable(cells, document);
+  const contentRow = [contentEls];
+
+  // Assemble table
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    bgImgRow,
+    contentRow,
+  ], document);
+
   element.replaceWith(table);
 }

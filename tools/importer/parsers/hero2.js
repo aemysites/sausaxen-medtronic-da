@@ -1,86 +1,81 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper: Extract background image URL from inline style or img
-  function getBgImageUrl(el) {
-    const style = el.getAttribute('style') || '';
-    const match = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/i);
+  // Helper to extract background-image url from style attribute
+  function extractBgUrl(style) {
+    if (!style) return null;
+    const match = style.match(/background-image:\s*url\(['"]?([^'")]+)['"]?\)/i);
     if (match && match[1]) {
-      let url = match[1]
-        .replace(/\\2f/g, '/')
-        .replace(/\\/g, '')
-        .replace(/\s+/g, '');
-      url = url.replace(/^\//, '');
-      if (!/^https?:\/\//.test(url)) {
-        url = `${document.location.origin}/${url}`;
-      }
-      return url;
-    }
-    // Check for img tag
-    const img = el.querySelector('img');
-    if (img && img.src) {
-      return img.src;
+      // Unescape any encoded slashes
+      return match[1].replace(/\\2f /g, '/').replace(/\\/g, '');
     }
     return null;
   }
 
-  // Helper: Create image element from URL
-  function createImage(url) {
-    const img = document.createElement('img');
-    img.src = url;
-    img.setAttribute('loading', 'lazy');
-    return img;
-  }
+  // 1. Header row
+  const headerRow = ['Hero (hero2)'];
 
-  // Try to find a background image in parent or siblings
+  // 2. Background image row
+  // Look for the first element with a background-image style
   let bgUrl = null;
-  let el = element;
-  while (el && el !== document.body) {
-    const url = getBgImageUrl(el);
+  let bgDiv = null;
+  // Search direct children and one level deeper for background-image
+  const containers = [element, ...element.querySelectorAll('*')];
+  for (const el of containers) {
+    const style = el.getAttribute && el.getAttribute('style');
+    const url = extractBgUrl(style);
     if (url) {
       bgUrl = url;
+      bgDiv = el;
       break;
     }
-    el = el.parentElement;
   }
-  if (!bgUrl) {
-    const img = element.querySelector('img');
-    if (img && img.src) {
-      bgUrl = img.src;
+  let bgImgEl = null;
+  if (bgUrl) {
+    bgImgEl = document.createElement('img');
+    bgImgEl.src = bgUrl;
+    bgImgEl.alt = '';
+  }
+  const bgRow = [bgImgEl ? bgImgEl : ''];
+
+  // 3. Content row
+  // Find content elements: eyebrow, intro, h1, button
+  // These are inside nested .aem-Grid > .text or .button
+  let eyebrow = null, intro = null, h1 = null, cta = null;
+  const grids = element.querySelectorAll('.aem-Grid');
+  for (const grid of grids) {
+    // Eyebrow
+    if (!eyebrow) {
+      eyebrow = grid.querySelector('.text.eyebrow2 .cmp-text');
+    }
+    // Intro
+    if (!intro) {
+      intro = grid.querySelector('.text.intro-heading .cmp-text');
+    }
+    // H1
+    if (!h1) {
+      h1 = grid.querySelector('.text.h1 .cmp-text');
+    }
+    // CTA
+    if (!cta) {
+      cta = grid.querySelector('.button a.cmp-button');
     }
   }
 
-  // Gather all visible text content (headings, paragraphs, etc.), preserving order
+  // Compose content cell
   const contentCell = [];
-  // Use a TreeWalker to preserve document order
-  const walker = document.createTreeWalker(
-    element,
-    NodeFilter.SHOW_ELEMENT,
-    {
-      acceptNode: (node) => {
-        if (node.closest('.cmp-carousel__actions')) return NodeFilter.FILTER_REJECT;
-        if (node.tagName && node.tagName.toLowerCase() === 'img') return NodeFilter.FILTER_SKIP;
-        // Accept headings, paragraphs, links, buttons, and divs with text
-        if ([
-          'h1','h2','h3','h4','h5','h6','p','a','button','span','strong','em','b','i','div','ul','ol','li'
-        ].includes(node.tagName && node.tagName.toLowerCase())) {
-          if (node.textContent && node.textContent.trim()) return NodeFilter.FILTER_ACCEPT;
-        }
-        return NodeFilter.FILTER_SKIP;
-      }
-    }
-  );
-  let n;
-  while ((n = walker.nextNode())) {
-    if (!contentCell.some(e => e.isSameNode && e.isSameNode(n))) {
-      contentCell.push(n.cloneNode(true));
-    }
-  }
+  if (eyebrow) contentCell.push(eyebrow);
+  if (intro) contentCell.push(intro);
+  if (h1) contentCell.push(h1);
+  if (cta) contentCell.push(cta);
+  const contentRow = [contentCell.length ? contentCell : ''];
 
-  const headerRow = ['Hero (hero2)'];
-  const rows = [headerRow];
-  rows.push([bgUrl ? createImage(bgUrl) : '']);
-  // Always add a third row for content, even if empty (to match required structure)
-  rows.push([contentCell.length ? contentCell : '']);
-  const table = WebImporter.DOMUtils.createTable(rows, document);
+  // Compose table
+  const table = WebImporter.DOMUtils.createTable([
+    headerRow,
+    bgRow,
+    contentRow,
+  ], document);
+
+  // Replace original element
   element.replaceWith(table);
 }
