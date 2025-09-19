@@ -1,68 +1,71 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Find the carousel root
-  const carouselRoot = element.querySelector('.carousel.panelcontainer');
-  if (!carouselRoot) return;
+  // Find the carousel block
+  const carousel = element.querySelector('.carousel, .cmp-carousel');
+  if (!carousel) return;
 
-  // Find the carousel content container
-  const carouselContent = carouselRoot.querySelector('.cmp-carousel__content');
-  if (!carouselContent) return;
+  // Find carousel content
+  const content = carousel.querySelector('.cmp-carousel__content');
+  if (!content) return;
 
   // Get all carousel items
-  const items = carouselContent.querySelectorAll('.cmp-carousel__item');
+  const items = Array.from(content.querySelectorAll('.cmp-carousel__item'));
   if (!items.length) return;
 
-  // Prepare the table rows
-  const rows = [];
-  // Header row: must match block name exactly
-  rows.push(['Carousel (carousel18)']);
+  // Table header must match the block name exactly
+  const headerRow = ['Carousel (carousel18)'];
+  const rows = [headerRow];
 
   items.forEach((item) => {
-    // --- Image cell ---
-    let imgCell = '';
-    const imageCol = item.querySelector('.image .cmp-image');
-    if (imageCol) {
-      const img = imageCol.querySelector('img');
+    // --- IMAGE CELL ---
+    let imageCell = null;
+    const imageBlock = item.querySelector('.image .cmp-image');
+    if (imageBlock) {
+      const img = imageBlock.querySelector('img');
       if (img) {
-        imgCell = img;
+        imageCell = img;
       }
     }
+    if (!imageCell) return; // skip slide if no image
 
-    // --- Text cell ---
-    let textCell = '';
+    // --- TEXT CELL ---
+    const textCell = document.createElement('div');
+    textCell.style.display = 'contents'; // avoid extra wrapper
     const cardModule = item.querySelector('.card-module');
     if (cardModule) {
-      // Compose content: eyebrow, title, description, CTA
-      const contentParts = [];
-      // Eyebrow (optional)
+      // Eyebrow (optional, usually first)
       const eyebrow = cardModule.querySelector('.eyebrow2 .cmp-text p');
       if (eyebrow) {
-        contentParts.push(eyebrow.cloneNode(true));
+        textCell.appendChild(eyebrow.cloneNode(true));
       }
-      // Title (optional)
-      const title = cardModule.querySelector('.title .cmp-title__text');
+      // Title (h3, required)
+      const title = cardModule.querySelector('.cmp-title__text');
       if (title) {
-        contentParts.push(title.cloneNode(true));
+        textCell.appendChild(title.cloneNode(true));
       }
-      // Description(s) and CTA(s)
-      const textBlocks = cardModule.querySelectorAll('.text.no-bottom-margin-p .cmp-text p');
-      textBlocks.forEach((p) => {
-        contentParts.push(p.cloneNode(true));
+      // Description (all .cmp-text not eyebrow or CTA)
+      const descBlocks = Array.from(cardModule.querySelectorAll('.cmp-text'));
+      descBlocks.forEach((block) => {
+        // Only add paragraphs that are not eyebrow or CTA
+        if (!block.classList.contains('eyebrow2')) {
+          const p = block.querySelector('p');
+          if (p && (!p.querySelector('a') || p.textContent.trim() !== 'See how')) {
+            textCell.appendChild(p.cloneNode(true));
+          }
+        }
       });
-      // Only add if there's content
-      if (contentParts.length) {
-        // Wrap in a div for semantic grouping
-        const textDiv = document.createElement('div');
-        contentParts.forEach((el) => textDiv.appendChild(el));
-        textCell = textDiv;
+      // CTA (last .cmp-text p with a link)
+      const cta = Array.from(cardModule.querySelectorAll('.cmp-text p a')).pop();
+      if (cta) {
+        const ctaP = document.createElement('p');
+        ctaP.appendChild(cta.cloneNode(true));
+        textCell.appendChild(ctaP);
       }
     }
-
-    rows.push([imgCell, textCell]);
+    rows.push([imageCell, textCell]);
   });
 
-  // Create the table
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-  // Replace the original element
-  element.replaceWith(table);
+  // Create the table block
+  const block = WebImporter.DOMUtils.createTable(rows, document);
+  element.replaceWith(block);
 }

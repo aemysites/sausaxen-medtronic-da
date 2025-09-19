@@ -12,24 +12,24 @@
 /* global WebImporter */
 /* eslint-disable no-console */
 import columns3Parser from './parsers/columns3.js';
-import columns1Parser from './parsers/columns1.js';
+import hero2Parser from './parsers/hero2.js';
 import hero4Parser from './parsers/hero4.js';
 import cards5Parser from './parsers/cards5.js';
 import columns6Parser from './parsers/columns6.js';
 import columns7Parser from './parsers/columns7.js';
-import hero2Parser from './parsers/hero2.js';
-import hero14Parser from './parsers/hero14.js';
-import columns15Parser from './parsers/columns15.js';
 import carousel10Parser from './parsers/carousel10.js';
+import hero14Parser from './parsers/hero14.js';
+import columns1Parser from './parsers/columns1.js';
+import columns15Parser from './parsers/columns15.js';
 import columns17Parser from './parsers/columns17.js';
 import carousel18Parser from './parsers/carousel18.js';
-import carousel16Parser from './parsers/carousel16.js';
 import hero19Parser from './parsers/hero19.js';
-import hero22Parser from './parsers/hero22.js';
+import carousel16Parser from './parsers/carousel16.js';
 import embedVideo21Parser from './parsers/embedVideo21.js';
 import hero23Parser from './parsers/hero23.js';
-import hero28Parser from './parsers/hero28.js';
+import hero22Parser from './parsers/hero22.js';
 import columns29Parser from './parsers/columns29.js';
+import hero28Parser from './parsers/hero28.js';
 import hero26Parser from './parsers/hero26.js';
 import columns30Parser from './parsers/columns30.js';
 import hero31Parser from './parsers/hero31.js';
@@ -50,24 +50,24 @@ import {
 const parsers = {
   metadata: metadataParser,
   columns3: columns3Parser,
-  columns1: columns1Parser,
+  hero2: hero2Parser,
   hero4: hero4Parser,
   cards5: cards5Parser,
   columns6: columns6Parser,
   columns7: columns7Parser,
-  hero2: hero2Parser,
-  hero14: hero14Parser,
-  columns15: columns15Parser,
   carousel10: carousel10Parser,
+  hero14: hero14Parser,
+  columns1: columns1Parser,
+  columns15: columns15Parser,
   columns17: columns17Parser,
   carousel18: carousel18Parser,
-  carousel16: carousel16Parser,
   hero19: hero19Parser,
-  hero22: hero22Parser,
+  carousel16: carousel16Parser,
   embedVideo21: embedVideo21Parser,
   hero23: hero23Parser,
-  hero28: hero28Parser,
+  hero22: hero22Parser,
   columns29: columns29Parser,
+  hero28: hero28Parser,
   hero26: hero26Parser,
   columns30: columns30Parser,
   hero31: hero31Parser,
