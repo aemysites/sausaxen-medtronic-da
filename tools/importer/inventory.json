@@ -263,7 +263,7 @@
     },
     {
       "name": "Hero",
-      "cluster": 17, 
+      "cluster": 17,
       "source": "Hero",
       "target": "Hero (hero17)",
       "key": "hero17",
