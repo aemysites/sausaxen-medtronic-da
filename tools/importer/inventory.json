@@ -154,7 +154,7 @@
       ]
     },
     {
-      "name": "Columns",
+      "name": "Hero",
       "cluster": 11,
       "source": "Columns block",
       "target": "Columns block (columns11)",
