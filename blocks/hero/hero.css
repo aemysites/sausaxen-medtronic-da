@@ -896,7 +896,6 @@
   overflow: hidden;
 }
 
-/* TEXT COLUMN - left, should be order 1 */
 .hero.hero6 > div:first-child {
   flex: 1 1 50%;
   order: 1;
@@ -918,7 +917,6 @@
   justify-content: center;
 }
 
-/* LABEL */
 .hero.hero6 > div:first-child > div > p:first-child {
   color: #989898;
   text-transform: uppercase;
@@ -927,7 +925,6 @@
   margin: 0 0 22px;
 }
 
-/* HEADLINE with accent bar */
 .hero.hero6 > div:first-child > div h3 {
   position: relative;
   font-size: 30px;
@@ -944,7 +941,6 @@
   text-decoration: none;
 }
 
-/* BODY TEXT */
 .hero.hero6 > div:first-child > div > p:nth-of-type(2) {
   color: #444;
   font-size: 16.5px;
@@ -952,7 +948,6 @@
   margin: 0 0 28px;
 }
 
-/* BUTTON LINK */
 .hero.hero6 .button-container {
   margin: 0;
 }
@@ -971,14 +966,12 @@
   margin: 0;
 }
 
-/* BUTTON LINK HOVER */
 .hero.hero6 .button:hover,
 .hero.hero6 .button:focus {
   color: #1d3ecf;
   text-decoration: underline;
 }
 
-/* IMAGE COLUMN - right, should be order 2 */
 .hero.hero6 > div:last-child {
   flex: 1 1 50%;
   order: 2;
@@ -1005,7 +998,6 @@
   border-radius: 0;
 }
 
-/* RESPONSIVE: stack columns on small screens */
 @media (width <= 900px) {
   .hero.hero6 {
     flex-direction: column;
@@ -1030,5 +1022,225 @@
   .hero.hero6 > div:first-child > div {
     max-width: 98vw;
     margin: 0 auto;
+  }
+}
+
+
+.hero.hero8 {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: stretch;
+  min-height: 700px;
+  width: 100vw;
+  box-sizing: border-box;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.hero.hero8 > div:first-child {
+  flex: 1 1 55%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 480px;
+  height: 100%;
+  padding: 0;
+  background: none;
+  order: 1;
+}
+
+.hero.hero8 > div:first-child > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+.hero.hero8 > div:first-child picture,
+.hero.hero8 > div:first-child img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-width: none;
+  max-height: none;
+}
+
+.hero.hero8 > div:last-child {
+  flex: 0 1 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 700px;
+  height: 100%;
+  padding: 0 48px 0 0;
+  position: relative;
+  order: 2;
+  background: none;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+/* Center the circle within right column both vertically and horizontally */
+.hero.hero8 > div:last-child > div {
+  width: 480px;
+  height: 480px;
+  background: #fff;
+  border: 4px solid #2331A5;
+  border-radius: 50%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 36px;
+  margin: 0 auto;
+  box-shadow: none;
+  position: relative;
+  left: 0;
+  top: 0;
+}
+
+/* Blue bar: center inside circle, above "Careers" label */
+.hero.hero8 > div:last-child > div > p:first-child {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+  margin-top: 0;
+}
+
+.hero.hero8 > div:last-child > div > p:first-child picture img,
+.hero.hero8 > div:last-child > div > p:first-child img {
+  display: block;
+  margin: 0;
+  width: 80px;
+  height: 6px;
+  object-fit: contain;
+  background: #2331A5;
+  border-radius: 2px;
+}
+
+/* Careers label styling */
+.hero.hero8 > div:last-child > div > p:nth-child(2) {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #2331A5;
+  margin-bottom: 16px;
+  margin-top: 0;
+  text-transform: uppercase;
+}
+
+/* Heading styling */
+.hero.hero8 > div:last-child > div > h2 {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #2331A5;
+  margin: 0 0 24px;
+  line-height: 1.2;
+  text-align: center;
+}
+
+/* Body text styling */
+.hero.hero8 > div:last-child > div > p:nth-child(4) {
+  font-size: 16px;
+  color: #232323;
+  margin-bottom: 32px;
+  margin-top: 0;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* Button alignment and styling */
+.hero.hero8 > div:last-child > div > .button-container {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.hero.hero8 > div:last-child > div .button-container .button {
+  display: inline-block;
+  padding: 10px 28px;
+  font-size: 16px;
+  color: #2331A5;
+  border: 2px solid #2331A5;
+  border-radius: 30px;
+  background: #fff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.hero.hero8 > div:last-child > div .button-container .button:hover,
+.hero.hero8 > div:last-child > div .button-container .button:focus {
+  background: #2331A5;
+  color: #fff;
+  border-color: #2331A5;
+}
+
+/* Ensure right-side circle is never clipped and has white space above/below */
+
+/* Responsive Styles */
+@media (width <= 900px) {
+  .hero.hero8 {
+    flex-direction: column;
+    min-height: 0;
+    height: auto;
+    width: 100vw;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .hero.hero8 > div:first-child {
+    flex: 1 1 100vw;
+    width: 100vw;
+    height: 220px;
+    min-height: 0;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .hero.hero8 > div:first-child > div {
+    width: 100vw;
+    height: 220px;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .hero.hero8 > div:first-child picture,
+  .hero.hero8 > div:first-child img {
+    width: 100vw;
+    height: 220px;
+    object-fit: cover;
+    min-height: 0;
+    max-height: 220px;
+  }
+
+  .hero.hero8 > div:last-child {
+    flex: 1 1 100vw;
+    width: 100vw;
+    height: auto;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    margin-top: 0;
+  }
+
+  .hero.hero8 > div:last-child > div {
+    width: 90vw;
+    min-width: 0;
+    height: auto;
+    border-radius: 32px;
+    padding: 32px 12px;
+    box-sizing: border-box;
+    margin: 32px auto 0;
   }
 }
