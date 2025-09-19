@@ -387,6 +387,18 @@
           "section": "section-8"
         }
       ]
+    },
+    {
+      "name": "Columns",
+      "cluster": 29,
+      "instances": [
+        {
+          "url": "https://www.medtronic.com/in-en/our-company.html",
+          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+          "uuid": "867525b3-03-b3fb3569666c185e0416e5449a88232afc86088d",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[4]/div[1]"
+        }
+      ]
     }
   ],
   "outliers": [
@@ -432,12 +444,6 @@
       "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
       "uuid": "867525b3-01-3cfdac99b3120c30acca2c2aafc52daa86783b00",
       "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[2]"
-    },
-    {
-      "url": "https://www.medtronic.com/in-en/our-company.html",
-      "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
-      "uuid": "867525b3-03-b3fb3569666c185e0416e5449a88232afc86088d",
-      "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[4]/div[1]"
     },
     {
       "url": "https://www.medtronic.com/in-en/our-company.html",
