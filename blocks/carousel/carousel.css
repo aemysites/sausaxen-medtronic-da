@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .carousel .carousel-slides-container {
   position: relative;
 }
@@ -99,7 +100,6 @@
   z-index: 1;
 }
 
-/* stylelint-disable-next-line no-descending-specificity */
 .carousel .carousel-navigation-buttons button {
   position: relative;
   width: 44px;
@@ -149,5 +149,194 @@
 
   .carousel .carousel-slide .carousel-slide-content[data-align='justify'] {
     --slide-content-width: auto;
+  }
+}
+
+
+.carousel.carousel10 {
+  background: #fff;
+  position: relative;
+}
+
+/* 1. Navigation Buttons Styling */
+.carousel.carousel10 .carousel-navigation-buttons {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.carousel.carousel10 .carousel-navigation-buttons button {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  margin: 0 16px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #dadada;
+  box-shadow: 0 2px 8px 0 rgb(80 80 80 / 7%);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel.carousel10 .carousel-navigation-buttons button:hover,
+.carousel.carousel10 .carousel-navigation-buttons button:focus-visible {
+  border-color: #3b63fb;
+  box-shadow: 0 2px 12px 0 rgb(59 99 251 / 15%);
+  background: #fff;
+}
+
+/* Arrow Icon Styling */
+.carousel.carousel10 .carousel-navigation-buttons button::after {
+  border: none;
+  position: static;
+  content: '';
+  display: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: none;
+}
+
+.carousel.carousel10 .carousel-navigation-buttons button.slide-prev::before,
+.carousel.carousel10 .carousel-navigation-buttons button.slide-next::before {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 18px;
+  border: solid #333;
+  border-width: 0 2px 2px 0;
+  padding: 3px;
+  margin: 0 auto;
+  position: relative;
+  top: 1px;
+}
+
+.carousel.carousel10 .carousel-navigation-buttons button.slide-prev::before {
+  transform: rotate(135deg) scale(1.1);
+}
+
+.carousel.carousel10 .carousel-navigation-buttons button.slide-next::before {
+  transform: rotate(-45deg) scale(1.1);
+}
+
+/* Hide the old ::after arrows */
+
+/* 2. Page Indicators: Hide (not visible in screenshot) */
+.carousel.carousel10 .carousel-slide-indicators {
+  display: none;
+}
+
+/* Move slide content to the right, make background transparent, add max width for balance */
+.carousel.carousel10 .carousel-slide .carousel-slide-content {
+  background: transparent;
+  color: #131313;
+  box-shadow: none;
+  margin: 0;
+  padding: 48px 64px 48px 0;
+  max-width: 540px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50%;
+  border-radius: 0;
+}
+
+/* Headline: large, blue, hierarchy */
+.carousel.carousel10 .carousel-slide .carousel-slide-content h3,
+.carousel.carousel10 .carousel-slide .carousel-slide-content h2 {
+  color: #3b63fb;
+  font-size: 2rem;
+  font-weight: 600;
+  margin-bottom: 0.75em;
+  margin-top: 0.5em;
+  line-height: 1.25;
+}
+
+.carousel.carousel10 .carousel-slide .carousel-slide-content p:first-child {
+  text-transform: uppercase;
+  font-size: 0.85em;
+  letter-spacing: 0.03em;
+  color: #505050;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+}
+
+/* "Learn more" as outlined blue button */
+.carousel.carousel10 .carousel-slide .carousel-slide-content a[href*="arctic-front-cardiac-cryoablation-catheter"] {
+  display: inline-block;
+  margin-top: 1.4em;
+  margin-bottom: 0.9em;
+  padding: 0.5em 1.5em;
+  border: 2px solid #3b63fb;
+  border-radius: 2em;
+  color: #3b63fb;
+  background: transparent;
+  font-weight: 500;
+  font-size: 1em;
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.carousel.carousel10 .carousel-slide .carousel-slide-content a[href*="arctic-front-cardiac-cryoablation-catheter"]:hover,
+.carousel.carousel10 .carousel-slide .carousel-slide-content a[href*="arctic-front-cardiac-cryoablation-catheter"]:focus {
+  background: #f2f6fe;
+  border-color: #1d3ecf;
+  color: #1d3ecf;
+}
+
+/* "Alert Indications, Safety, and Warnings" – small icon inline */
+.carousel.carousel10 .carousel-slide .carousel-slide-content a[title*="Alert Indications"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  font-size: 1em;
+  color: #3b63fb;
+  margin-top: 0.8em;
+  margin-bottom: 0.2em;
+}
+
+.carousel.carousel10 .carousel-slide .carousel-slide-content a[title*="Alert Indications"] img {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin: 0;
+  filter: brightness(1) sepia(1) hue-rotate(-20deg) saturate(9);
+}
+
+/* Remove giant triangle (if present) */
+.carousel.carousel10 .carousel-slide .carousel-slide-content img[alt=""] {
+  width: auto;
+  height: auto;
+  max-width: 1.4em;
+  max-height: 1.4em;
+  margin: 0 0.2em 0 0;
+}
+
+/* Navigation buttons: subtle shadow, thin border, white bg, arrows remain */
+
+@media (width <= 900px) {
+  .carousel.carousel10 .carousel-slide .carousel-slide-content {
+    position: relative;
+    right: auto;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    padding: 32px 16px;
+    max-width: 100%;
   }
 }
