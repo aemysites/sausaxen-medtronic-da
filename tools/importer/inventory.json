@@ -51,6 +51,68 @@
           "uuid": "63714cd4-06-897d04125718c8374d6da592581048ae04cd4342",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[7]",
           "section": "section-7"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/our-company.html",
+          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+          "uuid": "867525b3-04-858bd8088210114fb707fc05266771cb4003db40",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[5]",
+          "section": "section-11"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
+          "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
+          "uuid": "63714cd4-07-3bde66a67ef245aed9a507e31fb0329adc4a02a2",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[8]",
+          "section": "section-8"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/our-company.html",
+          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+          "uuid": "867525b3-07-3bde66a67ef245aed9a507e31fb0329adc4a02a2",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[8]",
+          "section": "section-12"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/our-company.html",
+          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+          "uuid": "867525b3-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]",
+          "section": "section-9"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/our-company.html",
+          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
+          "uuid": "867525b3-02-09bc5b3870cd6f656e88e4daee23300cff7bef28",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[3]",
+          "section": "section-10"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/our-impact.html",
+          "urlHash": "1cb1b96977e91d26e2406d970c59af25a7db30ae",
+          "uuid": "1cb1b969-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]",
+          "section": "section-1"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-03-312986026cd8ee832437867f6932c0cd7408977d",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[4]",
+          "section": "section-4"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-00-d76785946ea6e2b9207aa52263cba8862283f7f9",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[1]",
+          "section": "section-3"
+        },
+        {
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-02-c5c9d58302c1278f1942a4eb0d3a66a5cd085d91",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]"
         }
       ]
     },
@@ -67,22 +129,6 @@
           "uuid": "1cb1b969-07-897d04125718c8374d6da592581048ae04cd4342",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[7]",
           "section": "section-2"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 4,
-      "source": "Hero",
-      "target": "Hero (hero4)",
-      "key": "hero4",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-company.html",
-          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
-          "uuid": "867525b3-04-858bd8088210114fb707fc05266771cb4003db40",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[5]",
-          "section": "section-11"
         }
       ]
     },
@@ -144,38 +190,12 @@
           "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
           "uuid": "63714cd4-04-858bd8088210114fb707fc05266771cb4003db40",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[5]"
-        }
-      ]
-    },
-    {
-      "name": "Columns",
-      "cluster": 11,
-      "source": "Columns block",
-      "target": "Columns block (columns11)",
-      "key": "columns11",
-      "instances": [
+        },
         {
-          "url": "https://www.medtronic.com/in-en/healthcare-professionals.html",
-          "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
-          "uuid": "63714cd4-07-3bde66a67ef245aed9a507e31fb0329adc4a02a2",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[8]",
-          "section": "section-8"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 14,
-      "source": "Hero",
-      "target": "Hero (hero14)",
-      "key": "hero14",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-company.html",
-          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
-          "uuid": "867525b3-07-3bde66a67ef245aed9a507e31fb0329adc4a02a2",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[8]",
-          "section": "section-12"
+          "url": "https://www.medtronic.com/in-en/index.html",
+          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
+          "uuid": "3462ed27-01-5340e1e12d4ea571e39a11e9ba5eb58a20fc47cb",
+          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]"
         }
       ]
     },
@@ -197,21 +217,6 @@
     },
     {
       "name": "Carousel",
-      "cluster": 16,
-      "source": "Carousel",
-      "target": "Carousel (carousel16)",
-      "key": "carousel16",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/index.html",
-          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
-          "uuid": "3462ed27-01-5340e1e12d4ea571e39a11e9ba5eb58a20fc47cb",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]"
-        }
-      ]
-    },
-    {
-      "name": "Carousel",
       "cluster": 18,
       "source": "Carousel",
       "target": "Carousel (carousel18)",
@@ -222,38 +227,6 @@
           "urlHash": "63714cd41b4b49c11cdee12b024c08a80abda210",
           "uuid": "63714cd4-01-3cfdac99b3120c30acca2c2aafc52daa86783b00",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[2]"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 19,
-      "source": "Hero",
-      "target": "Hero (hero19)",
-      "key": "hero19",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-company.html",
-          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
-          "uuid": "867525b3-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]",
-          "section": "section-9"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 20,
-      "source": "Hero",
-      "target": "Hero (hero19)",
-      "key": "hero20",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-company.html",
-          "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
-          "uuid": "867525b3-02-09bc5b3870cd6f656e88e4daee23300cff7bef28",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[3]",
-          "section": "section-10"
         }
       ]
     },
@@ -270,38 +243,6 @@
           "uuid": "63714cd4-00-fb800061a6868607901a7d86210caf52d46011ee",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]",
           "section": "section-5"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 22,
-      "source": "Hero",
-      "target": "Hero (hero22)",
-      "key": "hero22",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/our-impact.html",
-          "urlHash": "1cb1b96977e91d26e2406d970c59af25a7db30ae",
-          "uuid": "1cb1b969-00-7bfbeabc4de7c0c231ffde7c9d5b34d34c0326d6",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]",
-          "section": "section-1"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 23,
-      "source": "Hero",
-      "target": "Hero (hero23)",
-      "key": "hero23",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/index.html",
-          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
-          "uuid": "3462ed27-00-d76785946ea6e2b9207aa52263cba8862283f7f9",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[1]",
-          "section": "section-3"
         }
       ]
     },
@@ -330,37 +271,6 @@
           "urlHash": "867525b3bcfdb6918005c7fe05c521a35df604e2",
           "uuid": "867525b3-05-4a607e4dcc62d5c6dd7750947edf6cdb8a50efd1",
           "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[6]/div[1]"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 26,
-      "source": "Hero",
-      "target": "Hero (hero26)",
-      "key": "hero26",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/index.html",
-          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
-          "uuid": "3462ed27-03-312986026cd8ee832437867f6932c0cd7408977d",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[4]",
-          "section": "section-4"
-        }
-      ]
-    },
-    {
-      "name": "Hero",
-      "cluster": 27,
-      "source": "Hero",
-      "target": "Hero (hero27)",
-      "key": "hero27",
-      "instances": [
-        {
-          "url": "https://www.medtronic.com/in-en/index.html",
-          "urlHash": "3462ed27d3c1de41c4a9c6a97bd64fab979fc254",
-          "uuid": "3462ed27-02-c5c9d58302c1278f1942a4eb0d3a66a5cd085d91",
-          "xpath": "/html[1]/body[1]/div[2]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]"
         }
       ]
     }
