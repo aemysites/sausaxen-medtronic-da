@@ -1,65 +1,76 @@
 /* global WebImporter */
 export default function parse(element, { document }) {
-  // Helper to get direct child by class
-  function getDirectChildByClass(parent, className) {
-    return Array.from(parent.children).find(child => child.classList.contains(className));
+  // Helper: Get immediate children of a given element
+  function getImmediateChildrenByClass(parent, className) {
+    return Array.from(parent.children).filter(child => child.classList.contains(className));
   }
 
-  // Find the main grid
+  // 1. Header row
+  const headerRow = ['Columns block (columns7)'];
+
+  // 2. Find the two main columns
+  // The source HTML has a grid with two main columns: one for the image, one for the content
   const grid = element.querySelector('.aem-Grid');
   if (!grid) return;
 
-  // Get left column: image
-  const imageCol = Array.from(grid.children).find(child => child.classList.contains('image'));
-  let imageCell = null;
-  if (imageCol) {
-    const cmpImage = getDirectChildByClass(imageCol, 'cmp-image');
-    if (cmpImage) {
-      const img = cmpImage.querySelector('img');
-      if (img) imageCell = img;
+  // Left column: image
+  let leftCol = null;
+  let rightCol = null;
+  const gridChildren = Array.from(grid.children);
+  // Find image and card-module columns
+  gridChildren.forEach(child => {
+    if (child.classList.contains('image')) {
+      leftCol = child;
+    } else if (child.classList.contains('card-module')) {
+      rightCol = child;
     }
+  });
+
+  // Defensive: if missing columns, abort
+  if (!leftCol || !rightCol) return;
+
+  // Get the image element (use existing img)
+  const cmpImage = leftCol.querySelector('.cmp-image');
+  let imgEl = null;
+  if (cmpImage) {
+    imgEl = cmpImage.querySelector('img');
   }
 
-  // Get right column: content
-  const cardCol = Array.from(grid.children).find(child => child.classList.contains('wide-card'));
-  let contentCell = document.createElement('div');
-  if (cardCol) {
-    const cardGrid = cardCol.querySelector('.aem-Grid');
-    if (cardGrid) {
-      // Eyebrow
-      const eyebrow = getDirectChildByClass(cardGrid, 'eyebrow2');
-      if (eyebrow) {
-        const cmpText = getDirectChildByClass(eyebrow, 'cmp-text');
-        if (cmpText) {
-          Array.from(cmpText.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
-        }
+  // Right column: text content
+  // The right column contains a grid of text blocks
+  const rightGrid = rightCol.querySelector('.aem-Grid');
+  let rightContentEls = [];
+  if (rightGrid) {
+    // Get all non-empty content blocks (text, title)
+    Array.from(rightGrid.children).forEach(child => {
+      // Only add if it contains a cmp-text or cmp-title
+      const cmpText = child.querySelector('.cmp-text');
+      const cmpTitle = child.querySelector('.cmp-title');
+      if (cmpText) {
+        rightContentEls.push(cmpText);
       }
-      // Title
-      const title = getDirectChildByClass(cardGrid, 'title');
-      if (title) {
-        const cmpTitle = getDirectChildByClass(title, 'cmp-title');
-        if (cmpTitle) {
-          Array.from(cmpTitle.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
-        }
+      if (cmpTitle) {
+        rightContentEls.push(cmpTitle);
       }
-      // Text
-      const text = getDirectChildByClass(cardGrid, 'no-bottom-margin-p');
-      if (text) {
-        const cmpText2 = getDirectChildByClass(text, 'cmp-text');
-        if (cmpText2) {
-          Array.from(cmpText2.childNodes).forEach(n => contentCell.appendChild(n.cloneNode(true)));
-        }
-      }
-    }
+    });
   }
 
-  // Only create table if at least one cell has content
-  if (!imageCell && !contentCell.hasChildNodes()) return;
+  // Also add the summary text (the second cmp-text)
+  // (already handled above)
 
-  const headerRow = ['Columns (columns7)'];
-  const contentRow = [imageCell, contentCell];
-  const rows = [headerRow, contentRow];
+  // Compose the right column cell
+  // Combine all rightContentEls into one cell
+  const rightColCell = rightContentEls;
 
-  const table = WebImporter.DOMUtils.createTable(rows, document);
-  element.replaceWith(table);
+  // Compose the table
+  const cells = [
+    headerRow,
+    [imgEl, rightColCell], // 2 columns: image, content
+  ];
+
+  // Create the table block
+  const block = WebImporter.DOMUtils.createTable(cells, document);
+
+  // Replace the original element
+  element.replaceWith(block);
 }
