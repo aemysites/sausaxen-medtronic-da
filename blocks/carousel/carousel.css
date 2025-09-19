@@ -158,7 +158,6 @@
   position: relative;
 }
 
-/* 1. Navigation Buttons Styling */
 .carousel.carousel10 .carousel-navigation-buttons {
   position: absolute;
   top: 50%;
@@ -197,7 +196,6 @@
   background: #fff;
 }
 
-/* Arrow Icon Styling */
 .carousel.carousel10 .carousel-navigation-buttons button::after {
   border: none;
   position: static;
@@ -231,14 +229,10 @@
   transform: rotate(-45deg) scale(1.1);
 }
 
-/* Hide the old ::after arrows */
-
-/* 2. Page Indicators: Hide (not visible in screenshot) */
 .carousel.carousel10 .carousel-slide-indicators {
   display: none;
 }
 
-/* Move slide content to the right, make background transparent, add max width for balance */
 .carousel.carousel10 .carousel-slide .carousel-slide-content {
   background: transparent;
   color: #131313;
@@ -254,7 +248,6 @@
   border-radius: 0;
 }
 
-/* Headline: large, blue, hierarchy */
 .carousel.carousel10 .carousel-slide .carousel-slide-content h3,
 .carousel.carousel10 .carousel-slide .carousel-slide-content h2 {
   color: #3b63fb;
@@ -274,7 +267,6 @@
   font-weight: 400;
 }
 
-/* "Learn more" as outlined blue button */
 .carousel.carousel10 .carousel-slide .carousel-slide-content a[href*="arctic-front-cardiac-cryoablation-catheter"] {
   display: inline-block;
   margin-top: 1.4em;
@@ -298,7 +290,6 @@
   color: #1d3ecf;
 }
 
-/* "Alert Indications, Safety, and Warnings" – small icon inline */
 .carousel.carousel10 .carousel-slide .carousel-slide-content a[title*="Alert Indications"] {
   display: inline-flex;
   align-items: center;
@@ -317,7 +308,6 @@
   filter: brightness(1) sepia(1) hue-rotate(-20deg) saturate(9);
 }
 
-/* Remove giant triangle (if present) */
 .carousel.carousel10 .carousel-slide .carousel-slide-content img[alt=""] {
   width: auto;
   height: auto;
@@ -325,8 +315,6 @@
   max-height: 1.4em;
   margin: 0 0.2em 0 0;
 }
-
-/* Navigation buttons: subtle shadow, thin border, white bg, arrows remain */
 
 @media (width <= 900px) {
   .carousel.carousel10 .carousel-slide .carousel-slide-content {
@@ -338,5 +326,173 @@
     width: 100%;
     padding: 32px 16px;
     max-width: 100%;
+  }
+}
+
+
+/* Restore vertical page indicator dots on the left, with improved spacing and subtle opacity */
+.carousel.carousel16 .carousel-slide-indicators {
+  position: absolute;
+  top: 50%;
+  left: 32px;
+  transform: translateY(-50%);
+  flex-direction: column;
+  gap: 19px;
+  padding: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-start;
+  background: none;
+  opacity: 0.98;
+}
+
+.carousel.carousel16 .carousel-slide-indicator button {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #3b3b99;
+  box-shadow: 0 1px 4px rgb(60 60 120 / 10%);
+  margin: 0;
+  padding: 0;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.carousel.carousel16 .carousel-slide-indicator button:disabled,
+.carousel.carousel16 .carousel-slide-indicator button[aria-current="true"] {
+  background: #3b3b99;
+  border-color: #3b3b99;
+  box-shadow: 0 2px 8px rgb(60 60 160 / 15%);
+}
+
+.carousel.carousel16 .carousel-slide-indicator button:focus-visible {
+  outline: 2px solid #3b63fb;
+  outline-offset: 2px;
+}
+
+/* Slide content box: keep gradient fade, but slightly more compact for better balance */
+.carousel.carousel16 .carousel-slide .carousel-slide-content {
+  color: #232364;
+  background: linear-gradient(90deg, #fff 82%, rgb(255 255 255 / 12%) 100%);
+  box-shadow: none;
+  padding: 38px 48px 35px 0;
+  margin: 60px 6vw 60px auto;
+  width: 40vw;
+  min-width: 340px;
+  max-width: 500px;
+  border-radius: 0 22px 22px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.carousel.carousel16 .carousel-slide .carousel-slide-content h2 {
+  color: #232364;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-top: 0.75rem;
+  margin-bottom: 1.05rem;
+  letter-spacing: 0;
+  line-height: 1.08;
+}
+
+.carousel.carousel16 .carousel-slide .carousel-slide-content p {
+  color: #232364;
+  opacity: 0.93;
+  font-size: 1rem;
+  font-weight: 400;
+  margin-bottom: 1.2rem;
+  margin-top: 0.8em;
+}
+
+.carousel.carousel16 .carousel-slide .carousel-slide-content p:first-child {
+  text-transform: uppercase;
+  font-size: 0.83rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #3b3b99;
+  margin-bottom: 0.6em;
+  opacity: 1;
+}
+
+.carousel.carousel16 .carousel-slide .carousel-slide-content .button-container .button {
+  background: #fff;
+  color: #3b3b99;
+  border: 2px solid #3b3b99;
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 999px;
+  padding: 0.52em 2em;
+  box-shadow: none;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.carousel.carousel16 .carousel-slide .carousel-slide-content .button-container .button:hover,
+.carousel.carousel16 .carousel-slide .carousel-slide-content .button-container .button:focus {
+  background: #3b3b99;
+  color: #fff;
+  border-color: #3b3b99;
+  text-decoration: none;
+}
+
+/* Arrow navigation buttons: refine size and spacing to match indicators and content */
+.carousel.carousel16 .carousel-navigation-buttons button {
+  background: #fff;
+  border: 1.5px solid #e1e1ee;
+  box-shadow: 0 2px 8px rgb(80 96 160 / 10%);
+  width: 44px;
+  height: 44px;
+  margin: 0 17px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: box-shadow 0.2s, background 0.2s;
+}
+
+.carousel.carousel16 .carousel-navigation-buttons .slide-prev::before,
+.carousel.carousel16 .carousel-navigation-buttons .slide-next::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border-width: 0 0 3px 3px;
+  border-style: solid;
+  border-color: #3b3b99;
+  border-radius: 2px;
+  background: none;
+  box-sizing: border-box;
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.carousel.carousel16 .carousel-navigation-buttons .slide-next::before {
+  border-width: 0 3px 3px 0;
+  border-style: solid;
+  border-color: #3b3b99;
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+/* Responsive adjustments for smaller screens */
+@media (width <= 900px) {
+  .carousel.carousel16 .carousel-slide-indicators {
+    left: 8px;
+    gap: 13px;
+  }
+
+  .carousel.carousel16 .carousel-slide .carousel-slide-content {
+    width: 91vw;
+    min-width: 0;
+    max-width: 98vw;
+    padding: 22px 3vw 22px 0;
+    margin: 15px 2vw 15px auto;
+    border-radius: 0 15px 15px 0;
+  }
+
+  .carousel.carousel16 .carousel-slide .carousel-slide-content h2 {
+    font-size: 1.19rem;
   }
 }
