@@ -73,10 +73,10 @@ export const customTransformers = {
           console.log('After removal - .ot-sdk-container still exists:', !!doc.querySelector(".ot-sdk-container"));
           
           // Check and remove #fsvs-pagination
-          // let element5 = doc.querySelector("#fsvs-pagination");
-          // console.log('Before removal - #fsvs-pagination found:', !!element5);
-          // element5?.remove();
-          // console.log('After removal - #fsvs-pagination still exists:', !!doc.querySelector("#fsvs-pagination"));
+          let element5 = doc.querySelector("#fsvs-pagination");
+          console.log('Before removal - #fsvs-pagination found:', !!element5);
+          element5?.remove();
+          console.log('After removal - #fsvs-pagination still exists:', !!doc.querySelector("#fsvs-pagination"));
            console.log('All element removals completed');
         } else {
           console.log('Debug: document is null, context:', context, 'element:', element);
