@@ -207,127 +207,11 @@
 }
 
 
-.columns.columns7 > div {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  gap: 0;
-  width: 100%;
-}
-
-@media (width >= 900px) {
-  .columns.columns7 > div > div:first-child {
-    flex: 1.22 1 0;
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-  }
-
-  .columns.columns7 > div > div:last-child {
-    flex: 0.78 1 0;
-    min-width: 0;
-  }
-}
-
-@media (width <= 899px) {
-  .columns.columns7 > div {
-    flex-direction: column;
-  }
-
-  .columns.columns7 > div > div:first-child,
-  .columns.columns7 > div > div:last-child {
-    flex: none;
-    width: 100%;
-    min-width: 0;
-  }
-}
-
-.columns.columns7 .columns-img-col {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex: 1;
-}
-
-.columns.columns7 .columns-img-col picture,
-.columns.columns7 .columns-img-col img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-
-.columns.columns7 > div > div:last-child {
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  padding: 54px 56px 22px 60px;
-  height: 100%;
-  box-sizing: border-box;
-}
-
-@media (width <= 1199px) and (width >= 900px) {
-  .columns.columns7 > div > div:last-child {
-    padding: 38px 32px 18px 24px;
-  }
-}
-
-@media (width <= 899px) {
-  .columns.columns7 > div > div:last-child {
-    padding: 32px 16px 20px;
-  }
-}
-
-.columns.columns7 > div > div:last-child > p:first-of-type {
-  margin-top: 0;
-  margin-bottom: 14px;
-  color: #434343;
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  font-weight: 500;
-}
-
-.columns.columns7 > div > div:last-child h3 {
-  position: relative;
-  color: #2d3b8f;
-  font-size: 32px;
-  font-weight: 500;
-  line-height: 1.32;
-  margin: 0 0 18px;
-  padding-left: 16px;
-  box-sizing: border-box;
-}
-
-.columns.columns7 > div > div:last-child h3::before {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 4px;
-  height: 32px;
-  background: #2d3b8f;
-  border-radius: 3px;
-}
-
-.columns.columns7 > div > div:last-child > p:last-of-type {
-  color: #5a5a5a;
-  font-size: 14px;
-  margin: 0;
-  line-height: 1.5;
-  font-weight: 400;
-  max-width: 520px;
-}
-
-
 .columns.columns15 {
   background: #f6f6f6;
   padding: 54px 0;
 }
 
-/* Use flex for side-by-side layout, keep block wide and balanced */
 .columns.columns15 > div {
   display: flex;
   flex-direction: row;
@@ -349,7 +233,6 @@
   }
 }
 
-/* Left panel - slightly wider, a touch more vertical padding */
 .columns.columns15 > div > div:first-child {
   background: #fff;
   display: flex;
@@ -428,7 +311,6 @@
   margin: 0;
 }
 
-/* Right panel - takes more space, image centered */
 .columns.columns15 > div > div.columns-img-col {
   background: #18124c;
   display: flex;
@@ -466,4 +348,126 @@
   .columns.columns15 > div > div.columns-img-col img {
     max-width: 220px;
   }
+}
+
+
+.columns.columns7 {
+  width: 100%;
+  background: #fff;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Use flex for main columns; increase image column width, ensure block is tall enough for centering */
+.columns.columns7 > div {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  min-height: 440px;
+}
+
+/* Responsive: stack columns vertically on mobile */
+@media (width <= 900px) {
+  .columns.columns7 > div {
+    flex-direction: column;
+    min-height: unset;
+  }
+}
+
+/* Image column: wider, ensure it fills allocated space */
+.columns.columns7 .columns-img-col {
+  flex: 1.35 1 0;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  margin: 0;
+  padding: 0;
+}
+
+.columns.columns7 .columns-img-col picture,
+.columns.columns7 .columns-img-col img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  margin: 0;
+  padding: 0;
+  display: block;
+  background: none;
+  border: none;
+}
+
+/* Text column: narrower, perfectly centered vertically */
+.columns.columns7 > div > div:last-child {
+  flex: 0.65 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  background: #fff;
+  min-height: 0;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 0 2.5rem;
+  margin: 0;
+}
+
+/* Responsive: adjust padding for tablet/mobile */
+@media (width <= 1199px) and (width >= 900px) {
+  .columns.columns7 > div > div:last-child {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (width <= 900px) {
+  .columns.columns7 > div > div:last-child {
+    padding: 1.5rem 1rem;
+    height: auto;
+    justify-content: flex-start;
+  }
+}
+
+/* Label styling */
+.columns.columns7 > div > div:last-child > p:first-of-type {
+  margin: 0 0 1.05em;
+  color: #222c36;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 400;
+}
+
+/* Headline and accent bar (tweaked for alignment and vertical rhythm) */
+.columns.columns7 > div > div:last-child > h3 {
+  position: relative;
+  font-size: 2rem;
+  font-weight: 500;
+  line-height: 1.18;
+  color: #2832c2;
+  margin: 0 0 1.5em;
+  padding-left: 1.15rem;
+  box-sizing: border-box;
+}
+
+.columns.columns7 > div > div:last-child > h3::before {
+  display: inline-block;
+  position: absolute;
+  left: 0;
+  top: 0.09em;
+  width: 4px;
+  height: 2.18em;
+  background: #2832c2;
+  border-radius: 2px;
+}
+
+/* Supporting paragraph styling */
+.columns.columns7 > div > div:last-child > p:last-of-type {
+  color: #646464;
+  font-size: 1rem;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 400;
+  max-width: 520px;
 }
