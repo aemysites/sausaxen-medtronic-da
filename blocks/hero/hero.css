@@ -1770,7 +1770,7 @@
   position: relative;
   display: flex;
   flex-direction: row;
-  align-items: center; /* Vertical centering within hero */
+  align-items: center;
   justify-content: flex-start;
   width: 100vw;
   min-height: 100vh;
@@ -1800,9 +1800,9 @@
   height: auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;     /* vertical centering */
-  align-items: flex-start;     /* left align content */
-  padding-left: 11vw;          /* generous left padding */
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 11vw;
   padding-right: 2vw;
   z-index: 2;
   position: relative;
@@ -1811,7 +1811,7 @@
 .hero.hero14 > div:last-child > div {
   display: flex;
   flex-direction: column;
-  gap: 3.1rem; /* generous gap for breathing room */
+  gap: 3.1rem;
   max-width: 36rem;
   width: 100%;
   justify-content: center;
@@ -1893,5 +1893,162 @@
   .hero.hero14 p:nth-child(2) {
     font-size: 2rem;
     margin-bottom: 1.2rem;
+  }
+}
+
+
+.hero.hero15 {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 420px;
+  background: #f5f5f5;
+  align-items: stretch;
+  box-sizing: border-box;
+}
+
+/* Left column: image block */
+.hero.hero15 > div:first-child {
+  flex: 1 1 50%;
+  background: #18114c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-height: 420px;
+  box-sizing: border-box;
+}
+
+/* Center image inside left column */
+.hero.hero15 > div:first-child > div {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero.hero15 > div:first-child picture,
+.hero.hero15 > div:first-child img {
+  display: block;
+  max-width: 75%;
+  max-height: 340px;
+  height: auto;
+  object-fit: cover;
+  margin: 0 auto;
+}
+
+/* Right column: text block */
+.hero.hero15 > div:last-child {
+  flex: 1 1 50%;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 420px;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.hero.hero15 > div:last-child > div {
+  max-width: 420px;
+  width: 100%;
+  padding: 40px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* Heading styles */
+.hero.hero15 h3 {
+  color: #1a237e;
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  line-height: 1.2;
+}
+
+/* Upper label styles */
+.hero.hero15 p strong {
+  display: block;
+  color: #1a237e;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+  margin-top: 0;
+}
+
+/* Description text styles */
+.hero.hero15 p:not(.button-container, :has(strong)) {
+  color: #444;
+  font-size: 1rem;
+  margin: 0 0 16px;
+  line-height: 1.5;
+}
+
+/* Button/link styles */
+.hero.hero15 .button-container {
+  margin-top: 16px;
+}
+
+.hero.hero15 .button-container .button {
+  color: #3252f7;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: underline;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  cursor: pointer;
+  transition: none;
+}
+
+.hero.hero15 .button-container .button:hover,
+.hero.hero15 .button-container .button:focus {
+  color: #1d3ecf;
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+
+/* Responsive: stack vertically on small screens */
+@media (width <= 900px) {
+  .hero.hero15 {
+    flex-direction: column;
+  }
+
+  .hero.hero15 > div:first-child,
+  .hero.hero15 > div:last-child {
+    min-height: 240px;
+    width: 100%;
+    padding: 0;
+  }
+
+  .hero.hero15 > div:first-child > div,
+  .hero.hero15 > div:last-child > div {
+    max-width: 98vw;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+    padding: 32px 8vw;
+  }
+
+  .hero.hero15 h3,
+  .hero.hero15 p strong,
+  .hero.hero15 p:not(.button-container, :has(strong)) {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero.hero15 > div:first-child picture,
+  .hero.hero15 > div:first-child img {
+    max-width: 320px;
+    max-height: 200px;
   }
 }
