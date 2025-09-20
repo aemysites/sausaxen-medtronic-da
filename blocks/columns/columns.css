@@ -178,80 +178,6 @@
 }
 
 
-.columns.columns23 {
-  background: #fff;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 56px 40px;
-  box-sizing: border-box;
-}
-
-.columns.columns23 > div {
-  display: flex;
-  flex-direction: row;
-  gap: 64px;
-  align-items: flex-start;
-  justify-content: space-between;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.columns.columns23 > div > div {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 520px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  box-sizing: border-box;
-}
-
-@media (width <= 900px) {
-  .columns.columns23 {
-    padding: 32px 12px 36px;
-  }
-
-  .columns.columns23 > div {
-    flex-direction: column;
-    gap: 32px;
-  }
-
-  .columns.columns23 > div > div {
-    max-width: 100%;
-  }
-}
-
-.columns.columns23 h2 {
-  color: #23216F;
-  font-size: 2.25rem;
-  font-weight: 400;
-  margin-top: 0;
-  margin-bottom: 20px;
-  line-height: 1.15;
-  letter-spacing: 0;
-  word-break: normal;
-  white-space: normal;
-}
-
-.columns.columns23 p {
-  color: #23216F;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.6;
-  margin-top: 0;
-  margin-bottom: 0;
-  letter-spacing: 0;
-  word-break: normal;
-  white-space: normal;
-}
-
-.columns.columns23 > div > div > h2,
-.columns.columns23 > div > div > p {
-  max-width: none;
-}
-
-
 .columns.columns3 {
   background: #fff;
   box-shadow: 0 2px 8px rgb(34 34 34 / 7%);
@@ -874,7 +800,6 @@
   padding: 2.5rem 0;
 }
 
-/* Side-by-side columns with flexible, near-full width and minimal gap */
 .columns.columns22 > div {
   display: flex;
   flex-direction: row;
@@ -889,7 +814,6 @@
   padding-right: 0;
 }
 
-/* Responsive stacking for mobile */
 @media (width <= 900px) {
   .columns.columns22 > div {
     flex-direction: column;
@@ -899,7 +823,6 @@
   }
 }
 
-/* Each column: no max-width, flush alignment, no offset */
 .columns.columns22 > div > div {
   flex: 1 1 0;
   min-width: 0;
@@ -912,7 +835,6 @@
   align-self: flex-start;
 }
 
-/* Remove all top/bottom margin and padding from column children */
 .columns.columns22 > div > div > * {
   margin-top: 0;
   margin-bottom: 0;
@@ -920,7 +842,6 @@
   padding-bottom: 0;
 }
 
-/* Heading styling */
 .columns.columns22 h2 {
   color: #232366;
   font-size: 2.2rem;
@@ -930,7 +851,6 @@
   text-align: left;
 }
 
-/* Paragraph styling */
 .columns.columns22 p {
   color: #4B4B4B;
   font-size: 1rem;
@@ -940,7 +860,67 @@
   text-align: left;
 }
 
-/* Tight block: no extra spacing below columns */
 .columns.columns22 > div > div:not(:last-child) {
+  margin-bottom: 0;
+}
+
+
+.columns.columns23 {
+  background: #fff;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 80px 110px;
+  box-sizing: border-box;
+}
+
+/* Two columns, horizontally aligned, gap tuned */
+.columns.columns23 > div {
+  display: flex;
+  flex-direction: row;
+  gap: 48px;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+}
+
+/* Responsive stacking for mobile/tablet */
+@media (width <= 900px) {
+  .columns.columns23 {
+    padding: 32px 12px 36px;
+  }
+
+  .columns.columns23 > div {
+    flex-direction: column;
+    gap: 32px;
+  }
+}
+
+/* Limit individual column width and ensure alignment */
+.columns.columns23 > div > div {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 530px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Headline styles */
+.columns.columns23 h2 {
+  color: #26267b;
+  font-size: 2.25rem;
+  font-weight: 400;
+  line-height: 1.1;
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+/* Paragraph styles */
+.columns.columns23 p {
+  color: #595e6c;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  margin-top: 0;
   margin-bottom: 0;
 }
