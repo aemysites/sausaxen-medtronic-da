@@ -178,62 +178,6 @@
 }
 
 
-.columns.columns22 {
-  background: #fff;
-  margin: 0;
-  padding: 2.5rem 0;
-}
-
-.columns.columns22 > div {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 2.5rem;
-  max-width: 1350px;
-  margin: 0 auto;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-@media (width <= 900px) {
-  .columns.columns22 > div {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 2rem;
-    max-width: 100%;
-    padding: 0 1rem;
-  }
-}
-
-.columns.columns22 > div > div {
-  flex: 1 1 0;
-  min-width: 0;
-  max-width: 540px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.columns.columns22 h2 {
-  color: #222260;
-  font-size: 2rem;
-  font-weight: 400;
-  line-height: 1.1;
-  margin: 0 0 0.75rem;
-  text-align: left;
-}
-
-.columns.columns22 p {
-  color: #47475b;
-  font-size: 0.88rem;
-  font-weight: 400;
-  line-height: 1.6;
-  margin: 0;
-  text-align: left;
-}
-
-
 .columns.columns23 {
   background: #fff;
   max-width: 1200px;
@@ -811,7 +755,6 @@
   padding: 0;
 }
 
-/* Top-level columns: flex row for image and text block */
 .columns.columns7 > div {
   display: flex;
   flex-direction: row;
@@ -821,7 +764,6 @@
   min-height: 480px;
 }
 
-/* Responsive stacking for mobile */
 @media (width <= 900px) {
   .columns.columns7 > div {
     flex-direction: column;
@@ -829,7 +771,6 @@
   }
 }
 
-/* Left column: image, only fill left side */
 .columns.columns7 .columns-img-col {
   flex: 2 1 0;
   display: flex;
@@ -843,7 +784,6 @@
   max-width: 66.6666%;
 }
 
-/* Ensure image/picture fill parent without whitespace */
 .columns.columns7 .columns-img-col picture,
 .columns.columns7 .columns-img-col img {
   width: 100%;
@@ -856,7 +796,6 @@
   border: none;
 }
 
-/* Right column: text, vertically centered, proper width and padding */
 .columns.columns7 > div > div:last-child {
   flex: 1 1 0;
   display: flex;
@@ -888,7 +827,6 @@
   }
 }
 
-/* Section label styling */
 .columns.columns7 > div > div:last-child > p:first-of-type {
   margin: 0 0 1em;
   color: #7b7b7b;
@@ -898,7 +836,6 @@
   font-weight: 400;
 }
 
-/* Headline: bold, blue, left accent bar, visually centered */
 .columns.columns7 > div > div:last-child > h3 {
   position: relative;
   font-size: 2rem;
@@ -921,7 +858,6 @@
   border-radius: 2px;
 }
 
-/* Description styling */
 .columns.columns7 > div > div:last-child > p:last-of-type {
   color: #444;
   font-size: 16px;
@@ -929,4 +865,82 @@
   line-height: 1.5;
   font-weight: 400;
   max-width: 480px;
+}
+
+
+.columns.columns22 {
+  background: #fff;
+  margin: 0;
+  padding: 2.5rem 0;
+}
+
+/* Side-by-side columns with flexible, near-full width and minimal gap */
+.columns.columns22 > div {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 38px;
+  max-width: 98vw;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+/* Responsive stacking for mobile */
+@media (width <= 900px) {
+  .columns.columns22 > div {
+    flex-direction: column;
+    gap: 2rem;
+    max-width: 100%;
+    padding: 0 1rem;
+  }
+}
+
+/* Each column: no max-width, flush alignment, no offset */
+.columns.columns22 > div > div {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  align-self: flex-start;
+}
+
+/* Remove all top/bottom margin and padding from column children */
+.columns.columns22 > div > div > * {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Heading styling */
+.columns.columns22 h2 {
+  color: #232366;
+  font-size: 2.2rem;
+  font-weight: 400;
+  line-height: 1.1;
+  margin: 0 0 1.1rem;
+  text-align: left;
+}
+
+/* Paragraph styling */
+.columns.columns22 p {
+  color: #4B4B4B;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4;
+  margin: 0;
+  text-align: left;
+}
+
+/* Tight block: no extra spacing below columns */
+.columns.columns22 > div > div:not(:last-child) {
+  margin-bottom: 0;
 }
