@@ -179,51 +179,53 @@
 
 .cards.cards10 {
   background: #fff;
-  padding: 0;
+  padding: 64px 0;
   margin: 0 auto;
   max-width: 1200px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-/* Use grid for side-by-side cards, 3 columns on desktop */
 .cards.cards10 > ul {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 340px));
-  gap: 28px;
+  grid-template-columns: repeat(3, minmax(340px, 1fr));
+  gap: 32px;
+  justify-content: center;
+  align-items: start;
   padding: 0;
   margin: 0 auto;
   list-style: none;
-  justify-content: center;
-  align-items: start;
   width: 100%;
+  max-width: 1120px;
 }
 
-/* Responsive stacking on smaller screens */
-@media (width <= 1000px) {
+@media (width <= 1100px) {
   .cards.cards10 > ul {
     grid-template-columns: 1fr;
     gap: 20px;
-    justify-content: stretch;
+    max-width: 96vw;
   }
 }
 
 .cards.cards10 > ul > li {
   background: #fff;
-  box-shadow: none;
   border: none;
   border-radius: 0;
   padding: 0;
   min-width: 0;
   max-width: 370px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: flex-start;
 }
 
-/* Card image: show and style at the top */
 .cards.cards10 .cards-card-image {
   width: 100%;
-  margin: 0 0 18px;
+  margin: 0 0 14px; /* Reduced margin to tighten image/text grouping */
   padding: 0;
   line-height: 0;
   display: block;
@@ -233,50 +235,62 @@
 .cards.cards10 .cards-card-image picture {
   display: block;
   width: 100%;
-  height: 98px;
+  aspect-ratio: 16 / 9;
+  height: auto;
   object-fit: cover;
   border-radius: 0;
   margin: 0;
+  background: #f6f6f6;
 }
 
-/* Card body: vertical stack, left aligned */
 .cards.cards10 .cards-card-body {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   padding: 0;
   margin: 0;
-  width: 100%;
 }
 
-/* Category label styling */
 .cards.cards10 .cards-card-body > p:first-child {
-  font-size: 11px;
-  color: #b0b0b0;
+  color: #7a7a7a;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin: 0 0 8px;
+  letter-spacing: 2px;
+  font-size: 12px;
+  margin: 0 0 7px; /* Slightly reduced margin for tighter grouping */
   font-weight: 500;
-  text-align: left;
 }
 
-/* Heading with blue accent bar at left */
 .cards.cards10 .cards-card-body h3 {
-  font-size: 22px;
-  font-weight: 700;
-  color: #222;
-  margin: 0 0 8px;
-  text-align: left;
-  padding-left: 10px;
-  border-left: 2px solid #1446ff;
-  line-height: 1.19;
+  font-size: 24px;
+  font-weight: 500;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.25;
+  padding-left: 20px;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  border-left: none;
   background: none;
+  position: relative;
 }
 
-/* Remove inherited link styling in headings */
+.cards.cards10 .cards-card-body h3::before {
+  display: inline-block;
+  width: 3px;
+  height: 32px;
+  background: #0047FF;
+  border-radius: 2px;
+  margin-right: 13px;
+  margin-left: -20px;
+  vertical-align: middle;
+}
+
 .cards.cards10 .cards-card-body h3 a {
   color: inherit;
   text-decoration: none;
+  display: inline;
 }
 
 .cards.cards10 .cards-card-body h3 a:hover,
@@ -284,21 +298,20 @@
   text-decoration: underline;
 }
 
-/* "Learn more" link styling */
 .cards.cards10 .cards-card-body .button-container {
   margin: 0;
   padding: 0;
 }
 
 .cards.cards10 .cards-card-body .button {
-  background: none;
-  color: #1446ff;
+  color: #0047FF;
   font-size: 14px;
-  font-weight: 400;
+  font-weight: 500;
+  background: none;
   border: none;
   border-radius: 0;
   box-shadow: none;
-  margin: 0;
+  margin: 10px 0 0; /* Reduced margin for tighter grouping below title */
   padding: 0;
   text-align: left;
   min-width: 0;
@@ -306,6 +319,7 @@
   white-space: normal;
   text-decoration: none;
   line-height: 1.25;
+  cursor: pointer;
 }
 
 .cards.cards10 .cards-card-body .button:hover,
@@ -314,7 +328,6 @@
   color: #1846ff;
 }
 
-/* Spacing between elements in card body */
 .cards.cards10 .cards-card-body > *:not(:last-child) {
-  margin-bottom: 6px;
+  margin-bottom: 0;
 }
