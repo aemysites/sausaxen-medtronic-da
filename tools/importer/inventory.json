@@ -43,8 +43,8 @@
     {
       "name": "Columns",
       "cluster": 3,
-      "source": "Columns block",
-      "target": "Columns block (columns3)",
+      "source": "Columns",
+      "target": "Columns (columns3)",
       "key": "columns3",
       "instances": [
         {
@@ -59,8 +59,8 @@
     {
       "name": "Columns",
       "cluster": 4,
-      "source": "Columns block",
-      "target": "Columns block (columns4)",
+      "source": "Columns",
+      "target": "Columns (columns4)",
       "key": "columns4",
       "instances": [
         {
@@ -75,8 +75,8 @@
     {
       "name": "Columns",
       "cluster": 5,
-      "source": "Columns block",
-      "target": "Columns block (columns5)",
+      "source": "Columns",
+      "target": "Columns (columns5)",
       "key": "columns5",
       "instances": [
         {
@@ -107,8 +107,8 @@
     {
       "name": "Columns",
       "cluster": 7,
-      "source": "Columns block",
-      "target": "Columns block (columns7)",
+      "source": "Columns",
+      "target": "Columns (columns7)",
       "key": "columns7",
       "instances": [
         {
