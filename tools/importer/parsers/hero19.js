@@ -22,9 +22,27 @@ export default function parse(element, { document }) {
   // 2. Background image row
   let bgImageUrl = null;
   let bgImageEl = null;
-  // Find the deepest container with a background image
+  // Find containers with background images, but ignore section-level backgrounds
   const containers = element.querySelectorAll('[style*="background-image"]');
   for (const c of containers) {
+    // Skip if this is a section-level container or too high in the hierarchy
+    if (c.classList.contains('section') || 
+        c.classList.contains('cmp-container--section') ||
+        c.parentElement === element ||
+        c === element) {
+      continue;
+    }
+    
+    // Only consider containers that are likely hero-specific (nested deeper in the DOM)
+    // and have hero-related classes or are within hero content areas
+    const isHeroSpecific = c.closest('.hero') || 
+                          c.classList.contains('hero') ||
+                          c.querySelector('.cmp-image, .cmp-teaser, img');
+    
+    if (!isHeroSpecific) {
+      continue;
+    }
+    
     const url = getBackgroundImageUrl(c.getAttribute('style'));
     if (url) {
       bgImageUrl = url;
