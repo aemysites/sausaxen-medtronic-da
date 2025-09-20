@@ -422,161 +422,6 @@
 }
 
 
-.columns.columns4 {
-  background: #f5f5f7;
-  padding: 40px 0;
-}
-
-.columns.columns4 > div {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  max-width: 1200px;
-  margin: 0 auto;
-  min-height: 370px;
-  background: none;
-  box-sizing: border-box;
-}
-
-.columns.columns4 > div > .columns-img-col,
-.columns.columns4 > div > div:not(.columns-img-col) {
-  flex: 1 1 0;
-  min-width: 0;
-  min-height: 0;
-}
-
-.columns.columns4 > div > .columns-img-col {
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-start;
-  padding: 0;
-  background: none;
-}
-
-.columns.columns4 > div > .columns-img-col picture,
-.columns.columns4 > div > .columns-img-col img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  margin: 0;
-  max-width: unset;
-  min-width: 0;
-  min-height: 0;
-  border-radius: 0;
-  box-shadow: none;
-}
-
-@media (width <= 900px) {
-  .columns.columns4 > div {
-    flex-direction: column;
-    min-height: 0;
-    max-width: 100%;
-  }
-
-  .columns.columns4 > div > .columns-img-col {
-    min-height: 180px;
-    padding: 0 0 18px;
-  }
-
-  .columns.columns4 > div > .columns-img-col img {
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  .columns.columns4 > div > div:not(.columns-img-col) {
-    padding: 24px 14px 32px;
-  }
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) {
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 48px 56px;
-  box-sizing: border-box;
-  min-width: 0;
-  min-height: 0;
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) > p:first-child {
-  text-transform: uppercase;
-  font-size: 13px;
-  letter-spacing: 0.13em;
-  color: #6b6b6b;
-  margin: 0 0 19px;
-  font-weight: 500;
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) h3 {
-  position: relative;
-  color: #2d2ef9;
-  font-size: 2.1rem;
-  font-weight: 700;
-  margin: 0 0 20px;
-  line-height: 1.18;
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding-left: 4px;
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) h3 a {
-  color: inherit;
-  text-decoration: none;
-  font-weight: inherit;
-  line-height: inherit;
-  font-size: inherit;
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) h3::before {
-  display: inline-block;
-  vertical-align: middle;
-  width: 8px;
-  height: 2.25em;
-  background: #2d2ef9;
-  border-radius: 3px;
-  margin-right: 16px;
-  margin-left: -4px;
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) > p:nth-of-type(2) {
-  color: #222;
-  font-size: 16px;
-  margin: 0 0 16px;
-  line-height: 1.5;
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) .button-container {
-  margin: 0;
-  padding: 0;
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) .button-container a.button {
-  background: none;
-  border: none;
-  color: #2d2ef9;
-  font-size: 16px;
-  padding: 0;
-  margin: 0;
-  border-radius: 0;
-  min-width: unset;
-  min-height: unset;
-  line-height: 1.2;
-  display: inline;
-  font-weight: 500;
-  text-decoration: none;
-  box-shadow: none;
-}
-
-.columns.columns4 > div > div:not(.columns-img-col) .button-container a.button:hover,
-.columns.columns4 > div > div:not(.columns-img-col) .button-container a.button:focus {
-  color: #1d3ecf;
-  text-decoration: underline;
-}
-
-
 .columns.columns5 {
   background: #f6f6f6;
   padding: 48px 0;
@@ -764,7 +609,6 @@
   box-sizing: border-box;
 }
 
-/* Use Flexbox for two columns side by side */
 .columns.columns3 > div {
   display: flex;
   flex-direction: row;
@@ -774,7 +618,6 @@
   padding: 0;
 }
 
-/* Text (left) column: align to top and adjust width/padding for visual accuracy */
 .columns.columns3 > div > div:not(.columns-img-col) {
   flex: 0 1 45%;
   max-width: 45%;
@@ -782,7 +625,7 @@
   padding: 36px 40px 32px 56px;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* text starts at the top */
+  justify-content: flex-start;
   align-items: flex-start;
   box-sizing: border-box;
 }
@@ -805,7 +648,6 @@
   }
 }
 
-/* Section label */
 .columns.columns3 > div > div:not(.columns-img-col) > p:first-child {
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -816,7 +658,6 @@
   margin-bottom: 18px;
 }
 
-/* Main heading with vertical accent */
 .columns.columns3 h3 {
   color: #1a51b5;
   font-weight: 700;
@@ -841,7 +682,6 @@
   text-decoration: underline;
 }
 
-/* Subtitle/body text */
 .columns.columns3 > div > div:not(.columns-img-col) > p:not(:first-child) {
   color: #555;
   font-size: 16px;
@@ -849,7 +689,6 @@
   font-weight: 400;
 }
 
-/* Bulleted list styling */
 .columns.columns3 ul {
   margin: 12px 0 24px;
   padding-left: 20px;
@@ -864,7 +703,6 @@
   padding-left: 0;
 }
 
-/* "Learn more" link styling */
 .columns.columns3 .button-container {
   margin-top: 18px;
 }
@@ -894,7 +732,6 @@
   box-shadow: none;
 }
 
-/* Image (right) column: wider for visual balance */
 .columns.columns3 > div > .columns-img-col {
   flex: 1 1 55%;
   max-width: 55%;
@@ -941,4 +778,166 @@
     min-height: 160px;
     max-height: 220px;
   }
+}
+
+
+.columns.columns4 {
+  background: #f7f7f7;
+  padding: 40px 0;
+}
+
+.columns.columns4 > div {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 370px;
+  background: none;
+  box-sizing: border-box;
+}
+
+/* Responsive stacking on small screens */
+@media (width <= 900px) {
+  .columns.columns4 > div {
+    flex-direction: column;
+    min-height: 0;
+    max-width: 100%;
+  }
+}
+
+/* Image column - make image a bit wider */
+.columns.columns4 > div > .columns-img-col {
+  flex: 1.12 1 0%;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  background: none;
+}
+
+.columns.columns4 > div > .columns-img-col picture,
+.columns.columns4 > div > .columns-img-col img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  margin: 0;
+  max-width: unset;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+@media (width <= 900px) {
+  .columns.columns4 > div > .columns-img-col {
+    min-height: 180px;
+    padding: 0 0 18px;
+    flex: unset;
+  }
+
+  .columns.columns4 > div > .columns-img-col img {
+    max-width: 100%;
+    min-width: 0;
+    height: auto;
+  }
+}
+
+/* Text column - slightly less width and tighter padding */
+.columns.columns4 > div > div:not(.columns-img-col) {
+  flex: 0.88 1 0%;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 48px 24px 48px 40px;
+  box-sizing: border-box;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (width <= 900px) {
+  .columns.columns4 > div > div:not(.columns-img-col) {
+    padding: 24px 14px 32px;
+  }
+}
+
+/* Label styling */
+.columns.columns4 > div > div:not(.columns-img-col) > p:first-child {
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.13em;
+  color: #4b4b4b;
+  margin: 0 0 19px;
+  font-weight: 400;
+}
+
+/* Heading styling and accent bar */
+.columns.columns4 > div > div:not(.columns-img-col) h3 {
+  position: relative;
+  color: #2f3cff;
+  font-size: 2rem;
+  font-weight: 600;
+  margin: 0 0 20px;
+  line-height: 1.18;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding-left: 0;
+}
+
+.columns.columns4 > div > div:not(.columns-img-col) h3 a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: inherit;
+  line-height: inherit;
+  font-size: inherit;
+}
+
+.columns.columns4 > div > div:not(.columns-img-col) h3::before {
+  display: inline-block;
+  vertical-align: middle;
+  width: 4px;
+  height: 28px;
+  background: #2f3cff;
+  border-radius: 2px;
+  margin-right: 12px;
+  margin-left: 0;
+}
+
+/* Body text styling */
+.columns.columns4 > div > div:not(.columns-img-col) > p:nth-of-type(2) {
+  color: #444;
+  font-size: 1rem;
+  margin: 0 0 24px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* Button/link styling */
+.columns.columns4 > div > div:not(.columns-img-col) .button-container {
+  margin: 0;
+  padding: 0;
+}
+
+.columns.columns4 > div > div:not(.columns-img-col) .button-container a.button {
+  background: none;
+  border: none;
+  color: #2f3cff;
+  font-size: 1rem;
+  padding: 0;
+  margin: 0;
+  border-radius: 0;
+  min-width: unset;
+  min-height: unset;
+  line-height: 1.2;
+  display: inline;
+  font-weight: 500;
+  text-decoration: underline;
+  box-shadow: none;
 }
