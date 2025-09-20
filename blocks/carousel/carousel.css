@@ -1,3 +1,4 @@
+/* stylelint-disable no-descending-specificity */
 .carousel .carousel-slides-container {
   position: relative;
 }
@@ -525,6 +526,7 @@
   box-sizing: border-box;
   position: relative;
 }
+
 .carousel.carousel18 .carousel-slides-container,
 .carousel.carousel18 .carousel-slides {
   display: flex;
@@ -550,6 +552,7 @@
   padding: 0;
   position: static;
 }
+
 .carousel.carousel18 .carousel-slide-image {
   flex: 0 0 44%;
   min-width: 360px;
@@ -574,6 +577,7 @@
   border-radius: 0;
   background: none;
 }
+
 .carousel.carousel18 .carousel-slide-content {
   flex: 1 1 56%;
   display: flex;
@@ -650,6 +654,7 @@
   text-decoration: underline;
   background: none;
 }
+
 .carousel.carousel18 .carousel-slide-indicators {
   position: absolute;
   inset: auto 55px 16px auto;
@@ -784,7 +789,7 @@
   color: #2563eb;
   font-size: 2.12rem;
   font-weight: 700;
-  margin: 0.35em 0 0.55em 0;
+  margin: 0.35em 0 0.55em;
   line-height: 1.13;
   letter-spacing: -0.011em;
   word-break: break-word;
@@ -802,11 +807,11 @@
 }
 
 .carousel.carousel20 .carousel-slide-content p:nth-of-type(2) {
-  margin: 0 0 0.8em 0;
+  margin: 0 0 0.8em;
 }
 
 .carousel.carousel20 .carousel-slide-content p:nth-of-type(3) {
-  margin: 0 0 1.1em 0;
+  margin: 0 0 1.1em;
   color: #333;
   line-height: 1.5;
   font-size: 1em;
@@ -820,7 +825,7 @@
   border-radius: 2em;
   font-weight: 700;
   font-size: 1em;
-  margin: 0 0 0.7em 0;
+  margin: 0 0 0.7em;
   padding: 0.48em 1.6em;
   transition: border-color 0.2s, background 0.2s, color 0.2s;
   box-shadow: none;
@@ -864,7 +869,6 @@
   margin-left: 0.07em;
 }
 
-/* Navigation buttons: more horizontal spacing, lighter border/shadow */
 .carousel.carousel20 .carousel-navigation-buttons {
   position: absolute;
   top: 50%;
@@ -892,7 +896,7 @@
   border-radius: 50%;
   background: #fff;
   border: 1px solid #e8e8e8;
-  box-shadow: 0 1px 4px 0 rgba(80,80,80,0.06);
+  box-shadow: 0 1px 4px 0 rgb(80 80 80 / 6%);
   transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
   pointer-events: auto;
   display: flex;
@@ -904,7 +908,7 @@
 .carousel.carousel20 .carousel-navigation-buttons button:hover,
 .carousel.carousel20 .carousel-navigation-buttons button:focus-visible {
   border-color: #3b63fb;
-  box-shadow: 0 2px 8px 0 rgba(59,99,251,0.09);
+  box-shadow: 0 2px 8px 0 rgb(59 99 251 / 9%);
   background: #f2f6fe;
 }
 
@@ -938,29 +942,174 @@
   display: none;
 }
 
-@media (max-width: 900px) {
+@media (width <= 900px) {
   .carousel.carousel20 .carousel-slide {
     flex-direction: column;
     min-height: 0;
-    padding: 0 0 32px 0;
+    padding: 0 0 32px;
   }
+
   .carousel.carousel20 .carousel-slide-image {
     max-width: 100%;
     width: 100%;
     justify-content: center;
     margin-bottom: 16px;
   }
+
   .carousel.carousel20 .carousel-slide-content {
     max-width: 100%;
-    margin: 0 16px 20px 16px;
+    margin: 0 16px 20px;
     padding: 0;
     align-items: flex-start;
     transform: none;
   }
+
   .carousel.carousel20 .carousel-navigation-buttons {
     left: 0;
     right: 0;
     width: 100%;
     padding: 0 8px;
+  }
+}
+
+
+.carousel.carousel21 .carousel-navigation-buttons {
+  display: none;
+}
+
+.carousel.carousel21 .carousel-slide-indicators {
+  display: none;
+}
+
+/* Layout: Place slide content at right, vertically centered. */
+.carousel.carousel21 .carousel-slide .carousel-slide-content {
+  background: transparent;
+  color: #212178;
+  box-shadow: none;
+  margin: 0;
+  padding: 0 72px 0 0;
+  max-width: 540px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48%;
+  border-radius: 0;
+  text-align: left;
+  font-family: AvenirNextWorld, 'AvenirNextWorld Fallback', 'avenir next', avenir, Effra, helvetica, arial, sans-serif;
+
+  /* Remove unwanted overlay effect */
+}
+
+/* "Healthcare Professionals" (first p) styling */
+.carousel.carousel21 .carousel-slide .carousel-slide-content p:first-child {
+  text-transform: uppercase;
+  font-size: 0.9em;
+  letter-spacing: 0.08em;
+  color: #212178;
+  margin-bottom: 1.2em;
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+/* Heading styling */
+.carousel.carousel21 .carousel-slide .carousel-slide-content h2,
+.carousel.carousel21 .carousel-slide .carousel-slide-content h3 {
+  color: #212178;
+  font-size: 2.35rem;
+  font-weight: 400;
+  line-height: 1.05;
+  margin-top: 0;
+  margin-bottom: 0.7em;
+  letter-spacing: -0.02em;
+}
+
+/* Subheading (second p after h2) styling */
+.carousel.carousel21 .carousel-slide .carousel-slide-content h2 + p {
+  color: #505050;
+  font-size: 1.09em;
+  margin-top: -0.5em;
+  margin-bottom: 2.2em;
+  line-height: 1.5;
+  font-weight: 400;
+  max-width: 420px;
+}
+
+/* "Read more" button styling */
+.carousel.carousel21 .carousel-slide .carousel-slide-content .button-container .button {
+  background: transparent;
+  color: #212178;
+  border: 2px solid #212178;
+  border-radius: 2em;
+  font-size: 1em;
+  font-weight: 500;
+  padding: 0.5em 2.2em;
+  margin: 0;
+  box-shadow: none;
+  transition: border-color 0.2s, color 0.2s, background 0.2s;
+}
+
+.carousel.carousel21 .carousel-slide .carousel-slide-content .button-container .button:hover,
+.carousel.carousel21 .carousel-slide .carousel-slide-content .button-container .button:focus {
+  background: #f2f6fe;
+  border-color: #212178;
+  color: #212178;
+  text-decoration: none;
+}
+
+/* Image fade effect: gradient overlay left side only */
+.carousel.carousel21 .carousel-slide .carousel-slide-image::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, #fff 0%, rgb(255 255 255 / 60%) 25%, rgb(255 255 255 / 0%) 60%);
+  z-index: 1;
+}
+
+/* Ensure image is visible below content & gradient */
+.carousel.carousel21 .carousel-slide .carousel-slide-image,
+.carousel.carousel21 .carousel-slide .carousel-slide-image picture,
+.carousel.carousel21 .carousel-slide .carousel-slide-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 0;
+}
+
+/* Responsive: stack content below image on small screens */
+@media (width <= 900px) {
+  .carousel.carousel21 .carousel-slide .carousel-slide-content {
+    position: relative;
+    right: auto;
+    left: auto;
+    top: auto;
+    transform: none;
+    width: 100%;
+    padding: 32px 16px;
+    max-width: 100%;
+    background: transparent;
+    color: #212178;
+    text-align: left;
+  }
+
+  .carousel.carousel21 .carousel-slide .carousel-slide-content h2,
+  .carousel.carousel21 .carousel-slide .carousel-slide-content h3 {
+    font-size: 1.65rem;
+  }
+
+  .carousel.carousel21 .carousel-slide .carousel-slide-content h2 + p {
+    font-size: 1em;
+    margin-bottom: 1.2em;
+  }
+
+  .carousel.carousel21 .carousel-slide .carousel-slide-content .button-container .button {
+    padding: 0.5em 1.5em;
+  }
+
+  .carousel.carousel21 .carousel-slide .carousel-slide-image::after {
+    background: linear-gradient(180deg, #fff 0%, rgb(255 255 255 / 60%) 25%, rgb(255 255 255 / 0%) 70%);
   }
 }
