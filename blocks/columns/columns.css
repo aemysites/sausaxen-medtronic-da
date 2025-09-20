@@ -468,7 +468,7 @@
 .columns.columns22 {
   background: #fff;
   margin: 0;
-  padding: 2.5rem 0; /* increased vertical breathing room */
+  padding: 2.5rem 0;
 }
 
 .columns.columns22 > div {
@@ -476,8 +476,8 @@
   flex-direction: row;
   justify-content: flex-start;
   align-items: flex-start;
-  gap: 2.5rem; /* slightly reduced gap for tighter columns */
-  max-width: 1350px; /* allows more full-width feel */
+  gap: 2.5rem;
+  max-width: 1350px;
   margin: 0 auto;
   width: 100%;
   box-sizing: border-box;
@@ -496,7 +496,7 @@
 .columns.columns22 > div > div {
   flex: 1 1 0;
   min-width: 0;
-  max-width: 540px; /* slightly longer lines for better match */
+  max-width: 540px;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -518,4 +518,84 @@
   line-height: 1.6;
   margin: 0;
   text-align: left;
+}
+
+
+.columns.columns23 {
+  background: #fff;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 56px 40px;
+  box-sizing: border-box;
+}
+
+/* Apply flex row to the correct container: the direct child <div> of .columns.columns23 */
+.columns.columns23 > div {
+  display: flex;
+  flex-direction: row;
+  gap: 64px;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Each column: stack heading and paragraph vertically, allow reasonable line length */
+.columns.columns23 > div > div {
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 520px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+/* Responsive stacking for columns and proper padding */
+@media (width <= 900px) {
+  .columns.columns23 {
+    padding: 32px 12px 36px;
+  }
+
+  .columns.columns23 > div {
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .columns.columns23 > div > div {
+    max-width: 100%;
+  }
+}
+
+/* Headings styles */
+.columns.columns23 h2 {
+  color: #23216F;
+  font-size: 2.25rem;
+  font-weight: 400;
+  margin-top: 0;
+  margin-bottom: 20px;
+  line-height: 1.15;
+  letter-spacing: 0;
+  word-break: normal;
+  white-space: normal;
+}
+
+/* Paragraph styles */
+.columns.columns23 p {
+  color: #23216F;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.6;
+  margin-top: 0;
+  margin-bottom: 0;
+  letter-spacing: 0;
+  word-break: normal;
+  white-space: normal;
+}
+
+/* Remove any previous max-width constraints on h2/p to prevent excessive wrapping */
+.columns.columns23 > div > div > h2,
+.columns.columns23 > div > div > p {
+  max-width: none;
 }
