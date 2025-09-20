@@ -495,217 +495,6 @@
   }
 }
 
-
-.hero.hero8 {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: stretch;
-  min-height: 700px;
-  width: 100vw;
-  box-sizing: border-box;
-  position: relative;
-  padding: 0;
-  margin: 0;
-  overflow: hidden;
-}
-
-.hero.hero8 > div:first-child {
-  flex: 1 1 55%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  min-height: 480px;
-  height: 100%;
-  padding: 0;
-  background: none;
-  order: 1;
-}
-
-.hero.hero8 > div:first-child > div {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-end;
-}
-
-.hero.hero8 > div:first-child picture,
-.hero.hero8 > div:first-child img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  max-width: none;
-  max-height: none;
-}
-
-.hero.hero8 > div:last-child {
-  flex: 0 1 45%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 700px;
-  height: 100%;
-  padding: 0 48px 0 0;
-  position: relative;
-  order: 2;
-  background: none;
-  overflow: visible;
-  box-sizing: border-box;
-}
-
-.hero.hero8 > div:last-child > div {
-  width: 480px;
-  height: 480px;
-  background: #fff;
-  border: 4px solid #2331A5;
-  border-radius: 50%;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 48px 36px;
-  margin: 0 auto;
-  box-shadow: none;
-  position: relative;
-  left: 0;
-  top: 0;
-}
-
-.hero.hero8 > div:last-child > div > p:first-child {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 16px;
-  margin-top: 0;
-}
-
-.hero.hero8 > div:last-child > div > p:first-child picture img,
-.hero.hero8 > div:last-child > div > p:first-child img {
-  display: block;
-  margin: 0;
-  width: 80px;
-  height: 6px;
-  object-fit: contain;
-  background: #2331A5;
-  border-radius: 2px;
-}
-
-.hero.hero8 > div:last-child > div > p:nth-child(2) {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: #2331A5;
-  margin-bottom: 16px;
-  margin-top: 0;
-  text-transform: uppercase;
-}
-
-.hero.hero8 > div:last-child > div > h2 {
-  font-size: 2rem;
-  font-weight: 500;
-  color: #2331A5;
-  margin: 0 0 24px;
-  line-height: 1.2;
-  text-align: center;
-}
-
-.hero.hero8 > div:last-child > div > p:nth-child(4) {
-  font-size: 16px;
-  color: #232323;
-  margin-bottom: 32px;
-  margin-top: 0;
-  line-height: 1.6;
-  text-align: center;
-}
-
-.hero.hero8 > div:last-child > div > .button-container {
-  margin-top: 12px;
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.hero.hero8 > div:last-child > div .button-container .button {
-  display: inline-block;
-  padding: 10px 28px;
-  font-size: 16px;
-  color: #2331A5;
-  border: 2px solid #2331A5;
-  border-radius: 30px;
-  background: #fff;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background 0.2s, color 0.2s;
-}
-
-.hero.hero8 > div:last-child > div .button-container .button:hover,
-.hero.hero8 > div:last-child > div .button-container .button:focus {
-  background: #2331A5;
-  color: #fff;
-  border-color: #2331A5;
-}
-
-@media (width <= 900px) {
-  .hero.hero8 {
-    flex-direction: column;
-    min-height: 0;
-    height: auto;
-    width: 100vw;
-    align-items: stretch;
-    justify-content: center;
-  }
-
-  .hero.hero8 > div:first-child {
-    flex: 1 1 100vw;
-    width: 100vw;
-    height: 220px;
-    min-height: 0;
-    padding: 0;
-    justify-content: center;
-  }
-
-  .hero.hero8 > div:first-child > div {
-    width: 100vw;
-    height: 220px;
-    align-items: stretch;
-    justify-content: center;
-  }
-
-  .hero.hero8 > div:first-child picture,
-  .hero.hero8 > div:first-child img {
-    width: 100vw;
-    height: 220px;
-    object-fit: cover;
-    min-height: 0;
-    max-height: 220px;
-  }
-
-  .hero.hero8 > div:last-child {
-    flex: 1 1 100vw;
-    width: 100vw;
-    height: auto;
-    padding: 0;
-    align-items: center;
-    justify-content: center;
-    min-height: 0;
-    margin-top: 0;
-  }
-
-  .hero.hero8 > div:last-child > div {
-    width: 90vw;
-    min-width: 0;
-    height: auto;
-    border-radius: 32px;
-    padding: 32px 12px;
-    box-sizing: border-box;
-    margin: 32px auto 0;
-  }
-}
-
 .hero.hero14 {
   position: relative;
   display: flex;
@@ -2284,7 +2073,6 @@
   background: none;
 }
 
-/* Background image and overlay: make image fill hero and fade from left */
 .hero.hero19 > div:first-child {
   position: absolute;
   inset: 0;
@@ -2310,7 +2098,6 @@
   pointer-events: none;
 }
 
-/* Softer, narrower gradient for readability */
 .hero.hero19 > div:first-child::after {
   position: absolute;
   inset: 0;
@@ -2321,7 +2108,6 @@
   z-index: 1;
 }
 
-/* Content: left-aligned, vertically centered and padded */
 .hero.hero19 > div:last-child {
   position: relative;
   z-index: 2;
@@ -2349,7 +2135,6 @@
   gap: 18px;
 }
 
-/* Heading styles as before */
 .hero.hero19 > div:last-child p:first-child {
   color: #5C5C5C;
   font-size: 13px;
@@ -2381,7 +2166,6 @@
   opacity: 0.98;
 }
 
-/* Responsive: stack vertically on mobile, overlay stays */
 @media (width <= 900px) {
   .hero.hero19 {
     flex-direction: column;
@@ -2442,4 +2226,272 @@
   }
 }
 
-/* Remove any space around the block for true full-width hero */
+
+.hero.hero8 {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  box-sizing: border-box;
+  background: none;
+  padding: 0;
+  margin: 0;
+  position: relative;
+}
+
+.hero.hero8 > div {
+  flex: 1 1 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  height: auto;
+  box-sizing: border-box;
+}
+
+.hero.hero8 > div:first-child {
+  order: 1;
+  justify-content: flex-end;
+  align-items: center;
+  position: relative;
+  background: none;
+  padding: 0;
+  min-height: 0;
+}
+
+.hero.hero8 > div:first-child > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-end;
+}
+
+/* Make sure image fills column, not viewport */
+.hero.hero8 > div:first-child picture,
+.hero.hero8 > div:first-child img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  position: relative;
+  max-height: 800px;
+}
+
+/* Fade effect on image's right edge */
+.hero.hero8 > div:first-child::after {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0; right: 0; bottom: 0;
+  width: 44%;
+  background: linear-gradient(to right, rgb(255 255 255 / 0%) 0%, #fff 99%);
+  pointer-events: none;
+}
+
+/* Circular content area - larger, proper overlap and perfect vertical centering */
+.hero.hero8 > div:last-child {
+  order: 2;
+  justify-content: center;
+  align-items: center;
+  z-index: 2;
+  background: none;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  position: relative;
+  height: auto;
+
+  /* Use grid for vertical centering */
+  display: grid;
+  justify-content: center;
+  align-content: center;
+}
+
+/* Circle overlaps image and is vertically centered */
+.hero.hero8 > div:last-child > div {
+  background: #fff;
+  border: 3px solid #2741E2;
+  border-radius: 50%;
+  width: 620px;
+  height: 620px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  text-align: center;
+  padding: 80px 48px 80px 52px;
+  margin-left: -185px;
+  box-shadow: none;
+  position: relative;
+  z-index: 3;
+}
+
+.hero.hero8 > div:last-child > div > p:first-child {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 28px;
+  margin-top: 0;
+}
+
+.hero.hero8 > div:last-child > div > p:first-child picture img,
+.hero.hero8 > div:last-child > div > p:first-child img {
+  display: block;
+  margin: 0 auto;
+  width: 42px;
+  height: 3px;
+  background: #2741E2;
+  border-radius: 2px;
+}
+
+/* Eyebrow text */
+.hero.hero8 > div:last-child > div > p:nth-child(2) {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: #2741E2;
+  margin-bottom: 16px;
+  margin-top: 0;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+/* Heading */
+.hero.hero8 > div:last-child > div > h2 {
+  font-size: 2.4rem;
+  font-weight: 400;
+  color: #1A2141;
+  margin: 0 0 18px;
+  line-height: 1.15;
+  text-align: center;
+}
+
+/* Paragraph */
+.hero.hero8 > div:last-child > div > p:nth-child(4) {
+  font-size: 1rem;
+  color: #444;
+  margin: 0 auto 22px;
+  line-height: 1.5;
+  text-align: center;
+  max-width: 340px;
+}
+
+/* Button */
+.hero.hero8 > div:last-child > div .button-container {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.hero.hero8 > div:last-child > div .button-container .button {
+  display: inline-block;
+  padding: 12px 32px;
+  font-size: 1rem;
+  color: #2741E2;
+  border: 1.5px solid #2741E2;
+  border-radius: 32px;
+  background: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+}
+
+.hero.hero8 > div:last-child > div .button-container .button:hover,
+.hero.hero8 > div:last-child > div .button-container .button:focus {
+  background: #2741E2;
+  color: #fff;
+  border-color: #2741E2;
+}
+
+/* Responsive adjustments for stacking and circle sizing */
+@media (width <= 900px) {
+  .hero.hero8 {
+    flex-direction: column;
+    min-height: unset;
+    height: auto;
+    width: 100vw;
+    align-items: stretch;
+    justify-content: center;
+    padding: 0;
+  }
+
+  .hero.hero8 > div {
+    min-height: unset;
+    height: auto;
+    justify-content: center;
+    align-items: center;
+    padding: 0 2vw;
+  }
+
+  .hero.hero8 > div:first-child,
+  .hero.hero8 > div:last-child {
+    width: 100vw;
+    position: relative;
+    padding: 0;
+  }
+
+  .hero.hero8 > div:first-child > div {
+    width: 100vw;
+    height: 220px;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .hero.hero8 > div:first-child picture,
+  .hero.hero8 > div:first-child img {
+    width: 100vw;
+    height: 220px;
+    object-fit: cover;
+    min-height: 0;
+    max-height: 220px;
+    position: relative;
+    max-width: 100vw;
+  }
+
+  .hero.hero8 > div:first-child::after {
+    width: 100vw;
+    height: 50px;
+    left: 0;
+    top: auto;
+    bottom: 0;
+    background: none;
+  }
+
+  .hero.hero8 > div:last-child {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .hero.hero8 > div:last-child > div {
+    width: min(90vw, 380px);
+    min-width: 0;
+    height: auto;
+    border-radius: 32px;
+    padding: 32px 12px;
+    margin: 32px auto 0;
+    box-sizing: border-box;
+    margin-left: 0;
+  }
+
+  .hero.hero8 > div:last-child > div > h2 {
+    font-size: 1.35rem;
+    margin-bottom: 14px;
+  }
+
+  .hero.hero8 > div:last-child > div > p:nth-child(4) {
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+    max-width: 96vw;
+  }
+
+  .hero.hero8 > div:last-child > div .button-container .button {
+    padding: 10px 28px;
+    font-size: 0.95rem;
+  }
+}
