@@ -1,13 +1,30 @@
 .embed {
-  width: unset;
+  width: 100vw;
   text-align: center;
   max-width: 800px;
-  margin: 32px auto;
+  margin: 0;
+  min-height: 65vh;
+  padding: 0;
+  position: relative;
+  background: url("https://www.medtronic.com/content/dam/medtronic-wide/public/brand-corporate-assets/imagery/concept/cardiac-surgeries-graphic.jpg") center right/cover no-repeat;
+  overflow: hidden;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
 .embed > div {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
+  flex: 1 1 50vw;
+  flex-direction: row;
+  align-items: stretch;
+  min-width: 0;
+  min-height: 100%;
+  background: transparent;
+  position: relative;
+  z-index: 2;
 }
 
 .embed.embed-twitter .twitter-tweet-rendered {
@@ -59,4 +76,36 @@
   border-left: 6px solid;
   top: 4px;
   left: 7px;
+}
+
+/* Ensure the aspect-ratio container is full height and aligns content to left */
+
+/* Make the iframe fill its parent, acting as a video/image background if present */
+.embed iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+  background: transparent;
+  border: none;
+  pointer-events: none;
+}
+
+/* Remove any possible unwanted default white background from the aspect-ratio container */
+
+/* Responsive: Stack vertically on smaller screens */
+@media (width <= 900px) {
+  .embed {
+    flex-direction: column;
+    min-height: 45vh;
+    height: auto;
+  }
+
+  .embed > div {
+    flex: 1 1 100%;
+    min-width: 0;
+    min-height: 45vh;
+  }
 }
