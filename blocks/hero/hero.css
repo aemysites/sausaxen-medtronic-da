@@ -837,155 +837,6 @@
 }
 
 
-.hero.hero15 {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  min-height: 420px;
-  background: #f5f5f5;
-  align-items: stretch;
-  box-sizing: border-box;
-}
-
-.hero.hero15 > div:first-child {
-  flex: 1 1 50%;
-  background: #18114c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  min-height: 420px;
-  box-sizing: border-box;
-}
-
-.hero.hero15 > div:first-child > div {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.hero.hero15 > div:first-child picture,
-.hero.hero15 > div:first-child img {
-  display: block;
-  max-width: 75%;
-  max-height: 340px;
-  height: auto;
-  object-fit: cover;
-  margin: 0 auto;
-}
-
-.hero.hero15 > div:last-child {
-  flex: 1 1 50%;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 420px;
-  box-sizing: border-box;
-  padding: 0;
-}
-
-.hero.hero15 > div:last-child > div {
-  max-width: 420px;
-  width: 100%;
-  padding: 40px 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-}
-
-.hero.hero15 h3 {
-  color: #1a237e;
-  font-size: 2rem;
-  font-weight: 700;
-  margin: 0 0 12px;
-  line-height: 1.2;
-}
-
-.hero.hero15 p strong {
-  display: block;
-  color: #1a237e;
-  font-size: 0.95rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 8px;
-  margin-top: 0;
-}
-
-.hero.hero15 p:not(.button-container, :has(strong)) {
-  color: #444;
-  font-size: 1rem;
-  margin: 0 0 16px;
-  line-height: 1.5;
-}
-
-.hero.hero15 .button-container {
-  margin-top: 16px;
-}
-
-.hero.hero15 .button-container .button {
-  color: #3252f7;
-  background: none;
-  border: none;
-  font-size: 1rem;
-  font-weight: 500;
-  text-decoration: underline;
-  border-radius: 0;
-  padding: 0;
-  margin: 0;
-  box-shadow: none;
-  cursor: pointer;
-  transition: none;
-}
-
-.hero.hero15 .button-container .button:hover,
-.hero.hero15 .button-container .button:focus {
-  color: #1d3ecf;
-  background: none;
-  border: none;
-  text-decoration: underline;
-}
-
-@media (width <= 900px) {
-  .hero.hero15 {
-    flex-direction: column;
-  }
-
-  .hero.hero15 > div:first-child,
-  .hero.hero15 > div:last-child {
-    min-height: 240px;
-    width: 100%;
-    padding: 0;
-  }
-
-  .hero.hero15 > div:first-child > div,
-  .hero.hero15 > div:last-child > div {
-    max-width: 98vw;
-    align-items: center;
-    text-align: center;
-    margin: 0 auto;
-    padding: 32px 8vw;
-  }
-
-  .hero.hero15 h3,
-  .hero.hero15 p strong,
-  .hero.hero15 p:not(.button-container, :has(strong)) {
-    text-align: center;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .hero.hero15 > div:first-child picture,
-  .hero.hero15 > div:first-child img {
-    max-width: 320px;
-    max-height: 200px;
-  }
-}
-
-
 .hero.hero17 {
   display: flex;
   flex-direction: row;
@@ -2250,7 +2101,6 @@
   box-sizing: border-box;
 }
 
-/* Image column: right side */
 .hero.hero9 > div:first-child {
   flex: 1 1 0;
   order: 2;
@@ -2276,7 +2126,6 @@
   display: block;
 }
 
-/* Text column: left side */
 .hero.hero9 > div:last-child {
   flex: 1 1 0;
   order: 1;
@@ -2292,13 +2141,8 @@
   background: transparent;
   box-sizing: border-box;
   z-index: 2;
-
-  /* DEBUG: Uncomment the next line to see the text area during troubleshooting */
-
-  /* background: rgba(0,255,0,0.05); */
 }
 
-/* Ensure the text content is visible and not collapsed */
 .hero.hero9 > div:last-child > div {
   max-width: 420px;
   width: 100%;
@@ -2313,7 +2157,6 @@
   visibility: visible;
 }
 
-/* Typography: ensure visibility and correct color */
 .hero.hero9 h1 {
   color: #312983;
   font-size: 2.75rem;
@@ -2339,7 +2182,6 @@
   display: block;
 }
 
-/* Prevent accidental hiding/collapsing of text */
 .hero.hero9 > div:last-child,
 .hero.hero9 > div:last-child > div,
 .hero.hero9 h1,
@@ -2349,7 +2191,6 @@
   display: block;
 }
 
-/* Responsive: stack on mobile */
 @media (width <= 900px) {
   .hero.hero9 {
     flex-direction: column;
@@ -2409,5 +2250,208 @@
 
   .hero.hero9 p {
     font-size: 1rem;
+  }
+}
+
+
+.hero.hero15 {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 88vh;
+  background: #f6f6f6;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: center;
+
+  /* Use margin auto to center block vertically in flex parent if possible */
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+/* Left navy section: ensure image is visible and fills available height */
+.hero.hero15 > div:first-child {
+  flex: 1 1 0;
+  min-width: 0;
+  background: #18124d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+  height: 100%;
+}
+
+.hero.hero15 > div:first-child > div {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 340px;
+}
+
+.hero.hero15 > div:first-child picture,
+.hero.hero15 > div:first-child img {
+  display: block;
+  max-width: 75%;
+  max-height: 420px;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  margin: 0 auto;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Right white section: text block vertically and horizontally centered */
+.hero.hero15 > div:last-child {
+  flex: 1 1 0;
+  min-width: 0;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+  height: 100%;
+}
+
+.hero.hero15 > div:last-child > div {
+  max-width: 440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 40px 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-height: 0;
+}
+
+/* Header and label spacing */
+.hero.hero15 h3 {
+  color: #2b2c7f;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 12px;
+  text-align: left;
+}
+
+.hero.hero15 p strong {
+  display: block;
+  color: #18124d;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin-bottom: 14px;
+  margin-top: 0;
+  text-transform: uppercase;
+  position: relative;
+  padding-top: 24px;
+}
+
+.hero.hero15 p strong::before {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 36px;
+  height: 4px;
+  background: #1847e5;
+  border-radius: 2px;
+}
+
+/* Body text */
+.hero.hero15 p:not(.button-container, :has(strong)) {
+  color: #313131;
+  font-size: 1rem;
+  margin: 0 0 22px;
+  line-height: 1.5;
+  text-align: left;
+  max-width: 340px;
+}
+
+/* "Learn more" link alignment and style */
+.hero.hero15 .button-container {
+  margin-top: 22px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.hero.hero15 .button-container .button {
+  color: #1847e5;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  text-decoration: underline;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-align: left;
+}
+
+.hero.hero15 .button-container .button:hover,
+.hero.hero15 .button-container .button:focus {
+  color: #2b2c7f;
+  background: none;
+  border: none;
+  text-decoration: underline;
+}
+
+/* Responsive stacking for mobile */
+@media (width <= 900px) {
+  .hero.hero15 {
+    flex-direction: column;
+    min-height: 0;
+    align-items: stretch;
+    justify-content: flex-start;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  .hero.hero15 > div:first-child,
+  .hero.hero15 > div:last-child {
+    width: 100%;
+    min-height: 180px;
+    padding: 0;
+    height: auto;
+  }
+
+  .hero.hero15 > div:first-child > div,
+  .hero.hero15 > div:last-child > div {
+    max-width: 98vw;
+    padding: 32px 6vw;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin: 0 auto;
+    height: auto;
+  }
+
+  .hero.hero15 h3,
+  .hero.hero15 p strong,
+  .hero.hero15 p:not(.button-container, :has(strong)) {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero.hero15 > div:first-child picture,
+  .hero.hero15 > div:first-child img {
+    max-width: 300px;
+    max-height: 180px;
+  }
+
+  .hero.hero15 .button-container {
+    justify-content: center;
   }
 }
