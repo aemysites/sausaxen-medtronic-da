@@ -178,120 +178,6 @@
 }
 
 
-.columns.columns7 {
-  width: 100%;
-  background: #fff;
-  box-sizing: border-box;
-  padding: 0;
-}
-
-.columns.columns7 > div {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  width: 100%;
-  min-height: 440px;
-}
-
-@media (width <= 900px) {
-  .columns.columns7 > div {
-    flex-direction: column;
-    min-height: unset;
-  }
-}
-
-.columns.columns7 .columns-img-col {
-  flex: 1.35 1 0;
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  align-items: stretch;
-  justify-content: stretch;
-  margin: 0;
-  padding: 0;
-}
-
-.columns.columns7 .columns-img-col picture,
-.columns.columns7 .columns-img-col img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  margin: 0;
-  padding: 0;
-  display: block;
-  background: none;
-  border: none;
-}
-
-.columns.columns7 > div > div:last-child {
-  flex: 0.65 1 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  background: #fff;
-  min-height: 0;
-  height: 100%;
-  box-sizing: border-box;
-  padding: 0 2.5rem;
-  margin: 0;
-}
-
-@media (width <= 1199px) and (width >= 900px) {
-  .columns.columns7 > div > div:last-child {
-    padding: 0 1.5rem;
-  }
-}
-
-@media (width <= 900px) {
-  .columns.columns7 > div > div:last-child {
-    padding: 1.5rem 1rem;
-    height: auto;
-    justify-content: flex-start;
-  }
-}
-
-.columns.columns7 > div > div:last-child > p:first-of-type {
-  margin: 0 0 1.05em;
-  color: #222c36;
-  font-size: 0.85rem;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-weight: 400;
-}
-
-.columns.columns7 > div > div:last-child > h3 {
-  position: relative;
-  font-size: 2rem;
-  font-weight: 500;
-  line-height: 1.18;
-  color: #2832c2;
-  margin: 0 0 1.5em;
-  padding-left: 1.15rem;
-  box-sizing: border-box;
-}
-
-.columns.columns7 > div > div:last-child > h3::before {
-  display: inline-block;
-  position: absolute;
-  left: 0;
-  top: 0.09em;
-  width: 4px;
-  height: 2.18em;
-  background: #2832c2;
-  border-radius: 2px;
-}
-
-.columns.columns7 > div > div:last-child > p:last-of-type {
-  color: #646464;
-  font-size: 1rem;
-  margin: 0;
-  line-height: 1.5;
-  font-weight: 400;
-  max-width: 520px;
-}
-
-
 .columns.columns22 {
   background: #fff;
   margin: 0;
@@ -764,7 +650,6 @@
   padding: 48px 0;
 }
 
-/* Main layout: use flex for direct children, side-by-side */
 .columns.columns5 > div {
   display: flex;
   flex-direction: row;
@@ -777,7 +662,6 @@
   gap: 0;
 }
 
-/* Responsive: stack vertically on small screens */
 @media (width <= 900px) {
   .columns.columns5 > div {
     flex-direction: column;
@@ -786,7 +670,6 @@
   }
 }
 
-/* Left column: image slightly wider, fills available height and width */
 .columns.columns5 > div > .columns-img-col {
   flex: 0 0 52%;
   max-width: 52%;
@@ -830,7 +713,6 @@
   }
 }
 
-/* Right column: text card styling, flush next to image */
 .columns.columns5 > div > div:not(.columns-img-col) {
   flex: 1 1 48%;
   max-width: 560px;
@@ -865,7 +747,6 @@
   }
 }
 
-/* Section label */
 .columns.columns5 > div > div:not(.columns-img-col) p:first-of-type {
   color: #5a5a5a;
   font-size: 14px;
@@ -876,7 +757,6 @@
   margin-top: 0;
 }
 
-/* Heading with blue accent bar (simulate with left border) */
 .columns.columns5 > div > div:not(.columns-img-col) h3 {
   font-size: 32px;
   font-weight: 600;
@@ -888,7 +768,6 @@
   border-left: 4px solid #1752f0;
 }
 
-/* Body text */
 .columns.columns5 > div > div:not(.columns-img-col) p:not(:first-of-type, .button-container) {
   color: #555;
   font-size: 16px;
@@ -898,7 +777,6 @@
   line-height: 1.6;
 }
 
-/* "Learn more" link */
 .columns.columns5 > div > div:not(.columns-img-col) .button-container {
   margin: 0;
 }
@@ -923,4 +801,132 @@
 .columns.columns5 > div > div:not(.columns-img-col) .button-container a.button:hover,
 .columns.columns5 > div > div:not(.columns-img-col) .button-container a.button:focus {
   text-decoration: underline;
+}
+
+
+.columns.columns7 {
+  width: 100%;
+  background: #fff;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+/* Top-level columns: flex row for image and text block */
+.columns.columns7 > div {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: stretch;
+  width: 100%;
+  min-height: 480px;
+}
+
+/* Responsive stacking for mobile */
+@media (width <= 900px) {
+  .columns.columns7 > div {
+    flex-direction: column;
+    min-height: unset;
+  }
+}
+
+/* Left column: image, only fill left side */
+.columns.columns7 .columns-img-col {
+  flex: 2 1 0;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  max-width: 66.6666%;
+}
+
+/* Ensure image/picture fill parent without whitespace */
+.columns.columns7 .columns-img-col picture,
+.columns.columns7 .columns-img-col img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+/* Right column: text, vertically centered, proper width and padding */
+.columns.columns7 > div > div:last-child {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  background: #fff;
+  min-height: 0;
+  box-sizing: border-box;
+  padding: 0 3.5rem;
+  margin: 0;
+  max-width: 480px;
+  width: 100%;
+}
+
+@media (width <= 1199px) and (width >= 901px) {
+  .columns.columns7 > div > div:last-child {
+    padding: 0 2rem;
+    max-width: 100%;
+  }
+}
+
+@media (width <= 900px) {
+  .columns.columns7 > div > div:last-child {
+    padding: 2rem 1rem;
+    height: auto;
+    max-width: 100%;
+    justify-content: flex-start;
+  }
+}
+
+/* Section label styling */
+.columns.columns7 > div > div:last-child > p:first-of-type {
+  margin: 0 0 1em;
+  color: #7b7b7b;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 400;
+}
+
+/* Headline: bold, blue, left accent bar, visually centered */
+.columns.columns7 > div > div:last-child > h3 {
+  position: relative;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.18;
+  color: #2c2ccf;
+  margin: 0 0 1.5em;
+  padding-left: 1.1rem;
+  box-sizing: border-box;
+}
+
+.columns.columns7 > div > div:last-child > h3::before {
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0.04em;
+  width: 4px;
+  height: 1em;
+  background: #2c2ccf;
+  border-radius: 2px;
+}
+
+/* Description styling */
+.columns.columns7 > div > div:last-child > p:last-of-type {
+  color: #444;
+  font-size: 16px;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 400;
+  max-width: 480px;
 }
