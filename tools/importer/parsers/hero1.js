@@ -4,21 +4,43 @@ export default function parse(element, { document }) {
   const headerRow = ['Hero (hero1)'];
 
   // 2. Background image row (row 2)
-  // Find the first .cmp-container with a background-image style
+  // Find .cmp-container with background-image style, but ignore section-level backgrounds
   let bgImageUrl = null;
-  const bgContainer = element.querySelector('.cmp-container[style*="background-image"]');
-  if (bgContainer && bgContainer.style && bgContainer.style.backgroundImage) {
-    // backgroundImage is like: url(/content/dam/medtronic-wide/public/brand-corporate-assets/imagery/concept/cardiac-surgeries-graphic.jpg)
-    const match = bgContainer.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
-    if (match && match[1]) {
-      bgImageUrl = match[1];
-      // If the URL is relative, make it absolute if needed
-      if (bgImageUrl.startsWith('/')) {
-        try {
-          bgImageUrl = new URL(bgImageUrl, document.location.origin).href;
-        } catch (e) {
-          // fallback: leave as is
+  const bgContainers = element.querySelectorAll('.cmp-container[style*="background-image"]');
+  
+  for (const bgContainer of bgContainers) {
+    // Skip if this is a section-level container or too high in the hierarchy
+    if (bgContainer.classList.contains('section') || 
+        bgContainer.classList.contains('cmp-container--section') ||
+        bgContainer.parentElement === element ||
+        bgContainer === element) {
+      continue;
+    }
+    
+    // Only consider containers that are likely hero-specific (nested deeper in the DOM)
+    // and have hero-related classes or are within hero content areas
+    const isHeroSpecific = bgContainer.closest('.hero') || 
+                          bgContainer.classList.contains('hero') ||
+                          bgContainer.querySelector('.cmp-image, .cmp-teaser, img, .cmp-text, .button');
+    
+    if (!isHeroSpecific) {
+      continue;
+    }
+    
+    if (bgContainer.style && bgContainer.style.backgroundImage) {
+      // backgroundImage is like: url(/content/dam/medtronic-wide/public/brand-corporate-assets/imagery/concept/cardiac-surgeries-graphic.jpg)
+      const match = bgContainer.style.backgroundImage.match(/url\(["']?(.*?)["']?\)/);
+      if (match && match[1]) {
+        bgImageUrl = match[1];
+        // If the URL is relative, make it absolute if needed
+        if (bgImageUrl.startsWith('/')) {
+          try {
+            bgImageUrl = new URL(bgImageUrl, document.location.origin).href;
+          } catch (e) {
+            // fallback: leave as is
+          }
         }
+        break; // Found a valid hero-specific background image
       }
     }
   }
